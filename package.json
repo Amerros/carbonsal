@@ -14,7 +14,9 @@
     "react-dom": "^18.2.0",
     "framer-motion": "^10.16.4",
     "recharts": "^2.8.0",
-    "@heroicons/react": "^2.0.18"
+    "@heroicons/react": "^2.0.18",
+    "stripe": "^14.5.0",
+    "@stripe/stripe-js": "^2.1.11"
   },
   "devDependencies": {
     "tailwindcss": "^3.3.0",
