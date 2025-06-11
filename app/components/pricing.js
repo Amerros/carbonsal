@@ -1,0 +1,346 @@
+'use client'
+
+import { useState } from 'react'
+import { motion } from 'framer-motion'
+import { 
+  CheckIcon,
+  XMarkIcon,
+  SparklesIcon,
+  BoltIcon,
+  RocketLaunchIcon,
+  CrownIcon,
+  StarIcon
+} from '@heroicons/react/24/outline'
+
+const Pricing = () => {
+  const [isAnnual, setIsAnnual] = useState(true)
+  const [selectedPlan, setSelectedPlan] = useState(null)
+
+  const plans = [
+    {
+      name: "Starter",
+      icon: BoltIcon,
+      description: "Perfect voor kleine bedrijven die beginnen met carbon tracking",
+      monthlyPrice: 49,
+      annualPrice: 39,
+      color: "from-blue-500 to-blue-600",
+      popular: false,
+      features: [
+        "1 gratis carbon footprint berekening",
+        "Basis PDF rapport",
+        "Email support", 
+        "Tot 25 medewerkers",
+        "Standaard compliance rapportage",
+        "Maandelijkse updates"
+      ],
+      notIncluded: [
+        "AI-powered insights",
+        "API toegang",
+        "Custom branding",
+        "Priority support"
+      ]
+    },
+    {
+      name: "Professional", 
+      icon: SparklesIcon,
+      description: "Voor groeiende bedrijven met uitgebreide sustainability doelen",
+      monthlyPrice: 149,
+      annualPrice: 119,
+      color: "from-primary-500 to-primary-600",
+      popular: true,
+      features: [
+        "Onbeperkte berekeningen",
+        "Premium PDF rapporten met branding",
+        "AI-powered aanbevelingen",
+        "Priority support & phone support",
+        "Tot 250 medewerkers", 
+        "Geavanceerde analytics dashboard",
+        "API toegang",
+        "Compliance certificaten",
+        "Benchmark rapportage",
+        "Wekelijkse updates"
+      ],
+      notIncluded: [
+        "White-label oplossing",
+        "Dedicated account manager"
+      ]
+    },
+    {
+      name: "Enterprise",
+      icon: CrownIcon, 
+      description: "Voor grote organisaties met complexe carbon management behoeften",
+      monthlyPrice: 399,
+      annualPrice: 319,
+      color: "from-purple-500 to-purple-600",
+      popular: false,
+      features: [
+        "Alles uit Professional",
+        "Onbeperkt aantal medewerkers",
+        "Dedicated account manager",
+        "White-label oplossing",
+        "Custom integraties",
+        "Advanced AI & predictive analytics",
+        "Real-time monitoring",
+        "Multi-location support",
+        "Custom compliance rapportages",
+        "24/7 priority support",
+        "Dagelijkse updates",
+        "Training & onboarding"
+      ],
+      notIncluded: []
+    }
+  ]
+
+  const addons = [
+    {
+      name: "Carbon Offset Credits",
+      description: "Gecertificeerde offset credits om je footprint te neutraliseren",
+      price: "€15/ton CO2"
+    },
+    {
+      name: "Sustainability Consulting", 
+      description: "Expert advies voor het ontwikkelen van je sustainability strategie",
+      price: "€150/uur"
+    },
+    {
+      name: "Custom Integrations",
+      description: "Maatwerk API integraties met jouw bestaande systemen", 
+      price: "Op aanvraag"
+    }
+  ]
+
+  const getPrice = (plan) => {
+    return isAnnual ? plan.annualPrice : plan.monthlyPrice
+  }
+
+  const getSavings = (plan) => {
+    const monthlyCost = plan.monthlyPrice * 12
+    const annualCost = plan.annualPrice * 12
+    return monthlyCost - annualCost
+  }
+
+  return (
+    <section id="pricing" className="py-24 px-4 relative overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary-950/5 to-transparent"></div>
+      
+      <div className="relative max-w-7xl mx-auto">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-16"
+        >
+          <span className="inline-block px-4 py-2 bg-primary-500/20 rounded-full text-primary-400 text-sm font-medium mb-4">
+            💰 Transparante Prijzen
+          </span>
+          <h2 className="text-4xl md:text-6xl font-bold mb-6">
+            <span className="gradient-text">Kies het plan</span><br />
+            <span className="text-gray-100">dat bij je past</span>
+          </h2>
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-8">
+            Geen verborgen kosten, geen setup fees. Start vandaag nog met carbon compliance 
+            en zie resultaten binnen 30 dagen.
+          </p>
+
+          {/* Billing Toggle */}
+          <div className="flex items-center justify-center gap-4">
+            <span className={`font-medium ${!isAnnual ? 'text-white' : 'text-gray-400'}`}>
+              Maandelijks
+            </span>
+            <motion.button
+              onClick={() => setIsAnnual(!isAnnual)}
+              className={`relative w-16 h-8 rounded-full transition-colors ${
+                isAnnual ? 'bg-primary-500' : 'bg-gray-600'
+              }`}
+              whileTap={{ scale: 0.95 }}
+            >
+              <motion.div
+                className="absolute top-1 w-6 h-6 bg-white rounded-full shadow-lg"
+                animate={{ x: isAnnual ? 32 : 4 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              />
+            </motion.button>
+            <span className={`font-medium ${isAnnual ? 'text-white' : 'text-gray-400'}`}>
+              Jaarlijks
+            </span>
+            {isAnnual && (
+              <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs font-medium rounded-full">
+                Tot 25% korting
+              </span>
+            )}
+          </div>
+        </motion.div>
+
+        {/* Pricing Cards */}
+        <div className="grid lg:grid-cols-3 gap-8 mb-16">
+          {plans.map((plan, index) => (
+            <motion.div
+              key={plan.name}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              className={`relative ${plan.popular ? 'lg:-mt-4 lg:scale-105' : ''}`}
+            >
+              <div className={`glass-effect rounded-2xl p-8 h-full card-hover border transition-all duration-300 ${
+                plan.popular 
+                  ? 'border-primary-500/50 shadow-2xl shadow-primary-500/20' 
+                  : 'border-white/10 hover:border-primary-500/30'
+              }`}>
+                {/* Popular Badge */}
+                {plan.popular && (
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                    <div className="bg-gradient-to-r from-primary-500 to-primary-600 px-4 py-2 rounded-full text-white text-sm font-semibold flex items-center gap-1">
+                      <StarIcon className="w-4 h-4" />
+                      Meest Populair
+                    </div>
+                  </div>
+                )}
+
+                {/* Header */}
+                <div className="text-center mb-8">
+                  <div className={`w-16 h-16 bg-gradient-to-br ${plan.color} rounded-2xl flex items-center justify-center mx-auto mb-4`}>
+                    <plan.icon className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-2">{plan.name}</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed">{plan.description}</p>
+                </div>
+
+                {/* Pricing */}
+                <div className="text-center mb-8">
+                  <div className="flex items-end justify-center gap-1 mb-2">
+                    <span className="text-4xl font-bold text-white">€{getPrice(plan)}</span>
+                    <span className="text-gray-400 mb-1">/{isAnnual ? 'maand' : 'maand'}</span>
+                  </div>
+                  {isAnnual && (
+                    <div className="text-green-400 text-sm font-medium">
+                      Bespaar €{getSavings(plan)} per jaar
+                    </div>
+                  )}
+                </div>
+
+                {/* Features */}
+                <div className="space-y-4 mb-8">
+                  <h4 className="font-semibold text-white">Inbegrepen:</h4>
+                  {plan.features.map((feature, featureIndex) => (
+                    <div key={featureIndex} className="flex items-start gap-3">
+                      <CheckIcon className="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-300 text-sm">{feature}</span>
+                    </div>
+                  ))}
+                  
+                  {plan.notIncluded.length > 0 && (
+                    <div className="pt-4 border-t border-gray-700">
+                      <h5 className="font-medium text-gray-400 mb-3">Niet inbegrepen:</h5>
+                      {plan.notIncluded.map((feature, featureIndex) => (
+                        <div key={featureIndex} className="flex items-start gap-3 mb-2">
+                          <XMarkIcon className="w-5 h-5 text-gray-500 mt-0.5 flex-shrink-0" />
+                          <span className="text-gray-500 text-sm">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* CTA Button */}
+                <motion.button
+                  onClick={() => setSelectedPlan(plan.name)}
+                  className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 ${
+                    plan.popular
+                      ? 'gradient-button text-white'
+                      : 'glass-effect-dark text-white hover:bg-white/20'
+                  }`}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {plan.name === 'Enterprise' ? 'Contact Opnemen' : 'Start Nu'}
+                </motion.button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Add-ons */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="mb-16"
+        >
+          <h3 className="text-2xl font-bold text-white mb-8 text-center">
+            Extra <span className="gradient-text">services</span>
+          </h3>
+          <div className="grid md:grid-cols-3 gap-6">
+            {addons.map((addon, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="glass-effect-dark rounded-xl p-6 card-hover"
+              >
+                <h4 className="font-semibold text-white mb-2">{addon.name}</h4>
+                <p className="text-gray-400 text-sm mb-4">{addon.description}</p>
+                <div className="text-primary-400 font-semibold">{addon.price}</div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* FAQ Preview */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="text-center"
+        >
+          <div className="glass-effect rounded-2xl p-8 max-w-4xl mx-auto">
+            <h3 className="text-2xl font-bold text-white mb-6">
+              Veelgestelde <span className="gradient-text">vragen</span>
+            </h3>
+            <div className="grid md:grid-cols-2 gap-6 text-left">
+              <div>
+                <h4 className="font-semibold text-white mb-2">Kan ik van plan wisselen?</h4>
+                <p className="text-gray-400 text-sm">
+                  Ja, je kunt altijd upgraden of downgraden. Wijzigingen gaan direct in.
+                </p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-white mb-2">Is er een setup fee?</h4>
+                <p className="text-gray-400 text-sm">
+                  Nee, er zijn geen setup kosten. Je betaalt alleen je maandelijkse abonnement.
+                </p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-white mb-2">Hoe werkt de gratis trial?</h4>
+                <p className="text-gray-400 text-sm">
+                  14 dagen volledige toegang tot alle features, geen creditcard vereist.
+                </p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-white mb-2">Krijg ik support?</h4>
+                <p className="text-gray-400 text-sm">
+                  Alle plannen bevatten support. Enterprise krijgt dedicated account management.
+                </p>
+              </div>
+            </div>
+            <motion.button
+              className="mt-8 gradient-button px-8 py-3 rounded-xl font-semibold"
+              whileHover={{ scale: 1.05 }}
+            >
+              Meer vragen? Contact ons
+            </motion.button>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  )
+}
+
+export default Pricing
