@@ -1,0 +1,42 @@
+{
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "framework": "nextjs",
+  "functions": {
+    "app/api/**/*": {
+      "maxDuration": 30
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization"
+        }
+      ]
+    }
+  ],
+  "env": {
+    "NEXT_PUBLIC_URL": "@carbon-comply-url",
+    "STRIPE_PUBLISHABLE_KEY": "@stripe-publishable-key",
+    "STRIPE_SECRET_KEY": "@stripe-secret-key",
+    "STRIPE_WEBHOOK_SECRET": "@stripe-webhook-secret",
+    "OPENAI_API_KEY": "@openai-api-key"
+  }
+}
