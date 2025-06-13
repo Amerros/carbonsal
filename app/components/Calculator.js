@@ -464,4 +464,245 @@ const Calculator = ({ onClose }) => {
                 <div className="text-3xl font-bold text-primary-400 mb-2">
                   {results.emissions.total} ton
                 </div>
-                <div className="
+                 <div className="grid md:grid-cols-3 gap-6">
+              <div className="glass-effect-dark rounded-xl p-6 text-center">
+                <div className="text-3xl font-bold text-primary-400 mb-2">
+                  {results.emissions.total} ton
+                </div>
+                <div className="text-gray-400 mb-4">CO2 Uitstoot per Jaar</div>
+                <p className="text-sm text-gray-500">
+                  Totale carbon footprint van je bedrijf
+                </p>
+              </div>
+              
+              <div className="glass-effect-dark rounded-xl p-6 text-center">
+                <div className="text-3xl font-bold text-green-400 mb-2">
+                  {results.benchmark?.percentile || 0}%
+                </div>
+                <div className="text-gray-400 mb-4">Beter dan Gemiddelde</div>
+                <p className="text-sm text-gray-500">
+                  Vergeleken met {results.companyInfo.industry} sector
+                </p>
+              </div>
+              
+              <div className="glass-effect-dark rounded-xl p-6 text-center">
+                <div className="text-3xl font-bold text-blue-400 mb-2">
+                  €{results.costSavings?.total?.toLocaleString() || 0}
+                </div>
+                <div className="text-gray-400 mb-4">Potentiële Besparing</div>
+                <p className="text-sm text-gray-500">
+                  Jaarlijkse kostenbesparing mogelijk
+                </p>
+              </div>
+            </div>
+
+            {/* Charts */}
+            <div className="grid lg:grid-cols-2 gap-8">
+              {/* Breakdown Chart */}
+              <div className="glass-effect-dark rounded-xl p-6">
+                <h3 className="text-xl font-semibold text-white mb-4">Uitstoot per Categorie</h3>
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={breakdownData}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={100}
+                      fill="#8884d8"
+                      dataKey="value"
+                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    >
+                      {breakdownData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Monthly Projections */}
+              <div className="glass-effect-dark rounded-xl p-6">
+                <h3 className="text-xl font-semibold text-white mb-4">Maandelijkse Projecties</h3>
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={results.projections}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                    <XAxis dataKey="month" stroke="#9CA3AF" />
+                    <YAxis stroke="#9CA3AF" />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'rgba(0,0,0,0.8)', 
+                        border: '1px solid #374151',
+                        borderRadius: '8px'
+                      }}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="current" 
+                      stroke="#ef4444" 
+                      strokeWidth={2}
+                      name="Huidige trend"
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="optimized" 
+                      stroke="#22c55e" 
+                      strokeWidth={2}
+                      name="Met optimalisaties"
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Recommendations */}
+            {results.recommendations && results.recommendations.length > 0 && (
+              <div className="glass-effect-dark rounded-xl p-6">
+                <h3 className="text-xl font-semibold text-white mb-6">Top Aanbevelingen</h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  {results.recommendations.slice(0, 4).map((rec, index) => (
+                    <div key={index} className="bg-black/20 rounded-lg p-4">
+                      <div className="flex items-start justify-between mb-2">
+                        <h4 className="font-medium text-white">{rec.action}</h4>
+                        <span className={`px-2 py-1 rounded text-xs font-medium ${
+                          rec.impact === 'Hoog' ? 'bg-red-500/20 text-red-400' :
+                          rec.impact === 'Medium' ? 'bg-yellow-500/20 text-yellow-400' :
+                          'bg-green-500/20 text-green-400'
+                        }`}>
+                          {rec.impact}
+                        </span>
+                      </div>
+                      <div className="text-sm text-gray-400 space-y-1">
+                        <p>💰 Besparing: {rec.savings} ton CO2</p>
+                        <p>💸 Kosten: {rec.cost}</p>
+                        <p>⏱️ Terugverdientijd: {rec.paybackMonths} maanden</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              {isAuthenticated && results.calculationId && (
+                <motion.button
+                  onClick={generatePDF}
+                  disabled={isGeneratingPDF}
+                  className="flex items-center justify-center space-x-2 gradient-button px-8 py-3 rounded-xl font-semibold disabled:opacity-50"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <DocumentArrowDownIcon className="w-5 h-5" />
+                  <span>{isGeneratingPDF ? 'Genereren...' : 'Download PDF Rapport'}</span>
+                </motion.button>
+              )}
+              
+              <motion.button
+                onClick={() => setShowResults(false)}
+                className="glass-effect px-8 py-3 rounded-xl font-semibold hover:bg-white/20 transition-colors"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Nieuwe Berekening
+              </motion.button>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.9 }}
+        className="glass-effect rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+      >
+        {/* Header */}
+        <div className="p-6 border-b border-white/10">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center">
+                <CalculatorIcon className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-white">Carbon Footprint Calculator</h2>
+                <p className="text-gray-400">Bereken de CO2 uitstoot van je bedrijf</p>
+              </div>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+            >
+              <XMarkIcon className="w-6 h-6 text-gray-400" />
+            </button>
+          </div>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="p-6 border-b border-white/10">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-sm text-gray-400">Stap {currentStep} van {totalSteps}</span>
+            <span className="text-sm text-gray-400">{Math.round(progress)}% compleet</span>
+          </div>
+          <div className="w-full bg-gray-700 rounded-full h-2">
+            <motion.div
+              className="bg-gradient-to-r from-primary-500 to-primary-600 h-2 rounded-full"
+              style={{ width: `${progress}%` }}
+              initial={{ width: 0 }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.5 }}
+            />
+          </div>
+        </div>
+
+        {/* Form Content */}
+        <div className="p-6">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentStep}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              {renderStep()}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* Navigation */}
+        <div className="p-6 border-t border-white/10 flex justify-between">
+          <motion.button
+            onClick={prevStep}
+            disabled={currentStep === 1}
+            className="flex items-center space-x-2 px-6 py-3 glass-effect rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/20 transition-colors"
+            whileHover={{ scale: currentStep === 1 ? 1 : 1.05 }}
+            whileTap={{ scale: currentStep === 1 ? 1 : 0.95 }}
+          >
+            <ChevronLeftIcon className="w-5 h-5" />
+            <span>Vorige</span>
+          </motion.button>
+
+          <motion.button
+            onClick={nextStep}
+            disabled={isCalculating}
+            className="flex items-center space-x-2 gradient-button px-6 py-3 rounded-lg disabled:opacity-50"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <span>
+              {isCalculating ? 'Berekenen...' : currentStep === totalSteps ? 'Bereken' : 'Volgende'}
+            </span>
+            {!isCalculating && <ChevronRightIcon className="w-5 h-5" />}
+          </motion.button>
+        </div>
+      </motion.div>
+    </div>
+  )
+}
+
+export default Calculator
