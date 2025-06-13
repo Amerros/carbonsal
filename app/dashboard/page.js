@@ -10,7 +10,7 @@ import {
   CreditCardIcon,
   UserCircleIcon,
   ArrowRightIcon,
-  DownloadIcon,
+  ArrowDownTrayIcon, // This is the correct download icon
   PlusIcon,
   CalendarIcon
 } from '@heroicons/react/24/outline'
@@ -128,7 +128,7 @@ export default function Dashboard() {
             </div>
             
             <div className="flex items-center space-x-4">
-              <span className="text-gray-300">Welkom, {user.company_name}</span>
+              <span className="text-gray-300">Welkom, {user.companyName}</span>
               <button
                 onClick={logout}
                 className="text-gray-400 hover:text-white transition-colors"
@@ -175,7 +175,7 @@ export default function Dashboard() {
                 <p className="text-gray-400 text-sm">Rapporten</p>
                 <p className="text-2xl font-bold text-green-400">{reports.length}</p>
               </div>
-              <DownloadIcon className="w-8 h-8 text-green-400" />
+              <ArrowDownTrayIcon className="w-8 h-8 text-green-400" />
             </div>
           </div>
           
@@ -184,7 +184,7 @@ export default function Dashboard() {
               <div>
                 <p className="text-gray-400 text-sm">Abonnement</p>
                 <p className="text-2xl font-bold text-purple-400">
-                  {subscription?.plan_name || 'Gratis'}
+                  {subscription?.planName || 'Gratis'}
                 </p>
               </div>
               <CreditCardIcon className="w-8 h-8 text-purple-400" />
@@ -242,9 +242,9 @@ export default function Dashboard() {
                 {calculations.slice(0, 5).map((calc) => (
                   <div key={calc.id} className="flex items-center justify-between p-4 bg-black/20 rounded-lg">
                     <div>
-                      <p className="text-white font-medium">{calc.company_data.companyName}</p>
+                      <p className="text-white font-medium">{calc.companyData.companyName}</p>
                       <p className="text-gray-400 text-sm">
-                        {new Date(calc.created_at).toLocaleDateString('nl-NL')}
+                        {new Date(calc.createdAt).toLocaleDateString('nl-NL')}
                       </p>
                     </div>
                     <div className="text-right">
@@ -252,7 +252,7 @@ export default function Dashboard() {
                         {calc.results.emissions.total} ton CO2
                       </p>
                       <p className="text-gray-400 text-sm">
-                        {calc.company_data.industry}
+                        {calc.companyData.industry}
                       </p>
                     </div>
                   </div>
@@ -284,15 +284,15 @@ export default function Dashboard() {
                       <div>
                         <p className="text-white font-medium">{report.company_name}</p>
                         <p className="text-gray-400 text-sm">
-                          {new Date(report.created_at).toLocaleDateString('nl-NL')}
+                          {new Date(report.createdAt).toLocaleDateString('nl-NL')}
                         </p>
                       </div>
                     </div>
                     <button
-                      onClick={() => downloadReport(report.id, report.file_name)}
+                      onClick={() => downloadReport(report.id, report.fileName)}
                       className="p-2 hover:bg-white/10 rounded-lg transition-colors"
                     >
-                      <DownloadIcon className="w-5 h-5 text-gray-400 hover:text-white" />
+                      <ArrowDownTrayIcon className="w-5 h-5 text-gray-400 hover:text-white" />
                     </button>
                   </div>
                 ))}
