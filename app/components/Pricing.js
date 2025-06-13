@@ -1,35 +1,8 @@
-'use client'
-
-import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { 
-  CheckIcon,
-  XMarkIcon,
-  SparklesIcon,
-  BoltIcon,
-  RocketLaunchIcon,
-  StarIcon
-} from '@heroicons/react/24/outline'
-
-const Pricing = () => {
-  const [isAnnual, setIsAnnual] = useState(true)
-
-  const plans = [
-    {
-      name: "Starter",
-      icon: BoltIcon,
-      description: "Perfect voor kleine bedrijven die beginnen met carbon tracking",
-      monthlyPrice: 49,
-      annualPrice: 39,
-      color: "from-blue-500 to-blue-600",
-      popular: false,
-      features: [
-        "1 gratis carbon footprint berekening",
-        "Basis PDF rapport",
-        "Email support", 
-        "Tot 25 medewerkers",
-        "Standaard compliance rapportage",
-        "Maandelijkse updates"
+notIncluded: [
+        "AI-powered insights",
+        "API toegang",
+        "Onbeperkte berekeningen",
+        "Priority support"
       ]
     },
     {
@@ -51,6 +24,10 @@ const Pricing = () => {
         "Compliance certificaten",
         "Benchmark rapportage",
         "Wekelijkse updates"
+      ],
+      notIncluded: [
+        "White-label oplossing",
+        "Dedicated account manager"
       ]
     },
     {
@@ -74,12 +51,64 @@ const Pricing = () => {
         "24/7 priority support",
         "Dagelijkse updates",
         "Training & onboarding"
-      ]
+      ],
+      notIncluded: []
     }
   ]
 
   const getPrice = (plan) => {
     return isAnnual ? plan.annualPrice : plan.monthlyPrice
+  }
+
+  const getSavings = (plan) => {
+    const monthlyCost = plan.monthlyPrice * 12
+    const annualCost = plan.annualPrice * 12
+    return monthlyCost - annualCost
+  }
+
+  const handleSubscribe = async (plan) => {
+    if (!isAuthenticated) {
+      setShowAuthModal(true)
+      return
+    }
+
+    if (plan.name === 'Enterprise') {
+      // For enterprise, show contact form or redirect
+      toast.success('Neem contact op via info@carboncomply.nl voor Enterprise pricing')
+      return
+    }
+
+    setLoadingPlan(plan.name)
+
+    try {
+      const response = await fetch('/api/create-checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeaders()
+        },
+        body: JSON.stringify({
+          priceId: `carbon-comply-${plan.name.toLowerCase()}`,
+          planName: plan.name,
+          isAnnual: isAnnual
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to create checkout session')
+      }
+
+      const { url } = await response.json()
+      
+      // Redirect to Stripe Checkout
+      window.location.href = url
+
+    } catch (error) {
+      console.error('Subscription error:', error)
+      toast.error('Er ging iets mis bij het starten van het betalingsproces')
+    } finally {
+      setLoadingPlan(null)
+    }
   }
 
   return (
@@ -171,6 +200,11 @@ const Pricing = () => {
                     <span className="text-4xl font-bold text-white">€{getPrice(plan)}</span>
                     <span className="text-gray-400 mb-1">/maand</span>
                   </div>
+                  {isAnnual && getSavings(plan) > 0 && (
+                    <div className="text-green-400 text-sm font-medium">
+                      Bespaar €{getSavings(plan)} per jaar
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-4 mb-8">
@@ -181,26 +215,57 @@ const Pricing = () => {
                       <span className="text-gray-300 text-sm">{feature}</span>
                     </div>
                   ))}
-                </div>
+                  
+                  {plan.notIncluded.length > 0 && (
+                    <div className="pt-4 border-t border-gray-700">
+                      <h5 className="font-medium text-gray-400 mb-3">Niet inbegrepen:</h5>
+                      {plan.notIncluded.map((feature, featureIndex) => (
+                        <div key={featureIndex} className="flex items-start gap-3 mb-2">
+                          <XMarkIcon className="w-5 h-5 text-gray-500 mt-0.5 flex-shrink-0" />
+                          <span className="text-gray-500 text-sm">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  'use client'
 
-                <motion.button
-                  className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 ${
-                    plan.popular
-                      ? 'gradient-button text-white'
-                      : 'glass-effect-dark text-white hover:bg-white/20'
-                  }`}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  {plan.name === 'Enterprise' ? 'Contact Opnemen' : 'Start Nu'}
-                </motion.button>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
+import { useState } from 'react'
+import { motion } from 'framer-motion'
+import { 
+  CheckIcon,
+  XMarkIcon,
+  SparklesIcon,
+  BoltIcon,
+  RocketLaunchIcon,
+  StarIcon
+} from '@heroicons/react/24/outline'
+import { useAuth } from '../../lib/AuthContext'
+import AuthModal from './AuthModal'
+import toast from 'react-hot-toast'
 
-export default Pricing
+const Pricing = () => {
+  const { isAuthenticated, getAuthHeaders } = useAuth()
+  const [isAnnual, setIsAnnual] = useState(true)
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [loadingPlan, setLoadingPlan] = useState(null)
+
+  const plans = [
+    {
+      name: "Starter",
+      icon: BoltIcon,
+      description: "Perfect voor kleine bedrijven die beginnen met carbon tracking",
+      monthlyPrice: 49,
+      annualPrice: 39,
+      color: "from-blue-500 to-blue-600",
+      popular: false,
+      features: [
+        "5 carbon footprint berekeningen per maand",
+        "Basis PDF rapporten",
+        "Email support", 
+        "Tot 25 medewerkers",
+        "Standaard compliance rapportage",
+        "Maandelijkse updates"
+      ],
+      notIncluded: [
+        "AI-powered insights",
+        "API toegang",
+        "
