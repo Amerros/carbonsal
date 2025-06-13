@@ -8,7 +8,11 @@ export const metadata = {
   description: 'Advanced carbon footprint calculation and compliance reporting for businesses',
   keywords: 'carbon footprint, CO2 calculator, sustainability, compliance, environmental reporting',
   authors: [{ name: 'Carbon Comply Team' }],
-  viewport: 'width=device-width, initial-scale=1',
+}
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
 }
 
 export default function RootLayout({ children }) {
