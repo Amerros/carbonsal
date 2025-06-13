@@ -8,8 +8,7 @@ import {
   SparklesIcon,
   BoltIcon,
   RocketLaunchIcon,
-  CrownIcon,
-  StarIcon
+  StarIcon // Using StarIcon instead of CrownIcon
 } from '@heroicons/react/24/outline'
 
 const Pricing = () => {
@@ -41,33 +40,8 @@ const Pricing = () => {
       ]
     },
     {
-      name: "Professional", 
-      icon: SparklesIcon,
-      description: "Voor groeiende bedrijven met uitgebreide sustainability doelen",
-      monthlyPrice: 149,
-      annualPrice: 119,
-      color: "from-primary-500 to-primary-600",
-      popular: true,
-      features: [
-        "Onbeperkte berekeningen",
-        "Premium PDF rapporten met branding",
-        "AI-powered aanbevelingen",
-        "Priority support & phone support",
-        "Tot 250 medewerkers", 
-        "Geavanceerde analytics dashboard",
-        "API toegang",
-        "Compliance certificaten",
-        "Benchmark rapportage",
-        "Wekelijkse updates"
-      ],
-      notIncluded: [
-        "White-label oplossing",
-        "Dedicated account manager"
-      ]
-    },
-    {
       name: "Enterprise",
-      icon: CrownIcon, 
+      icon: StarIcon, // Using StarIcon instead of CrownIcon
       description: "Voor grote organisaties met complexe carbon management behoeften",
       monthlyPrice: 399,
       annualPrice: 319,
@@ -344,3 +318,28 @@ const Pricing = () => {
 }
 
 export default Pricing
+    {
+      name: "Professional", 
+      icon: SparklesIcon,
+      description: "Voor groeiende bedrijven met uitgebreide sustainability doelen",
+      monthlyPrice: 149,
+      annualPrice: 119,
+      color: "from-primary-500 to-primary-600",
+      popular: true,
+      features: [
+        "Onbeperkte berekeningen",
+        "Premium PDF rapporten met branding",
+        "AI-powered aanbevelingen",
+        "Priority support & phone support",
+        "Tot 250 medewerkers", 
+        "Geavanceerde analytics dashboard",
+        "API toegang",
+        "Compliance certificaten",
+        "Benchmark rapportage",
+        "Wekelijkse updates"
+      ],
+      notIncluded: [
+        "White-label oplossing",
+        "Dedicated account manager"
+      ]
+    },
