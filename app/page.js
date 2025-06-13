@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { useAuth } from '../lib/AuthContext'
+import { useRouter } from 'next/navigation'
 import Navigation from './components/Navigation'
 import Hero from './components/Hero'
 import Features from './components/Features'
@@ -10,9 +12,13 @@ import Stats from './components/Stats'
 import Testimonials from './components/Testimonials'
 import Pricing from './components/Pricing'
 import Footer from './components/Footer'
+import AuthModal from './components/AuthModal'
 
 export default function Home() {
+  const { user } = useAuth()
+  const router = useRouter()
   const [showCalculator, setShowCalculator] = useState(false)
+  const [showAuthModal, setShowAuthModal] = useState(false)
   const [currentSection, setCurrentSection] = useState('hero')
   
   useEffect(() => {
@@ -33,6 +39,28 @@ export default function Home() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Check for successful payment
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search)
+    if (urlParams.get('success') === 'true') {
+      // Redirect to dashboard after successful payment
+      router.push('/dashboard')
+    }
+  }, [])
+
+  const handleShowCalculator = () => {
+    if (user) {
+      setShowCalculator(true)
+    } else {
+      setShowAuthModal(true)
+    }
+  }
+
+  const handleAuthSuccess = () => {
+    setShowAuthModal(false)
+    setShowCalculator(true)
+  }
+
   return (
     <div className="min-h-screen text-white overflow-x-hidden">
       {/* Floating Background Elements */}
@@ -46,21 +74,28 @@ export default function Home() {
       <Navigation currentSection={currentSection} />
       
       <main>
-        <Hero onShowCalculator={() => setShowCalculator(true)} />
+        <Hero onShowCalculator={handleShowCalculator} />
         <Features />
         <Stats />
-        
-        {showCalculator && (
-          <section id="calculator" className="py-20">
-            <Calculator onClose={() => setShowCalculator(false)} />
-          </section>
-        )}
-        
         <Testimonials />
         <Pricing />
       </main>
       
       <Footer />
+
+      {/* Calculator Modal */}
+      {showCalculator && (
+        <Calculator onClose={() => setShowCalculator(false)} />
+      )}
+
+      {/* Auth Modal */}
+      {showAuthModal && (
+        <AuthModal 
+          isOpen={showAuthModal}
+          onClose={() => setShowAuthModal(false)}
+          onSuccess={handleAuthSuccess}
+        />
+      )}
     </div>
   )
 }
