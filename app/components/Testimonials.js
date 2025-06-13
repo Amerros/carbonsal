@@ -303,7 +303,7 @@ const Testimonials = () => {
               </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
 
         {/* CTA Section */}
         <motion.div
