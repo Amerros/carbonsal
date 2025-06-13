@@ -1,36 +1,51 @@
 import { NextResponse } from 'next/server'
+import { db } from '../../../lib/db'
+import jwt from 'jsonwebtoken'
 
-// Carbon calculation coefficients (in kg CO2 per unit)
+// Real emission factors (kg CO2 per unit) - Nederlandse data
 const EMISSION_FACTORS = {
-  electricity: 0.5, // kg CO2 per kWh (NL grid mix)
-  gas: 2.3, // kg CO2 per m³
-  heating: 0.4, // kg CO2 per kWh
-  carFleet: 0.21, // kg CO2 per km (average)
-  publicTransport: 0.05, // kg CO2 per euro spent
-  businessTravel: 0.15, // kg CO2 per euro spent
-  waste: 0.8, // kg CO2 per kg waste
-  water: 0.3, // kg CO2 per m³
-  paper: 1.2, // kg CO2 per kg
-  plastic: 2.1, // kg CO2 per kg
-  metal: 1.8, // kg CO2 per kg
+  electricity: 0.379, // kg CO2 per kWh (NL grid mix 2024)
+  gas: 1.884, // kg CO2 per m³ (natural gas)
+  heating: 0.379, // kg CO2 per kWh
+  carFleet: 0.184, // kg CO2 per km (average EU)
+  publicTransport: 0.089, // kg CO2 per km
+  businessTravel: 0.255, // kg CO2 per km (flights)
+  waste: 0.469, // kg CO2 per kg waste
+  water: 0.298, // kg CO2 per m³
+  paper: 0.921, // kg CO2 per kg
+  plastic: 1.967, // kg CO2 per kg
+  metal: 1.467, // kg CO2 per kg
 }
 
-// Industry benchmarks (tons CO2 per employee per year)
+// Industry benchmarks (tons CO2 per employee per year) - Nederlandse data
 const INDUSTRY_BENCHMARKS = {
-  'Technologie': 4.2,
-  'Productie': 8.5,
-  'Retail': 3.8,
-  'Financiële Diensten': 2.9,
-  'Gezondheidszorg': 5.1,
-  'Onderwijs': 3.2,
-  'Transport & Logistiek': 12.3,
-  'Bouw': 9.7,
-  'Anders': 5.5
+  'Technologie': 3.8,
+  'Productie': 9.2,
+  'Retail': 4.1,
+  'Financiële Diensten': 2.7,
+  'Gezondheidszorg': 5.4,
+  'Onderwijs': 3.1,
+  'Transport & Logistiek': 14.2,
+  'Bouw': 11.1,
+  'Anders': 5.8
 }
 
 export async function POST(request) {
   try {
     const data = await request.json()
+    
+    // Get user from auth token (optional for anonymous calculations)
+    let user = null
+    const authHeader = request.headers.get('authorization')
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      try {
+        const token = authHeader.substring(7)
+        const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        user = await db.getUserById(decoded.userId)
+      } catch (error) {
+        // Continue with anonymous calculation
+      }
+    }
     
     // Validate required fields
     if (!data.companyName || !data.industry || !data.employees) {
@@ -61,7 +76,7 @@ export async function POST(request) {
     const percentile = calculatePercentile(performanceRatio)
 
     // Generate recommendations
-    const recommendations = generateRecommendations(emissions, totalEmissionsTons)
+    const recommendations = generateRecommendations(emissions, totalEmissionsTons, data.industry)
 
     // Calculate cost savings potential
     const costSavings = calculateCostSavings(emissions, totalEmissionsTons)
@@ -69,7 +84,7 @@ export async function POST(request) {
     // Generate monthly projections
     const monthlyProjections = generateMonthlyProjections(totalEmissionsTons)
 
-    // Create response
+    // Create result object
     const result = {
       companyInfo: {
         name: data.companyName,
@@ -96,6 +111,17 @@ export async function POST(request) {
       costSavings,
       projections: monthlyProjections,
       calculatedAt: new Date().toISOString()
+    }
+
+    // Save calculation if user is logged in
+    if (user) {
+      try {
+        const savedCalculation = await db.saveCalculation(user.id, data, result)
+        result.calculationId = savedCalculation.id
+      } catch (error) {
+        console.error('Failed to save calculation:', error)
+        // Continue without saving
+      }
     }
 
     return NextResponse.json(result)
@@ -125,7 +151,7 @@ function calculateTransportEmissions(transport) {
 
 function calculateWasteEmissions(waste) {
   const general = (parseFloat(waste.general) || 0) * EMISSION_FACTORS.waste
-  const recycling = (parseFloat(waste.recycling) || 0) * EMISSION_FACTORS.waste * 0.3 // 70% reduction for recycling
+  const recycling = (parseFloat(waste.recycling) || 0) * EMISSION_FACTORS.waste * 0.2 // 80% reduction for recycling
   return general + recycling
 }
 
@@ -160,30 +186,32 @@ function getPerformanceRanking(percentile) {
   return 'Needs Improvement'
 }
 
-function generateRecommendations(emissions, totalEmissions) {
+function generateRecommendations(emissions, totalEmissions, industry) {
   const recommendations = []
 
   // Energy recommendations
-  if (emissions.energy > totalEmissions * 1000 * 0.4) {
+  if (emissions.energy > totalEmissions * 1000 * 0.3) {
     recommendations.push({
       category: 'Energy',
       action: 'Overstap naar 100% groene energie',
       impact: 'Hoog',
-      savings: Math.round(emissions.energy * 0.7 / 10) / 100, // tons CO2
-      cost: '€2,500 - €5,000',
-      paybackMonths: 18
+      savings: Math.round(emissions.energy * 0.8 / 10) / 100, // tons CO2
+      cost: '€2,000 - €4,000',
+      paybackMonths: 15,
+      priority: 1
     })
   }
 
   // Transport recommendations
-  if (emissions.transport > totalEmissions * 1000 * 0.3) {
+  if (emissions.transport > totalEmissions * 1000 * 0.25) {
     recommendations.push({
       category: 'Transport',
-      action: 'Elektrische bedrijfswagens en fietsplan',
+      action: 'Elektrische bedrijfswagens implementeren',
       impact: 'Hoog',
-      savings: Math.round(emissions.transport * 0.6 / 10) / 100,
-      cost: '€15,000 - €30,000',
-      paybackMonths: 24
+      savings: Math.round(emissions.transport * 0.7 / 10) / 100,
+      cost: '€20,000 - €40,000',
+      paybackMonths: 36,
+      priority: 2
     })
   }
 
@@ -193,9 +221,23 @@ function generateRecommendations(emissions, totalEmissions) {
       category: 'Waste',
       action: 'Circulair afvalmanagement programma',
       impact: 'Medium',
-      savings: Math.round(emissions.waste * 0.5 / 10) / 100,
-      cost: '€1,200 - €3,000',
-      paybackMonths: 12
+      savings: Math.round(emissions.waste * 0.6 / 10) / 100,
+      cost: '€1,500 - €3,500',
+      paybackMonths: 18,
+      priority: 3
+    })
+  }
+
+  // Industry-specific recommendations
+  if (industry === 'Technologie') {
+    recommendations.push({
+      category: 'IT Infrastructure',
+      action: 'Cloud optimalisatie en server consolidatie',
+      impact: 'Medium',
+      savings: Math.round(totalEmissions * 0.12 * 100) / 100,
+      cost: '€5,000 - €12,000',
+      paybackMonths: 24,
+      priority: 4
     })
   }
 
@@ -204,34 +246,39 @@ function generateRecommendations(emissions, totalEmissions) {
     category: 'Efficiency',
     action: 'Smart building automation systeem',
     impact: 'Medium',
-    savings: Math.round(totalEmissions * 0.15 * 100) / 100,
-    cost: '€8,000 - €15,000',
-    paybackMonths: 30
+    savings: Math.round(totalEmissions * 0.18 * 100) / 100,
+    cost: '€8,000 - €18,000',
+    paybackMonths: 30,
+    priority: 5
   })
 
-  return recommendations.slice(0, 4) // Limit to top 4
+  return recommendations.slice(0, 5) // Top 5 recommendations
 }
 
 function calculateCostSavings(emissions, totalEmissions) {
-  const carbonPrice = 85 // €85 per ton CO2
-  const energyCost = 0.25 // €0.25 per kWh
-  const fuelCost = 1.8 // €1.8 per liter
+  const carbonPrice = 95 // €95 per ton CO2 (current EU ETS price)
+  const energyCost = 0.28 // €0.28 per kWh (NL average)
+  const fuelCost = 1.85 // €1.85 per liter
 
-  const potentialReduction = totalEmissions * 0.4 // 40% reduction potential
+  const potentialReduction = totalEmissions * 0.45 // 45% reduction potential
   const carbonSavings = potentialReduction * carbonPrice
 
-  // Energy cost savings (approximate)
-  const energySavings = (emissions.energy / EMISSION_FACTORS.electricity) * energyCost * 0.3
+  // Energy cost savings
+  const energySavings = (emissions.energy / EMISSION_FACTORS.electricity) * energyCost * 0.35
 
-  // Transport cost savings (approximate)
-  const transportSavings = (emissions.transport / EMISSION_FACTORS.carFleet) * 0.08 * fuelCost * 0.5
+  // Transport cost savings
+  const transportSavings = (emissions.transport / EMISSION_FACTORS.carFleet) * 0.12 * fuelCost * 0.6
+
+  // Waste cost savings
+  const wasteSavings = (emissions.waste / EMISSION_FACTORS.waste) * 0.15 * 0.5
 
   return {
-    total: Math.round(carbonSavings + energySavings + transportSavings),
+    total: Math.round(carbonSavings + energySavings + transportSavings + wasteSavings),
     carbon: Math.round(carbonSavings),
     energy: Math.round(energySavings),
     transport: Math.round(transportSavings),
-    timeline: '12 months'
+    waste: Math.round(wasteSavings),
+    timeline: '12-18 months'
   }
 }
 
@@ -240,9 +287,10 @@ function generateMonthlyProjections(totalEmissions) {
   
   return months.map((month, index) => {
     // Add seasonal variation
-    const seasonalFactor = 1 + 0.2 * Math.sin((index - 2) * Math.PI / 6)
-    const current = totalEmissions * seasonalFactor * (0.9 + Math.random() * 0.2)
-    const optimized = current * 0.75 // 25% reduction target
+    const seasonalFactor = 1 + 0.15 * Math.sin((index - 2) * Math.PI / 6)
+    const businessFactor = 0.85 + Math.random() * 0.3 // Business variation
+    const current = totalEmissions * seasonalFactor * businessFactor
+    const optimized = current * 0.65 // 35% reduction target
     
     return {
       month,
