@@ -464,11 +464,6 @@ const Calculator = ({ onClose }) => {
                 <div className="text-3xl font-bold text-primary-400 mb-2">
                   {results.emissions.total} ton
                 </div>
-                 <div className="grid md:grid-cols-3 gap-6">
-              <div className="glass-effect-dark rounded-xl p-6 text-center">
-                <div className="text-3xl font-bold text-primary-400 mb-2">
-                  {results.emissions.total} ton
-                </div>
                 <div className="text-gray-400 mb-4">CO2 Uitstoot per Jaar</div>
                 <p className="text-sm text-gray-500">
                   Totale carbon footprint van je bedrijf
