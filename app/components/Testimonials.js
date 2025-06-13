@@ -5,8 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { 
   StarIcon,
   ChevronLeftIcon,
-  ChevronRightIcon,
-  QuoteIcon
+  ChevronRightIcon
 } from '@heroicons/react/24/solid'
 import { 
   UserCircleIcon,
@@ -18,12 +17,18 @@ const Testimonials = () => {
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
 
+  // Custom Quote Icon
+  const QuoteIcon = ({ className }) => (
+    <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+      <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h4v10h-10z"/>
+    </svg>
+  )
+
   const testimonials = [
     {
       name: "Sarah van der Berg",
       position: "Sustainability Director",
       company: "GreenTech Solutions",
-      image: "/api/placeholder/64/64",
       rating: 5,
       text: "Carbon Comply heeft ons geholpen om 40% CO2 reductie te behalen in slechts 6 maanden. De AI-insights zijn ongelooflijk accuraat en de ROI was zichtbaar binnen 30 dagen.",
       metrics: {
@@ -36,7 +41,6 @@ const Testimonials = () => {
       name: "Michael Janssen", 
       position: "CEO",
       company: "Sustainable Manufacturing",
-      image: "/api/placeholder/64/64",
       rating: 5,
       text: "De meest uitgebreide en accurate carbon footprint tool die we hebben gebruikt. Het dashboard geeft ons real-time inzicht in onze impact en de compliance rapporten zijn perfect voor onze audits.",
       metrics: {
@@ -49,39 +53,12 @@ const Testimonials = () => {
       name: "Emma de Vries",
       position: "Operations Manager", 
       company: "EcoLogistics",
-      image: "/api/placeholder/64/64",
       rating: 5,
       text: "Fantastische ROI en gebruiksvriendelijk platform. De automatische rapportages bespaaren ons 20 uur per maand en de kostenbespaaringen waren direct zichtbaar.",
       metrics: {
         co2Reduction: "50%",
         savings: "€200,000",
         timeframe: "8 maanden"
-      }
-    },
-    {
-      name: "David Chen",
-      position: "Environmental Consultant",
-      company: "Future Energy Group",
-      image: "/api/placeholder/64/64", 
-      rating: 5,
-      text: "Als consultant adviseer ik Carbon Comply aan al mijn klanten. De wetenschappelijke basis is solide en de implementatie is naadloos. Beste tool op de markt.",
-      metrics: {
-        co2Reduction: "45%",
-        savings: "€156,000",
-        timeframe: "5 maanden"
-      }
-    },
-    {
-      name: "Lisa Vermeulen",
-      position: "CFO",
-      company: "Smart Buildings Inc",
-      image: "/api/placeholder/64/64",
-      rating: 5,
-      text: "De business case was duidelijk vanaf dag 1. Carbon Comply heeft niet alleen onze uitstoot verminderd, maar ook onze operationele kosten met 25% verlaagd.",
-      metrics: {
-        co2Reduction: "38%", 
-        savings: "€175,000",
-        timeframe: "7 maanden"
       }
     }
   ]
@@ -106,18 +83,11 @@ const Testimonials = () => {
     setIsAutoPlaying(false)
   }
 
-  const goToTestimonial = (index) => {
-    setCurrentTestimonial(index)
-    setIsAutoPlaying(false)
-  }
-
   return (
     <section id="testimonials" className="py-24 px-4 relative overflow-hidden">
-      {/* Background Effects */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary-950/10 via-transparent to-primary-950/20"></div>
       
       <div className="relative max-w-7xl mx-auto">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -138,7 +108,6 @@ const Testimonials = () => {
           </p>
         </motion.div>
 
-        {/* Main Testimonial */}
         <div className="relative">
           <AnimatePresence mode="wait">
             <motion.div
@@ -150,7 +119,6 @@ const Testimonials = () => {
               className="glass-effect rounded-3xl p-8 md:p-12 max-w-4xl mx-auto"
             >
               <div className="grid lg:grid-cols-3 gap-8 items-center">
-                {/* Quote Section */}
                 <div className="lg:col-span-2">
                   <QuoteIcon className="w-12 h-12 text-primary-400 mb-6" />
                   
@@ -158,14 +126,12 @@ const Testimonials = () => {
                     "{testimonials[currentTestimonial].text}"
                   </blockquote>
 
-                  {/* Stars */}
                   <div className="flex items-center gap-1 mb-6">
                     {[...Array(testimonials[currentTestimonial].rating)].map((_, i) => (
                       <StarIcon key={i} className="w-5 h-5 text-yellow-400" />
                     ))}
                   </div>
 
-                  {/* Author Info */}
                   <div className="flex items-center gap-4">
                     <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center">
                       <UserCircleIcon className="w-10 h-10 text-white" />
@@ -185,7 +151,6 @@ const Testimonials = () => {
                   </div>
                 </div>
 
-                {/* Metrics Section */}
                 <div className="space-y-4">
                   <h4 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                     <ChartBarIcon className="w-5 h-5 text-primary-400" />
@@ -219,7 +184,6 @@ const Testimonials = () => {
             </motion.div>
           </AnimatePresence>
 
-          {/* Navigation Arrows */}
           <div className="absolute top-1/2 -translate-y-1/2 left-4 right-4 flex justify-between pointer-events-none">
             <motion.button
               onClick={prevTestimonial}
@@ -241,12 +205,11 @@ const Testimonials = () => {
           </div>
         </div>
 
-        {/* Testimonial Indicators */}
         <div className="flex justify-center gap-2 mt-8">
           {testimonials.map((_, index) => (
             <motion.button
               key={index}
-              onClick={() => goToTestimonial(index)}
+              onClick={() => setCurrentTestimonial(index)}
               className={`w-3 h-3 rounded-full transition-all duration-300 ${
                 index === currentTestimonial 
                   ? 'bg-primary-500 w-8' 
@@ -256,80 +219,6 @@ const Testimonials = () => {
             />
           ))}
         </div>
-
-        {/* Additional Testimonials Grid */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          className="mt-20"
-        >
-          <h3 className="text-2xl font-semibold text-white mb-8 text-center">
-            Meer <span className="gradient-text">succesverhalen</span>
-          </h3>
-          
-          <div className="grid md:grid-cols-3 gap-6">
-            {testimonials.slice(0, 3).map((testimonial, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="glass-effect-dark rounded-xl p-6 card-hover"
-              >
-                <div className="flex items-center gap-1 mb-3">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <StarIcon key={i} className="w-4 h-4 text-yellow-400" />
-                  ))}
-                </div>
-                
-                <p className="text-gray-300 text-sm mb-4 line-clamp-3">
-                  "{testimonial.text.substring(0, 120)}..."
-                </p>
-                
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center">
-                    <span className="text-white text-sm font-semibold">
-                      {testimonial.name.split(' ').map(n => n[0]).join('')}
-                    </span>
-                  </div>
-                  <div>
-                    <div className="font-medium text-white text-sm">{testimonial.name}</div>
-                    <div className="text-gray-400 text-xs">{testimonial.company}</div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* CTA Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          className="text-center mt-16"
-        >
-          <div className="glass-effect rounded-2xl p-8 max-w-3xl mx-auto">
-            <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
-              Klaar om jouw <span className="gradient-text">succesverhaal</span> te schrijven?
-            </h3>
-            <p className="text-gray-300 mb-6">
-              Sluit je aan bij meer dan 500 bedrijven die al hun CO2 doelen hebben behaald 
-              met Carbon Comply.
-            </p>
-            <motion.button
-              className="gradient-button px-8 py-3 rounded-xl font-semibold"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Start je gratis trial
-            </motion.button>
-          </div>
-        </motion.div>
       </div>
     </section>
   )
