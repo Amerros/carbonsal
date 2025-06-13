@@ -4,9 +4,9 @@ const nextConfig = {
     domains: [],
   },
   env: {
-    STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
-    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
-    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '',
+    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY || '',
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY || '',
   }
 }
 
