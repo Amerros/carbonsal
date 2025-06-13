@@ -1,4 +1,41 @@
-notIncluded: [
+'use client'
+
+import { useState } from 'react'
+import { motion } from 'framer-motion'
+import { 
+  CheckIcon,
+  XMarkIcon,
+  SparklesIcon,
+  BoltIcon,
+  RocketLaunchIcon,
+  StarIcon
+} from '@heroicons/react/24/outline'
+import { useAuth } from '../../lib/AuthContext'
+import toast from 'react-hot-toast'
+
+const Pricing = () => {
+  const { isAuthenticated, getAuthHeaders } = useAuth()
+  const [isAnnual, setIsAnnual] = useState(true)
+  const [loadingPlan, setLoadingPlan] = useState(null)
+
+  const plans = [
+    {
+      name: "Starter",
+      icon: BoltIcon,
+      description: "Perfect voor kleine bedrijven die beginnen met carbon tracking",
+      monthlyPrice: 49,
+      annualPrice: 39,
+      color: "from-blue-500 to-blue-600",
+      popular: false,
+      features: [
+        "5 carbon footprint berekeningen per maand",
+        "Basis PDF rapporten",
+        "Email support", 
+        "Tot 25 medewerkers",
+        "Standaard compliance rapportage",
+        "Maandelijkse updates"
+      ],
+      notIncluded: [
         "AI-powered insights",
         "API toegang",
         "Onbeperkte berekeningen",
@@ -68,12 +105,11 @@ notIncluded: [
 
   const handleSubscribe = async (plan) => {
     if (!isAuthenticated) {
-      setShowAuthModal(true)
+      toast.error('Je moet eerst inloggen om een abonnement te nemen')
       return
     }
 
     if (plan.name === 'Enterprise') {
-      // For enterprise, show contact form or redirect
       toast.success('Neem contact op via info@carboncomply.nl voor Enterprise pricing')
       return
     }
@@ -99,8 +135,6 @@ notIncluded: [
       }
 
       const { url } = await response.json()
-      
-      // Redirect to Stripe Checkout
       window.location.href = url
 
     } catch (error) {
@@ -226,46 +260,65 @@ notIncluded: [
                         </div>
                       ))}
                     </div>
-                  'use client'
+                  )}
+                </div>
 
-import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { 
-  CheckIcon,
-  XMarkIcon,
-  SparklesIcon,
-  BoltIcon,
-  RocketLaunchIcon,
-  StarIcon
-} from '@heroicons/react/24/outline'
-import { useAuth } from '../../lib/AuthContext'
-import AuthModal from './AuthModal'
-import toast from 'react-hot-toast'
+                <motion.button
+                  onClick={() => handleSubscribe(plan)}
+                  disabled={loadingPlan === plan.name}
+                  className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 ${
+                    plan.popular
+                      ? 'gradient-button'
+                      : 'glass-effect hover:bg-white/20'
+                  } disabled:opacity-50`}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {loadingPlan === plan.name ? 'Laden...' : 
+                   plan.name === 'Enterprise' ? 'Contact Opnemen' : 'Start Nu'}
+                </motion.button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
 
-const Pricing = () => {
-  const { isAuthenticated, getAuthHeaders } = useAuth()
-  const [isAnnual, setIsAnnual] = useState(true)
-  const [showAuthModal, setShowAuthModal] = useState(false)
-  const [loadingPlan, setLoadingPlan] = useState(null)
+        {/* FAQ Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+          className="text-center"
+        >
+          <div className="glass-effect rounded-2xl p-8 max-w-4xl mx-auto">
+            <h3 className="text-2xl md:text-3xl font-bold text-white mb-6">
+              Nog vragen over onze <span className="gradient-text">prijzen</span>?
+            </h3>
+            <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
+              Alle plannen komen met een 14-dagen gratis proefperiode. 
+              Geen setup kosten, geen langetermijn contracten, stop wanneer je wilt.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <motion.button
+                className="gradient-button px-8 py-3 rounded-xl font-semibold"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Start Gratis Proefperiode
+              </motion.button>
+              <motion.button
+                className="glass-effect px-8 py-3 rounded-xl font-semibold hover:bg-white/20 transition-colors"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Neem Contact Op
+              </motion.button>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  )
+}
 
-  const plans = [
-    {
-      name: "Starter",
-      icon: BoltIcon,
-      description: "Perfect voor kleine bedrijven die beginnen met carbon tracking",
-      monthlyPrice: 49,
-      annualPrice: 39,
-      color: "from-blue-500 to-blue-600",
-      popular: false,
-      features: [
-        "5 carbon footprint berekeningen per maand",
-        "Basis PDF rapporten",
-        "Email support", 
-        "Tot 25 medewerkers",
-        "Standaard compliance rapportage",
-        "Maandelijkse updates"
-      ],
-      notIncluded: [
-        "AI-powered insights",
-        "API toegang",
-        "
+export default Pricing
