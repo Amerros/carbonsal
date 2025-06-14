@@ -5,12 +5,21 @@ export async function POST(request) {
   try {
     const { secret } = await request.json()
     
-    // Simple security check
-    if (secret !== 'setup123') {
+    // Simple security check - only allow in development or with correct secret
+    const isRailwayProduction = process.env.RAILWAY_ENVIRONMENT === 'production'
+    const isDevelopment = process.env.NODE_ENV === 'development'
+    
+    if (isRailwayProduction && secret !== process.env.SETUP_SECRET) {
+      return NextResponse.json({ 
+        error: 'Unauthorized - setup not allowed in production without proper secret' 
+      }, { status: 401 })
+    }
+    
+    if (!isDevelopment && !isRailwayProduction && secret !== 'setup123') {
       return NextResponse.json({ error: 'Invalid secret' }, { status: 401 })
     }
 
-    // Test the database connection with a simple operation
+    // Test the database connection
     const healthCheck = await db.healthCheck()
     
     if (healthCheck.status === 'unhealthy') {
@@ -19,31 +28,40 @@ export async function POST(request) {
       }, { status: 500 })
     }
 
-    // Try to create tables using Prisma schema push
-    // This will automatically create tables based on your schema
-    console.log('Database connection successful!')
-    console.log('Tables will be created automatically by Prisma when first accessed.')
-
+    // Railway automatically handles schema migration through Prisma
+    console.log('Railway database connection successful!')
+    console.log('Environment:', process.env.RAILWAY_ENVIRONMENT || 'development')
+    
     return NextResponse.json({ 
       success: true, 
-      message: 'Database connection successful! Prisma will create tables automatically.',
-      connection: healthCheck.connection,
-      timestamp: healthCheck.timestamp
+      message: 'Railway database connection successful! Schema is auto-managed by Railway.',
+      environment: process.env.RAILWAY_ENVIRONMENT || 'development',
+      database: healthCheck.connection,
+      timestamp: healthCheck.timestamp,
+      railway: {
+        service: process.env.RAILWAY_SERVICE_NAME || 'carbon-comply',
+        deployment: process.env.RAILWAY_DEPLOYMENT_ID || 'local',
+        region: process.env.RAILWAY_REGION || 'unknown',
+      }
     })
 
   } catch (error) {
-    console.error('Setup error:', error)
+    console.error('Railway setup error:', error)
     
-    // More detailed error information
+    // More detailed error information for Railway
     let errorMessage = error.message
-    if (error.message.includes('postgres.railway.internal')) {
-      errorMessage = 'Still connecting to Railway database. Please check your DATABASE_URL environment variable in Vercel.'
+    if (error.message.includes('connect ECONNREFUSED')) {
+      errorMessage = 'Railway database connection refused. Check DATABASE_URL environment variable.'
+    } else if (error.message.includes('timeout')) {
+      errorMessage = 'Railway database connection timeout. Please try again.'
     }
     
     return NextResponse.json(
       { 
-        error: 'Setup failed: ' + errorMessage,
-        details: error.stack
+        error: 'Railway setup failed: ' + errorMessage,
+        environment: process.env.RAILWAY_ENVIRONMENT || 'development',
+        service: process.env.RAILWAY_SERVICE_NAME || 'carbon-comply',
+        details: process.env.NODE_ENV === 'development' ? error.stack : undefined
       },
       { status: 500 }
     )
