@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 
 // ECHTE Hugging Face AI implementatie (GRATIS!)
 const HF_API_URL = "https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium"
-const HF_API_KEY = process.env.HUGGINGFACE_API_KEY || "hf_your_free_token_here"
+const HF_API_KEY = process.env.HUGGINGFACE_API_KEY || "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"
 
 // Nederlandse emissiefactoren (conform Nederlandse CO2-Prestatieladder)
 const DUTCH_EMISSION_FACTORS = {
