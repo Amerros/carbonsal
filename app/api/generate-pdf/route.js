@@ -27,12 +27,19 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Calculation not found' }, { status: 404 })
     }
 
+    // Debug: Log the actual structure
+    console.log('Calculation structure:', JSON.stringify(calculation, null, 2))
+
     // Create PDF
     const pdf = new jsPDF()
     
     // Safely extract data with fallbacks
     const companyData = calculation.company_data || calculation.companyData || {}
     const results = calculation.results || {}
+    
+    // Debug: Log extracted data
+    console.log('Company data:', companyData)
+    console.log('Results:', results)
     
     // Extract company info safely
     const companyName = companyData.companyName || companyData.company_name || companyData.name || 'Unknown Company'
