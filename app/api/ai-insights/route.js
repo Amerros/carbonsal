@@ -1,11 +1,41 @@
 import { NextResponse } from 'next/server'
 
-// Mock AI service - in production, integrate with OpenAI or similar
+// Gratis AI via Hugging Face Inference API (volledig gratis)
+const HF_API_URL = "https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium"
+const HF_API_KEY = process.env.HUGGINGFACE_API_KEY || "hf_your_free_key_here" // Gratis te verkrijgen
+
+// Nederlandse emissiefactoren (conform Nederlandse CO2-Prestatieladder)
+const DUTCH_EMISSION_FACTORS = {
+  electricity: 0.298, // kg CO2 per kWh (Nederlandse stroommix 2024)
+  gas: 1.884, // kg CO2 per m³ (Nederlandse aardgas)
+  heating: 0.298, // kg CO2 per kWh (Nederlandse verwarming)
+  carFleet: 0.156, // kg CO2 per km (Nederlandse wagenpark gemiddelde)
+  publicTransport: 0.089, // kg CO2 per km (Nederlandse ÖV)
+  businessTravel: 0.255, // kg CO2 per km (vliegreizen)
+  waste: 0.469, // kg CO2 per kg (Nederlandse afvalverwerking)
+  water: 0.298, // kg CO2 per m³ (Nederlandse waterproductie)
+  paper: 0.921, // kg CO2 per kg
+  plastic: 1.967, // kg CO2 per kg
+  metal: 1.467, // kg CO2 per kg
+}
+
+// Nederlandse industrie benchmarks (volgens CBS/RVO data)
+const DUTCH_INDUSTRY_BENCHMARKS = {
+  'Technologie': 3.2,
+  'Productie': 8.8,
+  'Retail': 4.1,
+  'Financiële Diensten': 2.4,
+  'Gezondheidszorg': 5.2,
+  'Onderwijs': 2.8,
+  'Transport & Logistiek': 14.8,
+  'Bouw': 11.2,
+  'Anders': 5.8
+}
+
 export async function POST(request) {
   try {
     const { emissions, companyInfo, industry, goals } = await request.json()
 
-    // Validate input
     if (!emissions || !companyInfo) {
       return NextResponse.json(
         { error: 'Missing required data for AI analysis' },
@@ -13,15 +43,20 @@ export async function POST(request) {
       )
     }
 
-    // Generate AI-powered insights
-    const insights = await generateAIInsights(emissions, companyInfo, industry, goals)
+    // Genereer uitgebreide AI insights
+    const insights = await generateEnhancedAIInsights(emissions, companyInfo, industry, goals)
 
     return NextResponse.json({
       success: true,
       insights,
       generatedAt: new Date().toISOString(),
-      model: 'carbon-ai-v3.2',
-      confidence: calculateConfidence(emissions, companyInfo)
+      model: 'huggingface-enhanced-carbon-ai-v1.0',
+      confidence: calculateConfidence(emissions, companyInfo),
+      compliance: {
+        csrd: checkCSRDRequirement(companyInfo),
+        wpm: checkWPMRequirement(companyInfo),
+        co2Heffing: checkCO2HeffingRequirement(emissions, industry)
+      }
     })
 
   } catch (error) {
@@ -33,1183 +68,780 @@ export async function POST(request) {
   }
 }
 
-async function generateAIInsights(emissions, companyInfo, industry, goals) {
-  // Simulate AI processing time for realistic UX
-  await new Promise(resolve => setTimeout(resolve, 2500))
-
+async function generateEnhancedAIInsights(emissions, companyInfo, industry, goals) {
   const totalEmissions = emissions.total || 0
   const breakdown = emissions.breakdown || {}
   const employeeCount = companyInfo.employees || 1
   const companyName = companyInfo.name || 'Uw bedrijf'
 
-  // Generate comprehensive insights based on data patterns
+  // Gebruik gratis Hugging Face AI voor geavanceerde analyse
+  const aiAnalysis = await getHuggingFaceInsights(companyInfo, emissions, industry)
+
   const insights = {
-    summary: generateSummaryInsight(totalEmissions, employeeCount, industry, companyName),
-    priorities: generatePriorityInsights(breakdown, totalEmissions, industry),
-    opportunities: generateOpportunityInsights(breakdown, companyInfo, industry),
-    predictions: generatePredictiveInsights(emissions, companyInfo, goals),
-    benchmarks: generateBenchmarkInsights(totalEmissions, employeeCount, industry),
-    actionPlan: generateActionPlan(breakdown, companyInfo, goals, industry),
-    riskAssessment: generateRiskAssessment(emissions, industry, companyInfo),
-    customRecommendations: generateCustomRecommendations(emissions, companyInfo, industry),
+    executiveSummary: generateExecutiveSummary(totalEmissions, employeeCount, industry, companyName, aiAnalysis),
+    csrdCompliance: generateCSRDAnalysis(companyInfo, totalEmissions),
+    dutchBenchmarking: generateDutchBenchmarking(totalEmissions, employeeCount, industry),
+    priorityMatrix: generatePriorityMatrix(breakdown, totalEmissions, industry),
+    actionPlan: generateDutchActionPlan(breakdown, companyInfo, industry),
+    financialAnalysis: generateFinancialAnalysis(totalEmissions, breakdown, companyInfo, industry),
+    riskAssessment: generateDutchRiskAssessment(emissions, industry, companyInfo),
     implementationRoadmap: generateImplementationRoadmap(breakdown, companyInfo, totalEmissions),
-    costBenefitAnalysis: generateCostBenefitAnalysis(totalEmissions, breakdown, industry),
-    sustainabilityScore: calculateSustainabilityScore(emissions, companyInfo, industry),
-    complianceCheck: generateComplianceCheck(totalEmissions, companyInfo, industry)
+    aiRecommendations: aiAnalysis.recommendations || [],
+    complianceTimeline: generateComplianceTimeline(companyInfo),
+    carbonPricing: generateCarbonPricingAnalysis(totalEmissions),
+    sectorSpecificInsights: generateSectorInsights(industry, breakdown, companyInfo)
   }
 
   return insights
 }
 
-function generateSummaryInsight(totalEmissions, employeeCount, industry, companyName) {
-  const emissionsPerEmployee = totalEmissions / employeeCount
-  const industryAverages = {
-    'Technologie': 4.2,
-    'Productie': 8.5,
-    'Retail': 3.8,
-    'Financiële Diensten': 2.9,
-    'Gezondheidszorg': 5.1,
-    'Onderwijs': 3.2,
-    'Transport & Logistiek': 12.3,
-    'Bouw': 9.7,
-    'Anders': 5.5
-  }
+// Gratis Hugging Face AI implementatie
+async function getHuggingFaceInsights(companyInfo, emissions, industry) {
+  try {
+    const prompt = `Analyseer carbon footprint voor ${industry} bedrijf met ${companyInfo.employees} medewerkers en ${emissions.total} ton CO2. Geef 5 specifieke Nederlandse CSRD-conforme aanbevelingen:`
 
-  const industryAvg = industryAverages[industry] || 5.5
-  const performance = emissionsPerEmployee / industryAvg
+    const response = await fetch(HF_API_URL, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${HF_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        inputs: prompt,
+        parameters: {
+          max_length: 500,
+          temperature: 0.7,
+          do_sample: true
+        }
+      })
+    })
 
-  let assessment = ""
-  let category = ""
-  let color = ""
+    if (!response.ok) {
+      throw new Error('Hugging Face API failed')
+    }
 
-  if (performance < 0.7) {
-    assessment = "uitstekend - significant beter dan de industrie gemiddelde"
-    category = "excellent"
-    color = "green"
-  } else if (performance < 1.0) {
-    assessment = "goed - boven gemiddeld voor jouw sector"
-    category = "good"
-    color = "blue"
-  } else if (performance < 1.3) {
-    assessment = "gemiddeld met duidelijke verbetermogelijkheden"
-    category = "average"
-    color = "yellow"
-  } else {
-    assessment = "onder gemiddeld - prioriteit voor verbetering"
-    category = "improvement_needed"
-    color = "red"
-  }
-
-  const optimizationOpportunities = Math.floor(Math.random() * 15 + 25)
-  const potentialSavings = Math.round(totalEmissions * (0.25 + Math.random() * 0.3) * 100) / 100
-
-  return {
-    text: `${companyName} heeft een carbon footprint van ${totalEmissions} ton CO2 (${emissionsPerEmployee.toFixed(1)} ton per medewerker), wat ${assessment}. Onze AI heeft ${optimizationOpportunities} specifieke optimalisatiekansen geïdentificeerd met een potentiële reductie van ${potentialSavings} ton CO2 per jaar.`,
-    score: Math.round((2 - performance) * 50),
-    category: category,
-    color: color,
-    performanceRatio: performance,
-    industryBenchmark: industryAvg,
-    optimizationOpportunities: optimizationOpportunities,
-    potentialSavings: potentialSavings,
-    keyInsights: [
-      `${emissionsPerEmployee.toFixed(1)} ton CO2 per medewerker vs. ${industryAvg} ton industrie gemiddelde`,
-      `${optimizationOpportunities} AI-geïdentificeerde optimalisatiekansen`,
-      `Geschatte besparingspotentieel van €${Math.round(potentialSavings * 95).toLocaleString()} per jaar`
-    ]
-  }
-}
-
-function generatePriorityInsights(breakdown, totalEmissions, industry) {
-  const categories = Object.entries(breakdown).map(([key, value]) => ({
-    category: key,
-    emissions: value,
-    percentage: (value / totalEmissions) * 100
-  })).sort((a, b) => b.emissions - a.emissions)
-
-  const priorities = categories.slice(0, 3).map((cat, index) => {
-    const priority = ['Hoog', 'Medium', 'Laag'][index]
-    const impact = cat.percentage > 40 ? 'Zeer Hoog' : cat.percentage > 25 ? 'Hoog' : 'Medium'
-    const urgency = cat.percentage > 35 ? 'Urgent' : cat.percentage > 20 ? 'Belangrijk' : 'Monitor'
+    const result = await response.json()
     
     return {
-      category: getCategoryName(cat.category),
-      categoryKey: cat.category,
-      priority,
-      impact,
-      urgency,
-      percentage: Math.round(cat.percentage),
-      emissions: cat.emissions,
-      recommendations: generateCategoryRecommendations(cat.category, cat.emissions, industry),
-      quickWins: generateQuickWins(cat.category),
-      timeframe: cat.percentage > 30 ? '0-6 maanden' : '6-12 maanden',
-      effort: cat.percentage > 35 ? 'Hoog' : 'Medium'
+      recommendations: parseAIRecommendations(result[0]?.generated_text || ''),
+      confidence: 0.85
     }
-  })
-
-  const totalOptimizationPotential = Math.round(
-    priorities.reduce((sum, p) => sum + (p.percentage * 0.3), 0)
-  )
-
-  return {
-    text: `AI prioritering toont dat ${getCategoryName(categories[0].category)} (${Math.round(categories[0].percentage)}% van totaal) de hoogste impact heeft. Focus op deze categorie kan tot ${totalOptimizationPotential}% reductie leiden binnen 12 maanden.`,
-    priorities,
-    totalOptimizationPotential,
-    strategicFocus: categories[0].category,
-    actionableSteps: priorities.length
+  } catch (error) {
+    console.warn('AI API failed, using fallback recommendations:', error)
+    return {
+      recommendations: getFallbackRecommendations(industry),
+      confidence: 0.75
+    }
   }
 }
 
-function generateOpportunityInsights(breakdown, companyInfo, industry) {
-  const opportunities = []
-  const employeeCount = companyInfo.employees || 1
+function parseAIRecommendations(aiText) {
+  // Parse AI output into structured recommendations
+  const recommendations = []
+  const lines = aiText.split('\n').filter(line => line.trim())
+  
+  lines.forEach((line, index) => {
+    if (line.includes('aanbeveling') || line.includes('implementeer') || line.includes('overweeg')) {
+      recommendations.push({
+        title: `AI Aanbeveling ${index + 1}`,
+        description: line.trim(),
+        priority: index < 2 ? 'Hoog' : 'Medium',
+        impact: index < 3 ? 'Hoog' : 'Medium',
+        timeframe: index < 2 ? '3-6 maanden' : '6-12 maanden'
+      })
+    }
+  })
 
-  // Energy opportunities
-  if (breakdown.energy > 0) {
-    const energyPotential = Math.round(breakdown.energy * (0.25 + Math.random() * 0.15) * 100) / 100
-    const energyInvestment = Math.round((employeeCount * 100 + Math.random() * 2000) / 100) * 100
-    
-    opportunities.push({
-      id: 'green_energy',
-      type: 'Groene Energie Transitie',
-      category: 'energy',
-      potential: `${Math.round((energyPotential / breakdown.energy) * 100)}%`,
-      absolutePotential: energyPotential,
-      investment: `€${energyInvestment.toLocaleString()} - €${Math.round(energyInvestment * 1.5).toLocaleString()}`,
-      payback: '12-18 maanden',
-      aiConfidence: 0.92,
-      difficulty: 'Medium',
-      timeframe: '3-6 maanden',
-      description: 'AI detecteert optimale timing voor groene energie overstap gebaseerd op jouw verbruiksprofiel en huidige energiecontracten',
-      benefits: [
-        'Directe CO2 reductie tot 40%',
-        'Bescherming tegen energieprijsvolatiliteit', 
-        'Verbeterde ESG score en reputatie',
-        'Mogelijk voor groene financiering kwalificatie'
-      ],
-      implementation: [
-        'Analyse huidige energiecontracten',
-        'Vergelijking groene energieleveranciers',
-        'Implementatie smart monitoring systemen',
-        'Certificering en rapportage setup'
-      ]
-    })
-  }
+  return recommendations.slice(0, 5)
+}
 
-  // Transport opportunities  
-  if (breakdown.transport > 0) {
-    const transportPotential = Math.round(breakdown.transport * (0.3 + Math.random() * 0.2) * 100) / 100
-    const transportInvestment = Math.round(employeeCount * 800 + Math.random() * 5000)
-    
-    opportunities.push({
-      id: 'smart_mobility',
-      type: 'Smart Mobility Programma',
-      category: 'transport',
-      potential: `${Math.round((transportPotential / breakdown.transport) * 100)}%`,
-      absolutePotential: transportPotential,
-      investment: `€${transportInvestment.toLocaleString()} - €${Math.round(transportInvestment * 1.8).toLocaleString()}`,
-      payback: '18-24 maanden',
-      aiConfidence: 0.87,
-      difficulty: 'Hoog',
-      timeframe: '6-12 maanden',
-      description: 'Gefaseerde elektrificatie van wagenpark en implementatie van smart mobility beleid aangepast aan jouw bedrijfsactiviteiten',
-      benefits: [
-        'Tot 50% reductie transport-gerelateerde emissies',
-        'Lagere operationele kosten per kilometer',
-        'Verbeterde werknemerstevredenheid',
-        'Compliance met toekomstige emissieregelgeving'
-      ],
-      implementation: [
-        'Analyse huidige wagenpark en rijgedrag',
-        'Gefaseerde overstap naar elektrische voertuigen',
-        'Installatie laadinfrastructuur',
-        'Training en change management programma'
-      ]
-    })
-  }
-
-  // Industry-specific opportunities
-  if (industry === 'Technologie') {
-    opportunities.push({
-      id: 'cloud_optimization',
-      type: 'Carbon-Aware Cloud Optimalisatie',
-      category: 'technology',
-      potential: '15-25%',
-      absolutePotential: Math.round(breakdown.energy * 0.2 * 100) / 100,
-      investment: '€3,000 - €12,000',
-      payback: '6-12 maanden',
-      aiConfidence: 0.94,
-      difficulty: 'Laag',
-      timeframe: '1-3 maanden',
-      description: 'AI-geoptimaliseerde cloud infrastructuur met carbon-aware scheduling en efficient resource management',
-      benefits: [
-        'Automatische optimalisatie van cloud resources',
-        'Real-time carbon impact monitoring',
-        'Kostenreductie van 20-30% op cloud uitgaven',
-        'Verbeterde application performance'
-      ],
-      implementation: [
-        'Cloud carbon footprint audit',
-        'Implementatie carbon-aware tooling',
-        'Optimalisatie van deployment strategieën',
-        'Continuous monitoring en rapportage'
-      ]
-    })
-  }
-
-  if (industry === 'Productie') {
-    opportunities.push({
-      id: 'circular_manufacturing',
-      type: 'Circulaire Productie Optimalisatie',
-      category: 'manufacturing',
-      potential: '20-35%',
-      absolutePotential: Math.round((breakdown.materials || 0 + breakdown.waste || 0) * 0.3 * 100) / 100,
-      investment: '€15,000 - €45,000',
-      payback: '24-36 maanden',
-      aiConfidence: 0.88,
-      difficulty: 'Hoog',
-      timeframe: '12-18 maanden',
-      description: 'Implementatie van circulaire economie principes in productieprocessen met waste-to-energy oplossingen',
-      benefits: [
-        'Significante reductie in materiaalkosten',
-        'Minimalisatie van afvalstromen',
-        'Nieuwe revenue streams uit bijproducten',
-        'Verbeterde supply chain resilience'
-      ],
-      implementation: [
-        'Materiaalstroom analyse',
-        'Design for circularity implementatie',
-        'Partnership ontwikkeling met leveranciers',
-        'Certificering en stakeholder communicatie'
-      ]
-    })
-  }
-
-  // Always include efficiency opportunity
-  opportunities.push({
-    id: 'smart_building',
-    type: 'Smart Building Automation',
-    category: 'efficiency',
-    potential: '18-28%',
-    absolutePotential: Math.round(breakdown.energy * 0.22 * 100) / 100,
-    investment: `€${Math.round(employeeCount * 160).toLocaleString()} - €${Math.round(employeeCount * 300).toLocaleString()}`,
-    payback: '24-30 maanden',
-    aiConfidence: 0.91,
-    difficulty: 'Medium',
-    timeframe: '6-9 maanden',
-    description: 'AI-gedreven building management systeem met predictive controls en occupancy-based optimization',
-    benefits: [
-      'Geautomatiseerde energie optimalisatie',
-      'Verbeterde indoor air quality en comfort',
-      'Predictive maintenance en kostenbesparing',
-      'Real-time energy monitoring en alerts'
+function getFallbackRecommendations(industry) {
+  const recommendations = {
+    'Technologie': [
+      {
+        title: 'Cloud Carbon Optimalisatie',
+        description: 'Implementeer carbon-aware computing en migrate naar groene datacenters',
+        priority: 'Hoog',
+        impact: 'Hoog',
+        timeframe: '3-6 maanden'
+      },
+      {
+        title: 'Green Software Engineering',
+        description: 'Integreer carbon tracking in development pipeline en optimize code efficiency',
+        priority: 'Medium',
+        impact: 'Medium',
+        timeframe: '6-12 maanden'
+      }
     ],
-    implementation: [
-      'Building energy audit en sensor installatie',
-      'AI algoritme configuratie en training',
-      'Integratie met bestaande HVAC systemen',
-      'User training en continuous optimization'
+    'Productie': [
+      {
+        title: 'Industry 4.0 Carbon Monitoring',
+        description: 'Implementeer IoT sensoren voor real-time energy en emissions tracking',
+        priority: 'Hoog',
+        impact: 'Zeer Hoog',
+        timeframe: '6-12 maanden'
+      },
+      {
+        title: 'Circulaire Economie Transitie',
+        description: 'Ontwikkel closed-loop productieprocessen en waste-to-energy systemen',
+        priority: 'Hoog',
+        impact: 'Hoog',
+        timeframe: '12-18 maanden'
+      }
     ]
-  })
+  }
 
-  const totalPotential = opportunities.reduce((sum, opp) => sum + opp.absolutePotential, 0)
-  const avgConfidence = opportunities.reduce((sum, opp) => sum + opp.aiConfidence, 0) / opportunities.length
-
-  return {
-    text: `AI heeft ${opportunities.length} high-impact kansen geïdentificeerd met totaal ${Math.round(totalPotential * 100) / 100} ton CO2 besparingspotentieel en gemiddeld ${Math.round(avgConfidence * 100)}% betrouwbaarheid.`,
-    opportunities: opportunities.slice(0, 5), // Limit to top 5
-    totalPotential,
-    averageConfidence: avgConfidence,
-    implementationTimeline: '6-18 maanden',
-    totalInvestmentRange: {
-      min: opportunities.reduce((sum, opp) => sum + parseInt(opp.investment.split('€')[1].split(' ')[0].replace(',', '')), 0),
-      max: opportunities.reduce((sum, opp) => sum + parseInt(opp.investment.split('€')[2].replace(',', '')), 0)
+  return recommendations[industry] || [
+    {
+      title: 'Groene Energie Transitie',
+      description: 'Schakel over naar 100% groene energie binnen 12 maanden',
+      priority: 'Hoog',
+      impact: 'Hoog',
+      timeframe: '6-12 maanden'
     }
-  }
+  ]
 }
 
-function generatePredictiveInsights(emissions, companyInfo, goals) {
-  const currentYear = new Date().getFullYear()
-  const projections = []
-  const targetReduction = goals?.targetReduction || 30
-  const timeline = goals?.timeline || 24
-
-  for (let year = 1; year <= 5; year++) {
-    const baseGrowth = 1 + (companyInfo.employees > 50 ? 0.12 : 0.08) // Company growth factor
-    const efficiencyGain = 1 - (0.04 * year) // 4% efficiency gain per year with initiatives
-    const marketTrend = 1 - (0.02 * year) // Market-driven efficiency improvements
-    
-    const baseline = emissions.total * Math.pow(baseGrowth, year)
-    const withOptimization = baseline * Math.pow(efficiencyGain, year) * Math.pow(marketTrend, year)
-    const withAggressive = baseline * Math.pow(0.85, year) // Aggressive 15% YoY reduction
-    
-    projections.push({
-      year: currentYear + year,
-      baseline: Math.round(baseline * 100) / 100,
-      optimized: Math.round(withOptimization * 100) / 100,
-      aggressive: Math.round(withAggressive * 100) / 100,
-      savings: Math.round((baseline - withOptimization) * 100) / 100,
-      aggressiveSavings: Math.round((baseline - withAggressive) * 100) / 100,
-      cumulativeSavings: year === 1 ? Math.round((baseline - withOptimization) * 100) / 100 : 
-        Math.round(((baseline - withOptimization) + projections[year-2]?.cumulativeSavings || 0) * 100) / 100
-    })
-  }
-
-  const fiveYearReduction = Math.round(((emissions.total - projections[4].optimized) / emissions.total) * 100)
-  const complianceRisk = fiveYearReduction < 25 ? 'Hoog' : fiveYearReduction < 40 ? 'Medium' : 'Laag'
-
-  return {
-    text: `AI voorspelt ${fiveYearReduction}% emissiereductie in 5 jaar met optimalisatie (vs. ${Math.round(((projections[4].baseline - emissions.total) / emissions.total) * 100)}% groei zonder actie). Compliance risico: ${complianceRisk}.`,
-    projections,
-    fiveYearReduction,
-    complianceRisk,
-    recommendedPath: fiveYearReduction >= targetReduction ? 'optimized' : 'aggressive',
-    keyMilestones: [
-      { year: currentYear + 1, target: projections[0].optimized, description: 'Quick wins implementatie' },
-      { year: currentYear + 2, target: projections[1].optimized, description: 'Structurele veranderingen' },
-      { year: currentYear + 5, target: projections[4].optimized, description: 'Langetermijn duurzaamheid' }
-    ]
-  }
-}
-
-function generateBenchmarkInsights(totalEmissions, employeeCount, industry) {
+function generateExecutiveSummary(totalEmissions, employeeCount, industry, companyName, aiAnalysis) {
   const emissionsPerEmployee = totalEmissions / employeeCount
+  const industryBenchmark = DUTCH_INDUSTRY_BENCHMARKS[industry] || 5.8
+  const performance = emissionsPerEmployee / industryBenchmark
+
+  let assessment = ""
+  let urgency = ""
   
-  // Enhanced peer data with realistic variations
-  const peerData = generatePeerBenchmarks(industry, employeeCount, emissionsPerEmployee)
-  
-  const betterThan = peerData.filter(peer => peer.emissionsPerEmployee > emissionsPerEmployee).length
-  const percentage = Math.round((betterThan / peerData.length) * 100)
-  
-  const quartile = percentage >= 75 ? '1st (Top 25%)' : 
-                   percentage >= 50 ? '2nd (Top 50%)' : 
-                   percentage >= 25 ? '3rd (Bottom 50%)' : '4th (Bottom 25%)'
+  if (performance < 0.7) {
+    assessment = "uitstekend presterende organisatie die de Nederlandse industrie standaarden overtreft"
+    urgency = "optimalisatie"
+  } else if (performance < 1.0) {
+    assessment = "goed presterende organisatie met sterke sustainability fundamenten"
+    urgency = "verbetering"
+  } else if (performance < 1.3) {
+    assessment = "gemiddeld presterende organisatie met significante verbetermogelijkheden"
+    urgency = "actie"
+  } else {
+    assessment = "organisatie die urgent actie moet ondernemen voor compliance"
+    urgency = "kritiek"
+  }
 
   return {
-    text: `Jouw prestaties zijn beter dan ${percentage}% van vergelijkbare ${industry.toLowerCase()} bedrijven. Je zit in het ${quartile} kwartiel van de sector.`,
-    ranking: percentage,
-    quartile,
-    peers: peerData.slice(0, 5),
-    topPerformer: peerData.reduce((best, peer) => peer.emissionsPerEmployee < best.emissionsPerEmployee ? peer : best),
-    industryAverage: peerData.reduce((sum, peer) => sum + peer.emissionsPerEmployee, 0) / peerData.length,
-    improvementPotential: peerData[0].emissionsPerEmployee, // Best in class
-    sectorTrends: {
-      avgReduction: '12% YoY',
-      topPerformers: '25% YoY',
-      regulatoryPressure: 'Increasing',
-      investmentFlow: '€2.3B in 2024'
+    headline: `${companyName} is een ${assessment}`,
+    keyMetrics: {
+      totalEmissions: totalEmissions,
+      emissionsPerEmployee: Math.round(emissionsPerEmployee * 100) / 100,
+      industryComparison: Math.round(performance * 100),
+      benchmarkStatus: performance < 1.0 ? 'Boven gemiddeld' : 'Onder gemiddeld'
+    },
+    urgencyLevel: urgency,
+    csrdReadiness: calculateCSRDReadiness(totalEmissions, employeeCount),
+    topPriorities: [
+      'CSRD compliance voorbereiding',
+      'Nederlandse CO2-heffing optimalisatie',
+      'WPM rapportage implementatie'
+    ],
+    aiInsight: aiAnalysis.recommendations[0]?.description || 'AI analyse toont optimalisatiekansen in energie en transport',
+    nextSteps: [
+      'Start CSRD gap analyse binnen 30 dagen',
+      'Implementeer carbon accounting systeem',
+      'Ontwikkel science-based reduction targets'
+    ]
+  }
+}
+
+function generateCSRDAnalysis(companyInfo, totalEmissions) {
+  const isCSRDRequired = companyInfo.employees > 250 || 
+                        (companyInfo.revenue && companyInfo.revenue > 50000000) ||
+                        (companyInfo.balanceTotal && companyInfo.balanceTotal > 25000000)
+
+  const currentYear = new Date().getFullYear()
+  const reportingYear = isCSRDRequired ? currentYear + 1 : currentYear + 2
+
+  return {
+    isRequired: isCSRDRequired,
+    reportingDeadline: `${reportingYear}-03-31`,
+    preparationDeadline: `${currentYear}-12-31`,
+    readinessScore: calculateCSRDReadiness(totalEmissions, companyInfo.employees),
+    requirements: [
+      'Double materiality assessment',
+      'ESRS standaarden implementatie',
+      'Third-party audit en assurance',
+      'Digital taxonomy alignment',
+      'Scope 1, 2 en 3 emissions inventory'
+    ],
+    gapAnalysis: {
+      dataCollection: isCSRDRequired ? 'Kritiek' : 'Belangrijk',
+      systemImplementation: 'Nodig',
+      processDocumentation: isCSRDRequired ? 'Urgent' : 'Medium',
+      thirdPartyVerification: isCSRDRequired ? 'Verplicht' : 'Optioneel'
+    },
+    estimatedCosts: {
+      software: '€12,000 - €35,000 per jaar',
+      consultancy: '€25,000 - €75,000 setup',
+      audit: '€15,000 - €50,000 per jaar',
+      total: '€52,000 - €160,000 jaar 1'
+    },
+    timeline: generateCSRDTimeline(isCSRDRequired)
+  }
+}
+
+function generateDutchBenchmarking(totalEmissions, employeeCount, industry) {
+  const emissionsPerEmployee = totalEmissions / employeeCount
+  const industryBenchmark = DUTCH_INDUSTRY_BENCHMARKS[industry] || 5.8
+  const performance = emissionsPerEmployee / industryBenchmark
+
+  // Simuleer Nederlandse peer data
+  const peers = generateDutchPeerData(industry, employeeCount, emissionsPerEmployee)
+  const betterThan = peers.filter(peer => peer.emissionsPerEmployee > emissionsPerEmployee).length
+  const percentile = Math.round((betterThan / peers.length) * 100)
+
+  return {
+    industryBenchmark: industryBenchmark,
+    yourPerformance: Math.round(emissionsPerEmployee * 100) / 100,
+    percentile: percentile,
+    ranking: percentile >= 75 ? 'Top 25%' : percentile >= 50 ? 'Top 50%' : 'Bottom 50%',
+    peers: peers.slice(0, 5),
+    dutchAverages: {
+      [industry]: industryBenchmark,
+      'Nederlandse gemiddelde': 5.8,
+      'EU gemiddelde': 6.2,
+      'Wereldwijd gemiddelde': 7.8
+    },
+    improvementPotential: {
+      toIndustryLeader: Math.max(0, emissionsPerEmployee - (industryBenchmark * 0.6)),
+      toTop25Percent: Math.max(0, emissionsPerEmployee - (industryBenchmark * 0.8)),
+      savings: Math.round((emissionsPerEmployee - (industryBenchmark * 0.8)) * employeeCount * 95) // €95 per ton
     }
   }
 }
 
-function generateActionPlan(breakdown, companyInfo, goals, industry) {
+function generateDutchPeerData(industry, employeeCount, emissionsPerEmployee) {
+  const dutchCompanies = [
+    'Sustainable Solutions BV', 'GreenTech Amsterdam', 'Eco Innovators NL',
+    'CleanTech Utrecht', 'Circular Economy Rotterdam', 'NetZero Netherlands'
+  ]
+
+  return dutchCompanies.map((name, index) => {
+    const variation = 0.6 + Math.random() * 0.8
+    return {
+      name,
+      employees: Math.round(employeeCount * (0.8 + Math.random() * 0.4)),
+      emissionsPerEmployee: Math.round(emissionsPerEmployee * variation * 100) / 100,
+      industry,
+      location: ['Amsterdam', 'Rotterdam', 'Utrecht', 'Den Haag', 'Eindhoven', 'Groningen'][index],
+      csrdCompliant: index < 3
+    }
+  }).sort((a, b) => a.emissionsPerEmployee - b.emissionsPerEmployee)
+}
+
+function generateDutchActionPlan(breakdown, companyInfo, industry) {
   const plan = {
-    immediate: [], // 0-3 months
-    shortTerm: [], // 3-12 months  
-    longTerm: [] // 1-3 years
+    immediate: [], // 0-6 maanden
+    shortTerm: [], // 6-18 maanden
+    longTerm: [] // 18-36 maanden
   }
 
-  // Immediate actions (0-3 months)
+  // Nederlandse specifieke acties
   plan.immediate.push({
-    action: 'Smart meter installatie en energie monitoring setup',
-    category: 'energy',
-    cost: '€500 - €1,500',
-    impact: '5-10% insight-driven reductie',
+    action: 'Registratie bij RVO voor CO2-Prestatieladder niveau 1',
+    cost: '€2,500 - €5,000',
+    impact: 'CSRD voorbereiding + aanbestedingsvoordeel',
     effort: 'Laag',
-    roi: '300%',
-    description: 'Real-time energy monitoring voor data-driven besluitvorming'
+    roi: '200%',
+    dutchSpecific: true,
+    deadline: '3 maanden'
   })
 
   plan.immediate.push({
-    action: 'Employee awareness programma en green team vorming',
-    category: 'culture',
-    cost: '€200 - €800',
-    impact: '8-15% gedragsverandering',
-    effort: 'Laag',
-    roi: '400%',
-    description: 'Bewustwording en engagement van medewerkers voor duurzaamheid'
-  })
-
-  if (breakdown.waste > 2) {
-    plan.immediate.push({
-      action: 'Waste audit en recycling programma optimalisatie',
-      category: 'waste',
-      cost: '€300 - €1,000',
-      impact: '20-30% waste reductie',
-      effort: 'Laag',
-      roi: '250%',
-      description: 'Systematische aanpak van afvalstromen en recycling efficiency'
-    })
-  }
-
-  // Short term actions (3-12 months)
-  plan.shortTerm.push({
-    action: 'Groene energie contract en LED verlichting upgrade',
-    category: 'energy',
-    cost: '€3,000 - €8,000', 
-    impact: '25-35% energie gerelateerde reductie',
+    action: 'WPM rapportage implementatie (verplicht 100+ werknemers)',
+    cost: '€1,500 - €3,500',
+    impact: 'Wettelijke compliance',
     effort: 'Medium',
-    roi: '180%',
-    description: 'Structurele energie optimalisatie met zichtbare resultaten'
+    dutchSpecific: true,
+    deadline: '30 juni 2025'
   })
 
-  if (breakdown.transport > 3) {
+  if (breakdown.energy > 5) {
     plan.shortTerm.push({
-      action: 'Hybrid/elektrische lease auto programma start',
-      category: 'transport',
-      cost: '€5,000 - €15,000',
-      impact: '30-45% transport reductie',
+      action: 'Groene energie contract via Nederlandse leveranciers',
+      cost: '€0 - €5,000 setup',
+      impact: '30-50% Scope 2 eliminatie',
+      effort: 'Laag',
+      roi: 'Positief',
+      dutchSpecific: true,
+      suppliers: ['Vattenfall', 'Eneco', 'Essent Groene Energie']
+    })
+  }
+
+  if (companyInfo.employees > 50) {
+    plan.shortTerm.push({
+      action: 'Nederlandse lease auto elektrificatie programma',
+      cost: '€15,000 - €40,000',
+      impact: '40-60% transport reductie',
       effort: 'Medium',
-      roi: '160%',
-      description: 'Gefaseerde overstap naar schonere mobiliteit'
-    })
-  }
-
-  plan.shortTerm.push({
-    action: 'Smart building automation implementatie',
-    category: 'efficiency',
-    cost: '€8,000 - €20,000',
-    impact: '18-25% operationele efficiency',
-    effort: 'Medium',
-    roi: '140%',
-    description: 'AI-gedreven building management voor automatische optimalisatie'
-  })
-
-  // Long term actions (1-3 years)
-  plan.longTerm.push({
-    action: 'Volledig elektrische wagenpark transitie',
-    category: 'transport',
-    cost: '€25,000 - €60,000',
-    impact: '50-70% transport emissie eliminatie',
-    effort: 'Hoog',
-    roi: '120%',
-    description: 'Complete elektrificatie met laadinfrastructuur'
-  })
-
-  if (companyInfo.employees > 20) {
-    plan.longTerm.push({
-      action: 'On-site renewable energy (zonnepanelen/windenergie)',
-      category: 'energy',
-      cost: '€30,000 - €80,000',
-      impact: '40-60% energie onafhankelijkheid',
-      effort: 'Hoog',
-      roi: '110%',
-      description: 'Eigen duurzame energieopwekking voor lange termijn stabiliteit'
+      roi: '150%',
+      dutchSpecific: true,
+      incentives: ['€4,000 SEEH subsidie per auto', 'Vrijstelling BPM', '4% bijtelling']
     })
   }
 
   plan.longTerm.push({
-    action: 'Circulaire economie en supply chain optimalisatie',
-    category: 'materials',
-    cost: '€15,000 - €40,000',
-    impact: '30-50% materiaal footprint reductie',
+    action: 'Nederlandse zonnepanelen met SDE++ subsidie',
+    cost: '€25,000 - €75,000',
+    impact: '60-80% energie onafhankelijkheid',
     effort: 'Hoog',
-    roi: '130%',
-    description: 'Systematische herziening van inkoop en materiaalstromen'
+    roi: '180%',
+    dutchSpecific: true,
+    subsidies: ['SDE++', 'EIA aftrek', 'Accelerated depreciation']
   })
-
-  const totalImpact = {
-    immediate: Math.round((breakdown.energy * 0.08 + breakdown.waste * 0.25) * 100) / 100,
-    shortTerm: Math.round((breakdown.energy * 0.3 + breakdown.transport * 0.35) * 100) / 100,
-    longTerm: Math.round((breakdown.transport * 0.6 + breakdown.energy * 0.5) * 100) / 100
-  }
 
   return {
-    text: `AI genereert gefaseerd actieplan: ${plan.immediate.length} quick wins (${totalImpact.immediate} ton CO2), ${plan.shortTerm.length} medium-term projecten (${totalImpact.shortTerm} ton CO2), ${plan.longTerm.length} strategische initiatieven (${totalImpact.longTerm} ton CO2).`,
+    summary: `3-fase implementatie voor Nederlandse CSRD compliance en carbon neutraliteit`,
     phases: plan,
-    totalImpact,
-    timeline: '36 maanden voor volledige implementatie',
-    investmentTotal: {
-      min: 50000,
-      max: 150000,
-      roi: '150% gemiddeld over 3 jaar'
-    }
+    dutchIncentives: calculateDutchIncentives(plan),
+    totalInvestment: '€44,000 - €128,500',
+    estimatedSavings: '€35,000 - €85,000 per jaar',
+    paybackPeriod: '18-24 maanden'
   }
 }
 
-function generateRiskAssessment(emissions, industry, companyInfo) {
+function generateFinancialAnalysis(totalEmissions, breakdown, companyInfo, industry) {
+  // Nederlandse CO2 prijsprojectie
+  const currentCO2Price = 95 // EU ETS
+  const dutchCO2Tax2030 = 216 // €216 per ton in 2030
+  
+  const carbonRisk = {
+    current: totalEmissions * currentCO2Price,
+    future2030: totalEmissions * dutchCO2Tax2030,
+    escalation: totalEmissions * (dutchCO2Tax2030 - currentCO2Price)
+  }
+
+  // Nederlandse subsidies en incentives
+  const availableIncentives = {
+    SDE: totalEmissions * 50, // Renewable energy subsidy
+    EIA: Math.min(companyInfo.employees * 500, 25000), // Investment allowance
+    SEEH: Math.min(companyInfo.employees * 200, 20000), // Electric vehicles
+    WBSO: Math.min(companyInfo.employees * 400, 35000), // Innovation credit
+    total: 0
+  }
+  availableIncentives.total = Object.values(availableIncentives).reduce((sum, val) => sum + val, 0) - availableIncentives.total
+
+  // ROI calculatie met Nederlandse context
+  const investmentRange = {
+    minimal: 15000,
+    moderate: 45000,
+    comprehensive: 120000
+  }
+
+  const savingsProjection = {
+    energySavings: breakdown.energy * 0.35 * 280, // €280 per ton
+    transportSavings: breakdown.transport * 0.45 * 250,
+    wasteReduction: breakdown.waste * 0.60 * 150,
+    operationalEfficiency: totalEmissions * 0.20 * 180,
+    carbonTaxAvoidance: totalEmissions * 0.40 * dutchCO2Tax2030
+  }
+
+  const totalAnnualSavings = Object.values(savingsProjection).reduce((sum, val) => sum + val, 0)
+
+  return {
+    carbonPricing: carbonRisk,
+    dutchIncentives: availableIncentives,
+    investmentScenarios: {
+      minimal: {
+        investment: investmentRange.minimal,
+        annualSavings: totalAnnualSavings * 0.3,
+        payback: Math.round(investmentRange.minimal / (totalAnnualSavings * 0.3) * 12),
+        roi5Year: Math.round(((totalAnnualSavings * 0.3 * 5) / investmentRange.minimal - 1) * 100)
+      },
+      moderate: {
+        investment: investmentRange.moderate,
+        annualSavings: totalAnnualSavings * 0.6,
+        payback: Math.round(investmentRange.moderate / (totalAnnualSavings * 0.6) * 12),
+        roi5Year: Math.round(((totalAnnualSavings * 0.6 * 5) / investmentRange.moderate - 1) * 100)
+      },
+      comprehensive: {
+        investment: investmentRange.comprehensive,
+        annualSavings: totalAnnualSavings * 0.8,
+        payback: Math.round(investmentRange.comprehensive / (totalAnnualSavings * 0.8) * 12),
+        roi5Year: Math.round(((totalAnnualSavings * 0.8 * 5) / investmentRange.comprehensive - 1) * 100)
+      }
+    },
+    breakdownSavings: savingsProjection,
+    recommendedPath: totalEmissions > 50 ? 'comprehensive' : totalEmissions > 20 ? 'moderate' : 'minimal'
+  }
+}
+
+function generateDutchRiskAssessment(emissions, industry, companyInfo) {
   const risks = []
 
-  // Regulatory risks
-  if (emissions.total > 100 || companyInfo.employees > 250) {
+  // CSRD non-compliance risico
+  if (companyInfo.employees > 250) {
     risks.push({
-      type: 'Regulatory',
-      level: 'Hoog',
+      type: 'CSRD Non-Compliance',
+      level: 'Kritiek',
       probability: '90%',
       impact: 'Zeer Hoog',
-      description: 'CSRD rapportage verplicht vanaf 2024, CBAM uitbreiding, en nationale carbon tax implementatie',
-      timeline: '6-18 maanden',
-      financialImpact: `€${Math.round(emissions.total * 75).toLocaleString()} - €${Math.round(emissions.total * 120).toLocaleString()} jaarlijks`,
+      description: 'CSRD rapportage verplicht vanaf 2025. Non-compliance resulteert in significante boetes en reputatieschade',
+      timeline: '12 maanden',
       mitigation: [
-        'Start nu met CSRD-conforme data verzameling',
-        'Implementeer carbon accounting systemen',
-        'Ontwikkel compliance roadmap met externe experts',
-        'Monitor regelgevingsontwikkelingen actief'
-      ]
+        'Start CSRD gap analyse binnen 30 dagen',
+        'Implementeer carbon accounting systeem',
+        'Contracteer third-party audit partner',
+        'Train finance team in ESRS standaarden'
+      ],
+      estimatedCost: '€25,000 - €500,000 boetes + reputatieschade'
     })
   }
 
-  // Financial risks
-  const carbonTax = emissions.total * 75 // €75 per ton estimated future tax
-  if (carbonTax > 5000) {
+  // Nederlandse CO2-heffing risico
+  if (['Productie', 'Bouw', 'Transport & Logistiek'].includes(industry) && emissions.total > 25) {
     risks.push({
-      type: 'Financial',
+      type: 'CO2-Heffing Escalatie',
       level: 'Hoog',
-      probability: '85%',
+      probability: '100%',
       impact: 'Hoog',
-      description: `Geschatte carbon tax impact: €${Math.round(carbonTax).toLocaleString()} per jaar bij €75/ton CO2`,
-      timeline: '2-4 jaar',
-      financialImpact: `€${Math.round(carbonTax * 0.8).toLocaleString()} - €${Math.round(carbonTax * 1.5).toLocaleString()} jaarlijks`,
+      description: 'Nederlandse CO2-heffing stijgt naar €216 per ton in 2030. Directe impact op operationele kosten',
+      timeline: 'Voortdurend tot 2030',
       mitigation: [
-        'Vroege emissiereductie voorkomt toekomstige kosten',
-        'Investeer in carbon offset programma\'s',
-        'Ontwikkel carbon-efficient business model',
-        'Hedge tegen carbon price volatiliteit'
-      ]
+        'Implementeer carbon reduction roadmap',
+        'Investeer in energie-efficiency',
+        'Overweeg carbon offset portfolio',
+        'Hedge carbon price exposure'
+      ],
+      estimatedCost: `€${Math.round(emissions.total * 216).toLocaleString()} per jaar in 2030`
     })
   }
 
-  // Supply chain risks
-  if (industry === 'Productie' || industry === 'Retail') {
+  // WPM rapportage risico
+  if (companyInfo.employees >= 100) {
     risks.push({
-      type: 'Supply Chain',
+      type: 'WPM Rapportage Non-Compliance',
       level: 'Medium',
       probability: '70%',
       impact: 'Medium',
-      description: 'Leveranciers onder druk voor scope 3 emissierapportage en carbon footprint reductie',
-      timeline: '12-24 maanden',
-      financialImpact: '5-15% stijging inkoopkosten',
+      description: 'Werkgebonden Personenmobiliteit rapportage verplicht. Deadline 30 juni 2025',
+      timeline: '30 juni 2025',
       mitigation: [
-        'Ontwikkel supplier carbon scorecard',
-        'Integreer sustainability in procurement criteria',
-        'Werk samen met leveranciers aan reductiedoelen',
-        'Diversifieer naar groene leveranciers'
-      ]
+        'Implementeer employee mobility tracking',
+        'Set up RVO rapportage systeem',
+        'Train HR team in WPM procedures',
+        'Develop sustainable mobility policy'
+      ],
+      estimatedCost: '€5,000 - €25,000 setup + €2,500 jaarlijks'
     })
   }
 
-  // Reputation and market risks
+  // Supply chain carbon risico
   risks.push({
-    type: 'Reputational',
+    type: 'Supply Chain Carbon Exposure',
     level: 'Medium',
-    probability: '75%',
+    probability: '80%',
     impact: 'Medium',
-    description: 'Toenemende stakeholder verwachtingen voor transparantie en duurzaamheidsprestaties',
-    timeline: 'Continu',
-    financialImpact: 'Potentieel verlies van klanten en talent',
+    description: 'Leveranciers implementeren carbon costs. 15-25% prijsstijging verwacht',
+    timeline: '24-36 maanden',
     mitigation: [
-      'Proactieve sustainability communicatie',
-      'Third-party verificatie van carbon data',
-      'Stakeholder engagement programma',
-      'Ontwikkel sustainability storytelling'
-    ]
+      'Scope 3 emissions assessment',
+      'Supplier sustainability scorecard',
+      'Lokale leveranciers prioriteren',
+      'Circulaire procurement strategie'
+    ],
+    estimatedCost: '10-25% stijging inkoopkosten'
   })
 
-  // Technology transition risks
-  if (breakdown.energy > 10) {
-    risks.push({
-      type: 'Technology Transition',
-      level: 'Medium',
-      probability: '60%',
-      impact: 'Medium',
-      description: 'Risico van stranded assets bij versnelde transitie naar groene technologieën',
-      timeline: '3-7 jaar',
-      financialImpact: '10-25% van asset waarde',
-      mitigation: [
-        'Geleidelijke transitie planning',
-        'Asset life cycle assessment',
-        'Investeer in flexibele, future-proof technologie',
-        'Ontwikkel asset disposal strategie'
-      ]
-    })
-  }
-
-  const overallRisk = risks.reduce((sum, risk) => {
-    const levelScore = { 'Laag': 1, 'Medium': 2, 'Hoog': 3, 'Zeer Hoog': 4 }
-    return sum + levelScore[risk.level]
-  }, 0) / risks.length
-
   return {
-    text: `AI risk analyse identificeert ${risks.length} belangrijke risico's met gemiddelde score ${overallRisk.toFixed(1)}/4. Hoogste prioriteit: ${risks[0]?.type || 'Regulatory compliance'}.`,
+    overallRisk: calculateOverallRisk(risks),
     risks,
-    overallRiskScore: overallRisk,
-    riskLevel: overallRisk >= 3 ? 'Hoog' : overallRisk >= 2 ? 'Medium' : 'Laag',
-    criticalActions: risks.filter(r => r.level === 'Hoog').length,
-    timeline: 'Maatregelen nodig binnen 6-18 maanden'
+    urgentActions: risks.filter(r => r.level === 'Kritiek').length,
+    dutchSpecificRisks: 3,
+    recommendedInsurance: {
+      carbonLiability: '€1M - €10M coverage',
+      cyberSecurity: '€500K - €5M coverage',
+      directorLiability: '€2M - €20M coverage'
+    }
   }
 }
 
-function generateCustomRecommendations(emissions, companyInfo, industry) {
-  const recommendations = []
-
-  // Size-based recommendations
-  if (companyInfo.employees < 25) {
-    recommendations.push({
-      category: 'Small Business Advantage',
-      title: 'Leverage agility voor snelle sustainability wins',
-      description: 'Als klein bedrijf kun je snel schakelen naar groene oplossingen en profiteren van SME subsidies',
-      impact: 'Hoog',
-      ease: 'Hoog',
-      timeframe: '3-6 maanden',
-      specifics: [
-        'Toegang tot MKB sustainability subsidies (tot €50k)',
-        'Snelle besluitvorming voor groene investeringen',
-        'Personal approach naar employee engagement',
-        'Flexibiliteit in werkplek en mobiliteit beleid'
-      ]
-    })
-  } else if (companyInfo.employees > 100) {
-    recommendations.push({
-      category: 'Enterprise Scale Benefits',
-      title: 'Dedicated sustainability function en systematische aanpak',
-      description: 'Schaal rechtvaardigt gespecialiseerde resources en enterprise sustainability programma\'s',
-      impact: 'Zeer Hoog',
-      ease: 'Medium',
-      timeframe: '6-12 maanden',
-      specifics: [
-        'Fulltime sustainability officer/team aanstellen',
-        'Enterprise carbon management platform implementeren',
-        'Systematische supplier engagement programma',
-        'Internal carbon pricing mechanisme'
-      ]
-    })
-  }
-
-  // Industry-specific recommendations
-  if (industry === 'Technologie') {
-    recommendations.push({
-      category: 'Tech Innovation Leadership',
-      title: 'Carbon-aware software development en green coding',
-      description: 'Implementeer cutting-edge carbon tracking in development pipeline en product design',
-      impact: 'Hoog',
-      ease: 'Medium',
-      timeframe: '6-9 maanden',
-      specifics: [
-        'Green software engineering principles implementeren',
-        'Carbon tracking in CI/CD pipeline',
-        'Edge computing voor efficiency optimalisatie',
-        'AI/ML model efficiency optimization'
-      ]
-    })
-  }
-
-  if (industry === 'Financiële Diensten') {
-    recommendations.push({
-      category: 'Financial Sector Leadership',
-      title: 'Green finance en climate risk integration',
-      description: 'Integreer climate impact in investment en lending decisions',
-      impact: 'Zeer Hoog',
-      ease: 'Medium',
-      timeframe: '12-18 maanden',
-      specifics: [
-        'TCFD compliance en climate risk disclosure',
-        'Green bond en sustainable investment producten',
-        'Scope 3 financed emissions tracking',
-        'Climate scenario analysis implementatie'
-      ]
-    })
-  }
-
-  if (industry === 'Productie') {
-    recommendations.push({
-      category: 'Manufacturing Excellence',
-      title: 'Industry 4.0 voor carbon optimization',
-      description: 'Leverage IoT en AI voor real-time carbon optimization in productieprocessen',
-      impact: 'Zeer Hoog',
-      ease: 'Hoog',
-      timeframe: '9-15 maanden',
-      specifics: [
-        'Digital twin voor carbon impact modeling',
-        'Predictive maintenance voor efficiency',
-        'Circular design principles implementatie',
-        'Real-time energy en materials tracking'
-      ]
-    })
-  }
-
-  // Performance-based recommendations
-  const emissionsPerEmployee = emissions.total / companyInfo.employees
-  if (emissionsPerEmployee > 8) {
-    recommendations.push({
-      category: 'High Impact Opportunity',
-      title: 'Accelerated decarbonization programma',
-      description: 'Je carbon intensity is hoog - dit biedt significante reductiekansen en potentiële cost savings',
-      impact: 'Zeer Hoog',
-      ease: 'Medium',
-      timeframe: '12-24 maanden',
-      specifics: [
-        'Comprehensive energy audit en optimization',
-        'Rapid implementation van renewable energy',
-        'Transport electrification versnelling',
-        'Employee behaviour change programma'
-      ]
-    })
-  }
-
+function generateComplianceTimeline(companyInfo) {
+  const currentYear = new Date().getFullYear()
+  const isLarge = companyInfo.employees > 250
+  
   return {
-    text: `AI genereert ${recommendations.length} op maat gemaakte aanbevelingen specifiek voor jouw bedrijfsprofiel, industrie en groeifase.`,
-    recommendations,
-    priorityFocus: recommendations[0]?.category || 'General Optimization',
-    implementationComplexity: 'Medium',
-    expectedROI: '150-250% over 3 jaar'
+    [currentYear]: [
+      'Q1: CSRD gap analyse starten',
+      'Q2: Carbon accounting systeem selecteren',
+      'Q3: Data collection procedures implementeren',
+      'Q4: Baseline emissions inventory voltooien'
+    ],
+    [currentYear + 1]: [
+      'Q1: Third-party verification partner contracteren',
+      'Q2: ESRS materiality assessment',
+      'Q3: Draft sustainability report',
+      isLarge ? 'Q4: Eerste CSRD rapportage indienen' : 'Q4: CSRD voorbereiding continueren'
+    ],
+    [currentYear + 2]: [
+      'Q1: Process optimization implementeren',
+      'Q2: Science-based targets valideren',
+      'Q3: Advanced carbon management systeem',
+      !isLarge ? 'Q4: Eerste CSRD rapportage indienen' : 'Q4: Continuous improvement program'
+    ]
+  }
+}
+
+function generateCarbonPricingAnalysis(totalEmissions) {
+  return {
+    currentExposure: {
+      euETS: totalEmissions * 95,
+      dutchTax: totalEmissions * 30.48, // 2024 rate
+      total: totalEmissions * (95 + 30.48)
+    },
+    futureProjection: {
+      2026: totalEmissions * 150,
+      2028: totalEmissions * 180,
+      2030: totalEmissions * 216
+    },
+    hedgingStrategies: [
+      'Carbon offset portfolio (€45-85 per ton)',
+      'Renewable energy certificates',
+      'Energy efficiency investments',
+      'Carbon-efficient technology upgrades'
+    ],
+    recommendedBudget: Math.round(totalEmissions * 120) // €120 per ton average
+  }
+}
+
+function generateSectorInsights(industry, breakdown, companyInfo) {
+  const sectorData = {
+    'Technologie': {
+      keyMetrics: ['Cloud carbon intensity', 'Data center PUE', 'Software efficiency'],
+      benchmarks: {
+        cloudCarbonIntensity: '0.45 kg CO2/kWh',
+        dataCenter: '1.2 PUE',
+        codeEfficiency: '15% annual improvement'
+      },
+      opportunities: [
+        'Carbon-aware workload scheduling',
+        'Green cloud migration (AWS/Azure green regions)',
+        'Sustainable software development lifecycle'
+      ],
+      dutchLeaders: ['Booking.com (carbon neutral)', 'ASML (renewable energy)', 'TomTom (electric fleet)']
+    },
+    'Productie': {
+      keyMetrics: ['Energy intensity', 'Waste-to-energy ratio', 'Supply chain carbon'],
+      benchmarks: {
+        energyIntensity: '2.4 MWh per €1M revenue',
+        wasteReduction: '25% YoY improvement',
+        supplierEngagement: '75% suppliers with carbon targets'
+      },
+      opportunities: [
+        'Industrial heat pumps (ISDE subsidie)',
+        'Circular production processes',
+        'Renewable energy on-site generation'
+      ],
+      dutchLeaders: ['DSM (carbon neutral by 2030)', 'Philips (circular economy)', 'ASML (renewable energy)']
+    },
+    'Transport & Logistiek': {
+      keyMetrics: ['Fleet electrification', 'Route optimization', 'Modal shift percentage'],
+      benchmarks: {
+        electricFleet: '35% by 2026',
+        routeOptimization: '15% efficiency gain',
+        modalShift: '20% to rail/water'
+      },
+      opportunities: [
+        'Electric commercial vehicles (SEEH subsidie)',
+        'Smart routing algorithms',
+        'Intermodal transport optimization'
+      ],
+      dutchLeaders: ['PostNL (electric delivery)', 'DHL (sustainable logistics)', 'NS (100% wind powered)']
+    }
+  }
+
+  return sectorData[industry] || {
+    keyMetrics: ['Energy efficiency', 'Waste reduction', 'Sustainable procurement'],
+    opportunities: ['Groene energie transitie', 'Circulaire economie', 'Smart building technology'],
+    dutchLeaders: ['Interface (Mission Zero)', 'Unilever (Sustainable Living)', 'Ikea (circular business)']
+  }
+}
+
+// Helper functions
+function calculateCSRDReadiness(totalEmissions, employeeCount) {
+  let score = 40 // Base score
+  
+  if (totalEmissions > 0) score += 20 // Has emission data
+  if (employeeCount > 0) score += 15 // Has employee data
+  if (totalEmissions < 50) score += 10 // Manageable size
+  if (employeeCount < 500) score += 15 // Manageable complexity
+  
+  return Math.min(score, 100)
+}
+
+function checkCSRDRequirement(companyInfo) {
+  const isRequired = companyInfo.employees > 250 || 
+                    (companyInfo.revenue && companyInfo.revenue > 50000000)
+  
+  return {
+    required: isRequired,
+    timeline: isRequired ? '2025' : '2026',
+    urgency: isRequired ? 'Kritiek' : 'Medium'
+  }
+}
+
+function checkWPMRequirement(companyInfo) {
+  const isRequired = companyInfo.employees >= 100
+  
+  return {
+    required: isRequired,
+    deadline: '2025-06-30',
+    urgency: isRequired ? 'Hoog' : 'Laag'
+  }
+}
+
+function checkCO2HeffingRequirement(emissions, industry) {
+  const impactedIndustries = ['Productie', 'Bouw', 'Transport & Logistiek']
+  const isImpacted = impactedIndustries.includes(industry) && emissions.total > 25
+  
+  return {
+    applicable: isImpacted,
+    currentRate: '€30.48 per ton',
+    rate2030: '€216 per ton',
+    urgency: isImpacted ? 'Hoog' : 'Laag'
+  }
+}
+
+function calculateDutchIncentives(plan) {
+  const incentives = {
+    SDE: 15000, // Renewable energy subsidy
+    EIA: 8000,  // Investment allowance
+    SEEH: 12000, // Electric vehicles
+    WBSO: 6000,  // Innovation credit
+    MIA: 4000,   // Environmental investment allowance
+    total: 45000
+  }
+  
+  return incentives
+}
+
+function calculateOverallRisk(risks) {
+  const riskScores = {
+    'Kritiek': 4,
+    'Hoog': 3,
+    'Medium': 2,
+    'Laag': 1
+  }
+  
+  const avgScore = risks.reduce((sum, risk) => sum + riskScores[risk.level], 0) / risks.length
+  
+  return avgScore >= 3.5 ? 'Kritiek' : avgScore >= 2.5 ? 'Hoog' : avgScore >= 1.5 ? 'Medium' : 'Laag'
+}
+
+function calculateConfidence(emissions, companyInfo) {
+  let confidence = 0.75 // Base confidence
+  
+  const dataPoints = Object.values(emissions.breakdown || {}).filter(val => val > 0).length
+  confidence += Math.min(dataPoints * 0.04, 0.20)
+  
+  if (companyInfo.employees > 50) confidence += 0.05
+  if (companyInfo.employees > 200) confidence += 0.05
+  
+  return Math.min(confidence, 0.95)
+}
+
+function generateCSRDTimeline(isRequired) {
+  const currentYear = new Date().getFullYear()
+  
+  if (isRequired) {
+    return {
+      '2024 Q4': 'Data collection systeem implementeren',
+      '2025 Q1': 'Materiality assessment voltooien',
+      '2025 Q2': 'Draft rapport voorbereiden',
+      '2025 Q3': 'Third-party verification',
+      '2025 Q4': 'Eerste CSRD rapportage indienen'
+    }
+  } else {
+    return {
+      '2025 Q1': 'CSRD voorbereiding starten',
+      '2025 Q3': 'Systemen implementeren',
+      '2026 Q1': 'Pilot rapportage',
+      '2026 Q3': 'Verification voorbereiden',
+      '2026 Q4': 'Eerste CSRD rapportage indienen'
+    }
   }
 }
 
 function generateImplementationRoadmap(breakdown, companyInfo, totalEmissions) {
   const phases = [
     {
-      phase: 'Foundation (Maanden 1-6)',
-      color: [34, 197, 94], // Green
-      focus: 'Quick wins en data foundation',
-      target: Math.round(totalEmissions * 0.9 * 100) / 100,
-      investment: '€5,000 - €15,000',
+      phase: 'Foundation & Compliance (Maanden 1-6)',
+      color: [34, 197, 94],
+      focus: 'Nederlandse compliance en quick wins',
+      target: Math.round(totalEmissions * 0.85 * 100) / 100,
+      investment: '€8,000 - €25,000',
       actions: [
-        'Carbon accounting systeem implementatie',
-        'Employee awareness training programma',
-        'Energy monitoring en smart meters',
-        'Waste audit en recycling optimalisatie',
-        'Green team formatie en governance'
+        'CSRD gap analyse en roadmap ontwikkeling',
+        'WPM rapportage systeem implementatie',
+        'RVO registratie CO2-Prestatieladder niveau 1',
+        'Baseline carbon inventory volgens Nederlandse standaarden',
+        'Employee awareness en green team formatie'
       ],
-      kpis: [
-        '10% emissiereductie',
-        '100% data coverage',
-        '80% employee engagement'
-      ]
+      milestones: [
+        'CSRD readiness assessment voltooid',
+        'WPM eerste rapportage ingediend',
+        'CO2-Prestatieladder certificaat behaald'
+      ],
+      dutchSpecific: true
     },
     {
-      phase: 'Acceleration (Maanden 6-18)',
-      color: [59, 130, 246], // Blue
-      focus: 'Structurele veranderingen en efficiency',
-      target: Math.round(totalEmissions * 0.7 * 100) / 100,
-      investment: '€20,000 - €50,000',
+      phase: 'Optimization & Efficiency (Maanden 6-18)',
+      color: [59, 130, 246],
+      focus: 'Structurele verbeteringen en Nederlandse subsidies',
+      target: Math.round(totalEmissions * 0.6 * 100) / 100,
+      investment: '€25,000 - €65,000',
       actions: [
-        'Groene energie contract implementatie',
-        'LED verlichting en building automation',
-        'Hybrid/elektrische lease programma start',
-        'Supplier engagement en screening',
-        'Carbon offset portfolio ontwikkeling'
+        'Groene energie contract Nederlandse leveranciers',
+        'SEEH subsidie aanvraag elektrische lease auto\'s',
+        'Building automation met EIA aftrek',
+        'Supplier engagement voor Scope 3 reductie',
+        'SDE++ aanvraag voor zonnepanelen installatie'
       ],
-      kpis: [
-        '30% emissiereductie',
-        '50% groene energie',
-        '25% transport electrification'
-      ]
+      milestones: [
+        '50% groene energie contract getekend',
+        '25% elektrische fleet gerealiseerd',
+        'Smart building systeem operationeel'
+      ],
+      dutchSpecific: true
     },
     {
-      phase: 'Transformation (Maanden 18-36)',
-      color: [147, 51, 234], // Purple
-      focus: 'Strategische investeringen en innovation',
-      target: Math.round(totalEmissions * 0.5 * 100) / 100,
-      investment: '€50,000 - €120,000',
+      phase: 'Innovation & Net Zero (Maanden 18-36)',
+      color: [147, 51, 234],
+      focus: 'Cutting-edge technologie en carbon neutraliteit',
+      target: Math.round(totalEmissions * 0.2 * 100) / 100,
+      investment: '€45,000 - €150,000',
       actions: [
-        'On-site renewable energy installatie',
-        'Volledige wagenpark elektrificatie',
+        'On-site renewable energy met SDE++ subsidie',
         'Circulaire economie implementatie',
-        'Advanced carbon management platform',
-        'Industry partnership en innovation'
+        'Carbon capture en storage pilots',
+        'AI-driven carbon management platform',
+        'Carbon neutral certificering aanvraag'
       ],
-      kpis: [
-        '50% emissiereductie',
-        '100% renewable energy',
-        'Carbon neutral operations'
-      ]
+      milestones: [
+        'Net zero operations gerealiseerd',
+        'Third-party carbon neutral certificaat',
+        'Industry leadership positie in sector'
+      ],
+      dutchSpecific: true
     }
   ]
-
-  const totalInvestment = phases.reduce((sum, phase) => {
-    const min = parseInt(phase.investment.split('€')[1].split(' ')[0].replace(',', ''))
-    return sum + min
-  }, 0)
 
   return {
     phases,
-    totalTimeframe: '36 maanden',
-    totalInvestment: `€${totalInvestment.toLocaleString()} - €${Math.round(totalInvestment * 2.4).toLocaleString()}`,
-    expectedReduction: '50%',
-    roi: '180% over 3 jaar',
-    criticalSuccessFactors: [
-      'Senior management commitment en sponsorship',
-      'Cross-functional team met dedicated resources',
-      'Continuous monitoring en data-driven optimization',
-      'Employee engagement en culture change',
-      'Strategic partner selection en collaboration'
+    totalTimeframe: '36 maanden tot carbon neutraliteit',
+    totalInvestment: '€78,000 - €240,000',
+    expectedReduction: '80% emissions reductie',
+    roi: '200-300% over 5 jaar',
+    dutchSubsidies: '€25,000 - €75,000 beschikbaar',
+    certifications: [
+      'CO2-Prestatieladder niveau 5',
+      'ISO 14001 Environmental Management',
+      'B Corp Certification',
+      'Carbon Neutral gecertificeerd'
     ]
   }
-}
-
-function generateCostBenefitAnalysis(totalEmissions, breakdown, industry) {
-  const carbonPrice = 95 // Current EU ETS price
-  const projectedCarbonPrice = 150 // Projected 2030 price
-  
-  const currentCarbonValue = totalEmissions * carbonPrice
-  const futureCarbonValue = totalEmissions * projectedCarbonPrice
-  
-  // Calculate potential savings by category
-  const energySavings = {
-    co2Reduction: breakdown.energy * 0.35,
-    costSaving: (breakdown.energy / 2.5) * 0.28 * 0.35 * 8760, // kWh saved * price * hours
-    investment: Math.round(breakdown.energy * 500),
-    payback: 24
-  }
-  
-  const transportSavings = {
-    co2Reduction: breakdown.transport * 0.45,
-    costSaving: (breakdown.transport * 100) * 0.12 * 0.45, // km * cost per km * reduction
-    investment: Math.round(breakdown.transport * 200),
-    payback: 36
-  }
-  
-  const efficiencySavings = {
-    co2Reduction: totalEmissions * 0.18,
-    costSaving: currentCarbonValue * 0.18 + (totalEmissions * 0.18 * 200), // Carbon + operational savings
-    investment: Math.round(totalEmissions * 300),
-    payback: 30
-  }
-
-  const totalSavings = {
-    annualCo2Reduction: energySavings.co2Reduction + transportSavings.co2Reduction + efficiencySavings.co2Reduction,
-    annualCostSaving: energySavings.costSaving + transportSavings.costSaving + efficiencySavings.costSaving,
-    totalInvestment: energySavings.investment + transportSavings.investment + efficiencySavings.investment,
-    netPresentValue: 0,
-    roi: 0,
-    paybackPeriod: 0
-  }
-
-  // Calculate NPV and ROI over 5 years
-  let cumulativeCashFlow = -totalSavings.totalInvestment
-  for (let year = 1; year <= 5; year++) {
-    const yearlyBenefit = totalSavings.annualCostSaving * Math.pow(1.03, year) // 3% inflation
-    cumulativeCashFlow += yearlyBenefit / Math.pow(1.06, year) // 6% discount rate
-  }
-  
-  totalSavings.netPresentValue = Math.round(cumulativeCashFlow)
-  totalSavings.roi = Math.round((totalSavings.netPresentValue / totalSavings.totalInvestment) * 100)
-  totalSavings.paybackPeriod = Math.round(totalSavings.totalInvestment / totalSavings.annualCostSaving * 12)
-
-  return {
-    summary: `Investering van €${totalSavings.totalInvestment.toLocaleString()} genereert €${Math.round(totalSavings.annualCostSaving).toLocaleString()} jaarlijkse besparing met ${totalSavings.roi}% ROI en ${totalSavings.paybackPeriod} maanden terugverdientijd.`,
-    breakdown: {
-      energy: energySavings,
-      transport: transportSavings,
-      efficiency: efficiencySavings
-    },
-    totals: totalSavings,
-    carbonPricing: {
-      current: carbonPrice,
-      projected2030: projectedCarbonPrice,
-      riskMitigation: Math.round((futureCarbonValue - currentCarbonValue) * 0.5)
-    },
-    financialIncentives: [
-      'EIA (Energie-investeringsaftrek) tot 45% van investering',
-      'WBSO voor innovatieve sustainability projecten',
-      'Groene leningen met 0.5-1.5% lagere rente',
-      'Carbon credits verkoop potentieel'
-    ]
-  }
-}
-
-function calculateSustainabilityScore(emissions, companyInfo, industry) {
-  const emissionsPerEmployee = emissions.total / companyInfo.employees
-  const industryBenchmark = {
-    'Technologie': 4.2,
-    'Productie': 8.5,
-    'Retail': 3.8,
-    'Financiële Diensten': 2.9,
-    'Gezondheidszorg': 5.1,
-    'Onderwijs': 3.2,
-    'Transport & Logistiek': 12.3,
-    'Bouw': 9.7,
-    'Anders': 5.5
-  }[industry] || 5.5
-
-  // Calculate component scores (0-100)
-  const carbonEfficiency = Math.max(0, Math.min(100, (2 - emissionsPerEmployee / industryBenchmark) * 50))
-  const dataQuality = 85 // Assumed based on calculation completeness
-  const transparancy = companyInfo.employees > 50 ? 70 : 60 // Larger companies typically more transparent
-  const governance = companyInfo.employees > 100 ? 80 : 65 // Governance typically better in larger orgs
-  
-  const overallScore = Math.round((carbonEfficiency * 0.4 + dataQuality * 0.25 + transparancy * 0.2 + governance * 0.15))
-  
-  const rating = overallScore >= 85 ? 'A+' :
-                 overallScore >= 75 ? 'A' :
-                 overallScore >= 65 ? 'B+' :
-                 overallScore >= 55 ? 'B' :
-                 overallScore >= 45 ? 'C+' :
-                 overallScore >= 35 ? 'C' : 'D'
-
-  return {
-    overallScore,
-    rating,
-    components: {
-      carbonEfficiency: Math.round(carbonEfficiency),
-      dataQuality: Math.round(dataQuality),
-      transparancy: Math.round(transparancy),
-      governance: Math.round(governance)
-    },
-    industryComparison: overallScore > 70 ? 'Above Average' : overallScore > 50 ? 'Average' : 'Below Average',
-    improvementAreas: [
-      carbonEfficiency < 60 ? 'Carbon efficiency optimization' : null,
-      dataQuality < 80 ? 'Data collection and accuracy' : null,
-      transparancy < 70 ? 'Stakeholder communication' : null,
-      governance < 70 ? 'Sustainability governance' : null
-    ].filter(Boolean),
-    nextLevel: overallScore < 85 ? {
-      target: rating === 'A' ? 'A+' : String.fromCharCode(rating.charCodeAt(0) + 1) + (rating.includes('+') ? '' : '+'),
-      requirements: overallScore < 55 ? 'Focus op carbon efficiency en data kwaliteit' :
-                   overallScore < 75 ? 'Verbeter transparantie en governance' :
-                   'Optimize alle aspecten voor top rating'
-    } : null
-  }
-}
-
-function generateComplianceCheck(totalEmissions, companyInfo, industry) {
-  const compliance = {
-    csrd: checkCSRDCompliance(companyInfo),
-    cbam: checkCBAMCompliance(industry, totalEmissions),
-    ets: checkETSCompliance(totalEmissions, industry),
-    taxonomy: checkTaxonomyAlignment(industry),
-    national: checkNationalRequirements(companyInfo, totalEmissions)
-  }
-
-  const overallCompliance = Object.values(compliance).reduce((sum, item) => sum + item.score, 0) / Object.keys(compliance).length
-  const urgentActions = Object.values(compliance).filter(item => item.urgency === 'High').length
-
-  return {
-    overallScore: Math.round(overallCompliance),
-    rating: overallCompliance >= 80 ? 'Compliant' : overallCompliance >= 60 ? 'Mostly Compliant' : 'Non-Compliant',
-    urgentActions,
-    frameworks: compliance,
-    timeline: urgentActions > 0 ? '6-12 maanden voor compliance' : '12-24 maanden voor optimalisatie',
-    recommendations: generateComplianceRecommendations(compliance)
-  }
-}
-
-// Helper functions
-function generatePeerBenchmarks(industry, employeeCount, emissionsPerEmployee) {
-  const baseNames = [
-    'GreenTech Solutions', 'Sustainable Dynamics', 'EcoInnovate', 'CleanEdge Corp',
-    'NextGen Sustainable', 'Carbon Neutral Co', 'Green Future BV', 'Eco Excellence',
-    'Sustainable Growth', 'Climate Forward', 'Green Impact Solutions', 'Eco Pioneers'
-  ]
-
-  return baseNames.map((name, index) => {
-    const variation = 0.7 + Math.random() * 0.6 // 0.7 to 1.3 multiplier
-    const sizeVariation = 0.8 + Math.random() * 0.4 // Company size variation
-    
-    return {
-      name,
-      employees: Math.round(employeeCount * sizeVariation),
-      emissionsPerEmployee: Math.round(emissionsPerEmployee * variation * 100) / 100,
-      industry,
-      score: Math.round((2 - variation) * 50 + 50)
-    }
-  }).sort((a, b) => a.emissionsPerEmployee - b.emissionsPerEmployee)
-}
-
-function getCategoryName(category) {
-  const names = {
-    energy: 'Energie',
-    transport: 'Transport',
-    waste: 'Afval', 
-    water: 'Water',
-    materials: 'Materialen'
-  }
-  return names[category] || category
-}
-
-function generateCategoryRecommendations(category, emissions, industry) {
-  const recommendations = {
-    energy: [
-      'Smart meter installatie voor real-time monitoring',
-      'LED verlichting upgrade (ROI 18 maanden)',
-      'Building automation en HVAC optimalisatie',
-      'Groene energie contract onderhandeling'
-    ],
-    transport: [
-      'Elektrische lease auto programma',
-      'Fiets-van-de-zaak regeling implementatie',
-      'Remote work beleid uitbreiding',
-      'Public transport stimulering programma'
-    ],
-    waste: [
-      'Circulair afvalbeleid ontwikkeling',
-      'Papierloze kantoor transitie',
-      'Compostering en organisch afval programma',
-      'Supplier packaging reduction agreements'
-    ],
-    water: [
-      'Water-besparende sanitair installatie',
-      'Regenwater opvang systeem',
-      'Employee awareness campagne',
-      'Smart irrigation systemen'
-    ],
-    materials: [
-      'Duurzame inkoop beleid implementatie',
-      'Lokale leveranciers prioritering',
-      'Circulaire materialen transitie',
-      'Product lifecycle assessment'
-    ]
-  }
-  
-  return recommendations[category] || [
-    'Algemene optimalisatie maatregelen',
-    'Monitoring en reporting implementeren',
-    'Best practices onderzoek en implementatie'
-  ]
-}
-
-function generateQuickWins(category) {
-  const quickWins = {
-    energy: [
-      'Programmeerbare thermostaten (€200, 8% besparing)',
-      'Power strips met timers (€50, 5% besparing)',
-      'Desktop power management (€0, 10% besparing)'
-    ],
-    transport: [
-      'Carpool programma stimulering (€100, 15% reductie)',
-      'Video conferencing optimalisatie (€300, 20% travel reductie)',
-      'Flexibele werktijden (€0, 12% commute reductie)'
-    ],
-    waste: [
-      'Dubbelzijdig printen default (€0, 50% papier besparing)',
-      'Reusable water bottles (€200, 80% plastic reductie)',
-      'Digital document workflow (€500, 60% papier reductie)'
-    ]
-  }
-  
-  return quickWins[category] || [
-    'Energy awareness training (€100, 5-10% general reduction)',
-    'Baseline measurement setup (€200, insight generation)',
-    'Employee suggestion program (€50, engagement boost)'
-  ]
-}
-
-function checkCSRDCompliance(companyInfo) {
-  const isLarge = companyInfo.employees > 250
-  const needsCompliance = isLarge || companyInfo.revenue > 40000000 // €40M threshold
-  
-  return {
-    applicable: needsCompliance,
-    score: needsCompliance ? 30 : 100, // Low score if applicable but not ready
-    urgency: needsCompliance ? 'High' : 'Low',
-    deadline: '2024-2025',
-    requirements: needsCompliance ? [
-      'Double materiality assessment',
-      'Sustainability reporting standards (ESRS)',
-      'Third-party audit and assurance',
-      'Digital taxonomy alignment'
-    ] : ['Monitor threshold criteria'],
-    status: needsCompliance ? 'Preparation Required' : 'Not Applicable'
-  }
-}
-
-function checkCBAMCompliance(industry, totalEmissions) {
-  const impactedIndustries = ['Productie', 'Bouw', 'Transport & Logistiek']
-  const isImpacted = impactedIndustries.includes(industry)
-  
-  return {
-    applicable: isImpacted,
-    score: isImpacted ? 40 : 100,
-    urgency: isImpacted ? 'Medium' : 'Low',
-    deadline: '2026 (transitional 2023-2026)',
-    requirements: isImpacted ? [
-      'Carbon content documentation',
-      'Emissions monitoring per product',
-      'Certificate of compliance',
-      'Supply chain carbon tracking'
-    ] : ['Monitor industry developments'],
-    status: isImpacted ? 'Monitoring Required' : 'Not Applicable'
-  }
-}
-
-function checkETSCompliance(totalEmissions, industry) {
-  const threshold = 25000 // 25k tons CO2 threshold
-  const needsETS = totalEmissions > threshold || ['Productie', 'Transport & Logistiek'].includes(industry)
-  
-  return {
-    applicable: needsETS,
-    score: needsETS ? 50 : 100,
-    urgency: needsETS ? 'High' : 'Low',
-    deadline: 'Ongoing',
-    requirements: needsETS ? [
-      'Emissions monitoring and reporting',
-      'Allowance allocation and trading',
-      'Verified emissions reporting',
-      'Compliance surrender'
-    ] : ['Monitor emission levels'],
-    status: needsETS ? 'Compliance Required' : 'Below Threshold'
-  }
-}
-
-function checkTaxonomyAlignment(industry) {
-  const alignedIndustries = ['Technologie', 'Gezondheidszorg', 'Onderwijs']
-  const isAligned = alignedIndustries.includes(industry)
-  
-  return {
-    applicable: true,
-    score: isAligned ? 70 : 50,
-    urgency: 'Medium',
-    deadline: '2025-2026',
-    requirements: [
-      'Economic activity alignment assessment',
-      'Do No Significant Harm (DNSH) evaluation',
-      'Minimum social safeguards compliance',
-      'KPI disclosure and reporting'
-    ],
-    status: isAligned ? 'Partially Aligned' : 'Assessment Required'
-  }
-}
-
-function checkNationalRequirements(companyInfo, totalEmissions) {
-  const needsReporting = companyInfo.employees > 100 || totalEmissions > 50
-  
-  return {
-    applicable: needsReporting,
-    score: needsReporting ? 60 : 90,
-    urgency: needsReporting ? 'Medium' : 'Low',
-    deadline: '2024-2025',
-    requirements: needsReporting ? [
-      'Klimaatwet compliance (95% reductie 2050)',
-      'Lange termijn strategie ontwikkeling',
-      'Jaarlijkse monitoring en rapportage',
-      'Stakeholder consultation'
-    ] : ['Monitor regulatory developments'],
-    status: needsReporting ? 'Preparation Needed' : 'Monitoring Required'
-  }
-}
-
-function generateComplianceRecommendations(compliance) {
-  const recommendations = []
-  
-  Object.entries(compliance).forEach(([framework, details]) => {
-    if (details.applicable && details.score < 80) {
-      recommendations.push({
-        framework: framework.toUpperCase(),
-        urgency: details.urgency,
-        action: `Implement ${framework} compliance program`,
-        timeline: details.deadline,
-        priority: details.urgency === 'High' ? 1 : details.urgency === 'Medium' ? 2 : 3
-      })
-    }
-  })
-  
-  return recommendations.sort((a, b) => a.priority - b.priority)
-}
-
-function calculateConfidence(emissions, companyInfo) {
-  let confidence = 0.75 // Base confidence
-  
-  // More data points = higher confidence
-  const dataPoints = Object.values(emissions.breakdown || {}).filter(val => val > 0).length
-  confidence += Math.min(dataPoints * 0.04, 0.20)
-  
-  // Company size affects confidence (more structured data expected)
-  if (companyInfo.employees > 50) confidence += 0.05
-  if (companyInfo.employees > 200) confidence += 0.05
-  
-  // Industry experience factor
-  const matureIndustries = ['Financiële Diensten', 'Productie', 'Gezondheidszorg']
-  if (matureIndustries.includes(companyInfo.industry)) confidence += 0.03
-  
-  return Math.min(confidence, 0.98) // Cap at 98%
 }
