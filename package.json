@@ -8,7 +8,8 @@
     "start": "prisma db push && next start -p $PORT",
     "postinstall": "prisma generate",
     "db:push": "prisma db push",
-    "db:migrate": "prisma migrate deploy"
+    "db:migrate": "prisma migrate deploy",
+    "setup": "node scripts/setup-db.js"
   },
   "dependencies": {
     "next": "14.0.0",
@@ -23,7 +24,10 @@
     "jspdf": "^2.5.1",
     "js-cookie": "^3.0.5",
     "react-hot-toast": "^2.4.1",
-    "stripe": "^14.7.0"
+    "stripe": "^14.7.0",
+    "@huggingface/inference": "^2.6.4",
+    "cohere-ai": "^7.3.0",
+    "ollama": "^0.4.0"
   },
   "devDependencies": {
     "prisma": "^5.7.0",
