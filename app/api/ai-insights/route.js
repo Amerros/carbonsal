@@ -1,4 +1,23 @@
-function generateFallbackInsights(totalEmissions, employeeCount, industry, companyName, breakdown, companyInfo) {
+aiRecommendations: [
+      {
+    aiRecommendations: [
+      {
+        title: 'Nederlandse Energie Transitie',
+        description: 'Schakel over naar 100% groene energie via Nederlandse leveranciers',
+        priority: 'Hoog',
+        impact: 'Hoog',
+        timeframe: '6-12 maanden'
+      },
+      {
+        title: 'SEEH Subsidie Programma',
+        description: 'Elektrificeer uw wagenpark met €4,000 subsidie per voertuig',
+        priority: 'Medium',
+        impact: 'Hoog',
+        timeframe: '12-18 maanden'
+      }
+    ]
+  }
+}function generateFallbackInsights(totalEmissions, employeeCount, industry, companyName, breakdown, companyInfo) {
   return {
     executiveSummary: {
       headline: `${companyName} heeft ${totalEmissions} ton CO2 uitstoot met verbeterpotentieel`,
