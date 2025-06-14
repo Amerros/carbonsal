@@ -89,61 +89,55 @@ const Calculator = ({ onClose }) => {
   }
 
   const generatePDF = async () => {
-    if (!results?.calculationId) {
-      toast.error('Je moet eerst ingelogd zijn om een PDF te downloaden')
-      return
-    }
-
-    setIsGeneratingPDF(true)
-    
-    try {
-      const response = await fetch('/api/generate-pdf', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...getAuthHeaders()
-        },
-        body: JSON.stringify({
-          calculationId: results.calculationId,
-          reportType: 'standard'
-        })
-      })
-
-      if (!response.ok) {
-        throw new Error('PDF generation failed')
-      }
-
-      const data = await response.json()
-      
-      // Download the PDF
-      const downloadResponse = await fetch(data.downloadUrl, {
-        headers: getAuthHeaders()
-      })
-
-      if (!downloadResponse.ok) {
-        throw new Error('PDF download failed')
-      }
-
-      // Create download link
-      const blob = await downloadResponse.blob()
-      const url = window.URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.style.display = 'none'
-      a.href = url
-      a.download = data.fileName
-      document.body.appendChild(a)
-      a.click()
-      window.URL.revokeObjectURL(url)
-      
-      toast.success('PDF rapport gedownload!')
-      
-    } catch (error) {
-      console.error('PDF error:', error)
-      toast.error('Er ging iets mis bij het genereren van de PDF')
-    } finally {
-      setIsGeneratingPDF(false)
-    }
+  if (!results?.calculationId) {
+    toast.error('Je moet eerst ingelogd zijn om een PDF te downloaden')
+    return
   }
+
+  setIsGeneratingPDF(true)
+  
+  try {
+    const response = await fetch('/api/generate-pdf', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeaders()
+      },
+      body: JSON.stringify({
+        calculationId: results.calculationId,
+        reportType: 'standard'
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error('PDF generation failed')
+    }
+
+    // Get the PDF as a blob (binary data)
+    const blob = await response.blob()
+    
+    // Create download link
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.style.display = 'none'
+    a.href = url
+    a.download = `carbon-report-${results.companyInfo?.name || 'report'}-${Date.now()}.pdf`
+    document.body.appendChild(a)
+    a.click()
+    
+    // Cleanup
+    window.URL.revokeObjectURL(url)
+    document.body.removeChild(a)
+    
+    toast.success('PDF rapport gedownload!')
+    
+  } catch (error) {
+    console.error('PDF error:', error)
+    toast.error('Er ging iets mis bij het genereren van de PDF')
+  } finally {
+    setIsGeneratingPDF(false)
+  }
+}
 
   const handleInputChange = (category, field, value) => {
     if (category) {
