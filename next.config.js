@@ -5,8 +5,8 @@ const nextConfig = {
     serverComponentsExternalPackages: ['@prisma/client'],
   },
   
-  // Enable standalone output for Railway
-  output: 'standalone',
+  // Remove standalone output for now - causing issues with Railway
+  // output: 'standalone',
   
   // Optimize for Railway deployment
   poweredByHeader: false,
