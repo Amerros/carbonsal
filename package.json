@@ -4,10 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
-    "start": "next start",
-    "lint": "next lint",
-    "postinstall": "prisma generate"
+    "build": "prisma generate && prisma db push && next build",
+    "start": "next start"
   },
   "dependencies": {
     "next": "14.0.0",
@@ -16,26 +14,18 @@
     "framer-motion": "^10.16.4",
     "recharts": "^2.8.0",
     "@heroicons/react": "^2.0.18",
-    "stripe": "^14.5.0",
-    "@stripe/stripe-js": "^2.1.11",
-    "pg": "^8.11.3",
     "@prisma/client": "^5.7.0",
     "prisma": "^5.7.0",
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^9.0.2",
     "jspdf": "^2.5.1",
     "js-cookie": "^3.0.5",
-    "react-hot-toast": "^2.4.1"
+    "react-hot-toast": "^2.4.1",
+    "pg": "^8.11.3"
   },
   "devDependencies": {
     "tailwindcss": "^3.3.0",
     "autoprefixer": "^10.4.16",
-    "postcss": "^8.4.31",
-    "eslint": "^8.52.0",
-    "eslint-config-next": "14.0.0",
-    "@types/pg": "^8.10.7",
-    "@types/bcryptjs": "^2.4.5",
-    "@types/jsonwebtoken": "^9.0.5",
-    "@types/js-cookie": "^3.0.6"
+    "postcss": "^8.4.31"
   }
 }
