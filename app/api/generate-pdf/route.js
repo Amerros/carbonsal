@@ -29,8 +29,15 @@ export async function POST(request) {
 
     // Create PDF
     const pdf = new jsPDF()
-    const companyData = calculation.company_data
-    const results = calculation.results
+    
+    // Safely extract data with fallbacks
+    const companyData = calculation.company_data || calculation.companyData || {}
+    const results = calculation.results || {}
+    
+    // Extract company info safely
+    const companyName = companyData.companyName || companyData.company_name || companyData.name || 'Unknown Company'
+    const industry = companyData.industry || 'Unknown Industry'
+    const employees = companyData.employees || companyData.employee_count || '0'
 
     // PDF Header
     pdf.setFontSize(20)
@@ -40,9 +47,9 @@ export async function POST(request) {
     pdf.setFontSize(12)
     pdf.setFont('helvetica', 'normal')
     pdf.text(`Generated: ${new Date().toLocaleDateString('nl-NL')}`, 20, 40)
-    pdf.text(`Company: ${companyData.companyName}`, 20, 50)
-    pdf.text(`Industry: ${companyData.industry}`, 20, 60)
-    pdf.text(`Employees: ${companyData.employees}`, 20, 70)
+    pdf.text(`Company: ${companyName}`, 20, 50)
+    pdf.text(`Industry: ${industry}`, 20, 60)
+    pdf.text(`Employees: ${employees}`, 20, 70)
 
     // Results Section
     pdf.setFontSize(16)
@@ -107,8 +114,9 @@ export async function POST(request) {
     const pdfBase64 = pdf.output('datauristring')
     const pdfBuffer = Buffer.from(pdfBase64.split(',')[1], 'base64')
     
-    // Create filename
-    const fileName = `carbon-report-${user.companyName?.replace(/[^a-zA-Z0-9]/g, '-')}-${Date.now()}.pdf`
+    // Create filename with safe company name
+    const safeCompanyName = companyName.replace(/[^a-zA-Z0-9]/g, '-')
+    const fileName = `carbon-report-${safeCompanyName}-${Date.now()}.pdf`
 
     // Save report record to database (without file path since we're returning directly)
     const reportRecord = await db.saveReport(user.id, calculationId, fileName, 'direct-download')
