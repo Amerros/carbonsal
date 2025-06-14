@@ -47,7 +47,7 @@ export async function POST(request) {
       user: {
         id: user.id,
         email: user.email,
-        company_name: user.company_name,
+        companyName: user.companyName,
         industry: user.industry,
         employees: user.employees
       },
@@ -84,8 +84,25 @@ export async function PUT(request) {
       )
     }
 
+    // Debug logging
+    console.log('User found:', { 
+      id: user.id, 
+      email: user.email, 
+      hasPassword: !!user.passwordHash,
+      passwordHashType: typeof user.passwordHash
+    })
+
+    // Check if password hash exists
+    if (!user.passwordHash) {
+      console.error('No password hash found for user:', user.email)
+      return NextResponse.json(
+        { error: 'Account configuratie probleem. Neem contact op met support.' },
+        { status: 500 }
+      )
+    }
+
     // Check password
-    const validPassword = await bcrypt.compare(password, user.password_hash)
+    const validPassword = await bcrypt.compare(password, user.passwordHash)
     if (!validPassword) {
       return NextResponse.json(
         { error: 'Verkeerd wachtwoord' },
@@ -106,7 +123,7 @@ export async function PUT(request) {
       user: {
         id: user.id,
         email: user.email,
-        company_name: user.company_name,
+        companyName: user.companyName,
         industry: user.industry,
         employees: user.employees
       },
@@ -149,7 +166,7 @@ export async function GET(request) {
       user: {
         id: user.id,
         email: user.email,
-        company_name: user.company_name,
+        companyName: user.companyName,
         industry: user.industry,
         employees: user.employees
       }
