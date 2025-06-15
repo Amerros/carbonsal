@@ -763,7 +763,7 @@ function calculateTotalInvestment(emissions, companyInfo) {
   return Math.round(emissions.total * 900) // Slightly higher for Dutch market
 }
 
-function calculateExpectedROI(emissions, companyInfo, industry) {
+function calculateExpectedROI2(emissions, companyInfo, industry) {
   return {
     year1: '18-28% (Nederlandse subsidies geïncludeerd)',
     year3: '160-220% (inclusief CO2-heffing savings)',
@@ -1687,7 +1687,7 @@ function calculateDutchSubsidies(emissions, companyInfo, industry) {
  }
 }
 
-function generateInvestmentScenarios(emissions, companyInfo, industry) {
+function generateInvestmentScenarios2(emissions, companyInfo, industry) {
  const baseInvestment = emissions.total * 900 // Slightly higher for Dutch market
  
  return {
