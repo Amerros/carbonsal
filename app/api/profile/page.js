@@ -1,3 +1,4 @@
+// app/profile/page.js
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -71,8 +72,9 @@ export default function ProfilePage() {
         location: 'Nederland'
       })
       loadUserStats()
+      loadNotificationPreferences()
     }
-  }, [user, isAuthenticated])
+  }, [user, isAuthenticated, router])
 
   const loadUserStats = async () => {
     try {
@@ -112,76 +114,7 @@ export default function ProfilePage() {
     }
   }
 
-  const updateProfile = async () => {
-    setLoading(true)
-    try {
-      const response = await fetch('/api/profile', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          ...getAuthHeaders()
-        },
-        body: JSON.stringify(profileData)
-      })
-
-      if (response.ok) {
-        toast.success('Profiel succesvol bijgewerkt!')
-      } else {
-        const data = await response.json()
-        toast.error(data.error || 'Update mislukt')
-      }
-    } catch (error) {
-      toast.error('Er ging iets mis bij het bijwerken')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const updatePassword = async () => {
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast.error('Nieuwe wachtwoorden komen niet overeen')
-      return
-    }
-
-    if (passwordData.newPassword.length < 6) {
-      toast.error('Nieuw wachtwoord moet minimaal 6 karakters zijn')
-      return
-    }
-
-    setLoading(true)
-    try {
-      const response = await fetch('/api/profile/password', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          ...getAuthHeaders()
-        },
-        body: JSON.stringify({
-          currentPassword: passwordData.currentPassword,
-          newPassword: passwordData.newPassword
-        })
-      })
-
-      if (response.ok) {
-        toast.success('Wachtwoord succesvol bijgewerkt!')
-        setPasswordData({
-          currentPassword: '',
-          newPassword: '',
-          confirmPassword: ''
-        })
-      } else {
-        const data = await response.json()
-        toast.error(data.error || 'Wachtwoord update mislukt')
-      }
-    } catch (error) {
-      toast.error('Er ging iets mis bij het bijwerken van het wachtwoord')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const updateNotifications = async () => {
-    setLoading(true)
+  const loadNotificationPreferences = async () => {
     try {
       const response = await fetch('/api/profile/notifications', {
         method: 'PUT',
@@ -379,7 +312,7 @@ export default function ProfilePage() {
                       <div className="flex items-center space-x-3">
                         <ExclamationCircleIcon className="w-6 h-6 text-yellow-400" />
                         <div>
-                          <p className="font-medium text-white">Profiel Incompleet</p>
+                          <p className="font-medium text-white">Profiel Verbetering</p>
                           <p className="text-sm text-gray-400">Voeg meer bedrijfsgegevens toe voor betere insights</p>
                         </div>
                       </div>
@@ -622,3 +555,122 @@ export default function ProfilePage() {
     </div>
   )
 }
+        headers: getAuthHeaders()
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setNotifications(data.preferences)
+      }
+    } catch (error) {
+      console.error('Failed to load notification preferences:', error)
+    }
+  }
+
+  const updateProfile = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch('/api/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeaders()
+        },
+        body: JSON.stringify(profileData)
+      })
+
+      if (response.ok) {
+        toast.success('Profiel succesvol bijgewerkt!')
+      } else {
+        const data = await response.json()
+        toast.error(data.error || 'Update mislukt')
+      }
+    } catch (error) {
+      toast.error('Er ging iets mis bij het bijwerken')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const updatePassword = async () => {
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast.error('Nieuwe wachtwoorden komen niet overeen')
+      return
+    }
+
+    if (passwordData.newPassword.length < 6) {
+      toast.error('Nieuw wachtwoord moet minimaal 6 karakters zijn')
+      return
+    }
+
+    setLoading(true)
+    try {
+      const response = await fetch('/api/profile/password', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeaders()
+        },
+        body: JSON.stringify({
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword
+        })
+      })
+
+      if (response.ok) {
+        toast.success('Wachtwoord succesvol bijgewerkt!')
+        setPasswordData({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        })
+      } else {
+        const data = await response.json()
+        toast.error(data.error || 'Wachtwoord update mislukt')
+      }
+    } catch (error) {
+      toast.error('Er ging iets mis bij het bijwerken van het wachtwoord')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const updateNotifications = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch('/api/profile/notifications', {
+        const loadNotificationPreferences = async () => {
+    try {
+      const response = await fetch('/api/profile/notifications', {
+        method: 'GET',
+        headers: getAuthHeaders()
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setNotifications(data.preferences || {
+          emailReports: true,
+          calculationReminders: true,
+          complianceAlerts: true,
+          marketingEmails: false
+        })
+      } else {
+        console.error('Failed to load notification preferences')
+        // Set default preferences if loading fails
+        setNotifications({
+          emailReports: true,
+          calculationReminders: true,
+          complianceAlerts: true,
+          marketingEmails: false
+        })
+      }
+    } catch (error) {
+      console.error('Failed to load notification preferences:', error)
+      // Set default preferences if there's an error
+      setNotifications({
+        emailReports: true,
+        calculationReminders: true,
+        complianceAlerts: true,
+        marketingEmails: false
+      })
+    }
+  }
