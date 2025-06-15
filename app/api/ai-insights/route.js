@@ -1076,7 +1076,7 @@ function calculateIndustryComparison(totalEmissions, employees, industry) {
   return Math.round((emissionsPerEmployee / benchmark) * 100)
 }
 
-function calculateCSRDReadiness(totalEmissions, employeeCount) {
+function calculateCSRDReadiness2(totalEmissions, employeeCount) {
   let score = 30
   if (totalEmissions > 0) score += 20
   if (employeeCount > 0) score += 15
@@ -1806,7 +1806,7 @@ function generatePriorityMatrix(breakdown, totalEmissions, industry) {
  return priorities.sort((a, b) => a.priority - b.priority)
 }
 
-function getDutchOpportunities(category, value) {
+function getDutchOpportunities2(category, value) {
  const opportunities = {
    energy: ['Groene energie contract', 'EIA belastingvoordeel', 'LED upgrade'],
    transport: ['SEEH subsidie elektrische auto\'s', 'WPM compliance improvement'],
