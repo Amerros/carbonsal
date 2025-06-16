@@ -3,7 +3,7 @@ const financialAI = aiInsights.financialAnalysis.aiAnalysis ||
     
     const aiLines = pdf.splitTextToSize(financialAI, 170)
     pdf.text(aiLines, 20, yPos)
-  }
+  
 }
 
 function generateRiskAssessment(pdf, aiInsights, results, companyData) {
