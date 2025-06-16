@@ -639,7 +639,7 @@ const Calculator = ({ onClose }) => {
               <h3 className="text-2xl font-bold text-white mb-2">Materialen & Producten</h3>
               <p className="text-gray-400">Upstream emissies van materiaalgebruik</p>
             </div>
-// Results view
+ // Results view
   if (showResults && results) {
     return (
       <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
