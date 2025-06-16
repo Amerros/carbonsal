@@ -1721,11 +1721,11 @@ function generateComplianceSection(pdf, results, aiInsights, companyData) {
   
   const wpmRequired = employees >= 100
   const wpmInfo = [
-    `Status: ${wmpRequired ? 'VERPLICHT vanaf 2025' : 'Niet van toepassing'}`,
-    `Deadline: ${wmpRequired ? '30 juni 2025' : 'N.v.t.'}`,
-    `Scope: ${wmpRequired ? 'Home-to-work mobility tracking verplicht' : 'Geen verplichtingen'}`,
-    `Data vereisten: ${wmpRequired ? 'CO2 impact woon-werk verkeer' : 'Geen'}`,
-    `Boete risico: ${wmpRequired ? 'Tot €870,000 bij non-compliance' : 'Geen'}`
+    `Status: ${wpmRequired ? 'VERPLICHT vanaf 2025' : 'Niet van toepassing'}`,
+    `Deadline: ${wpmRequired ? '30 juni 2025' : 'N.v.t.'}`,
+    `Scope: ${wpmRequired ? 'Home-to-work mobility tracking verplicht' : 'Geen verplichtingen'}`,
+    `Data vereisten: ${wpmRequired ? 'CO2 impact woon-werk verkeer' : 'Geen'}`,
+    `Boete risico: ${wpmRequired ? 'Tot €870,000 bij non-compliance' : 'Geen'}`
   ]
   
   wpmInfo.forEach(info => {
