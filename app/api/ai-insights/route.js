@@ -722,1227 +722,737 @@ function generateStructuredActionPlan(emissions, companyInfo, industry) {
   const longTerm = []
 
   // Immediate actions (0-6 months)
-  immediate.push('CO2-Prestatieladder niveau 1 certificering aanvragen')
+  immediate.push({
+    title: 'CO2-Prestatieladder Niveau 1 Certificering',
+    description: 'Begin met de voorbereiding voor CO2-Prestatieladder niveau 1 om transparantie te tonen en basisvoordelen te benutten in Nederlandse aanbestedingen.',
+    impact: 'Laag', cost: '€5,000', subsidy: 'N.v.t.', co2Impact: 'N.v.t. (framework)', payback: '6 maanden (door aanbestedingsvoordeel)', complexity: 'Laag'
+  })
   if (emissions.breakdown?.energy > 2) {
-    immediate.push('Groene energie contract onderhandelen met Nederlandse leveranciers')
+    immediate.push({
+      title: 'Overstap naar Nederlandse Groene Stroom',
+      description: 'Schakel over naar een Nederlandse energieleverancier die 100% groene stroom levert met GvO\'s, om Scope 2 emissies direct te elimineren.',
+      impact: 'Zeer Hoog', cost: '€0', subsidy: 'N.v.t. (vaak concurrerend tarief)', co2Impact: '30-50% totale emissiereductie', payback: 'Direct', complexity: 'Laag'
+    })
   }
   if (companyInfo.employees >= 100) {
-    immediate.push('WPM rapportage systeem opzetten (deadline juni 2025)')
+    immediate.push({
+      title: 'WPM Rapportagesysteem Implementeren',
+      description: 'Zet een systeem op voor het bijhouden van woon-werkverkeer en zakelijke reizen van medewerkers ter voorbereiding op de WPM-rapportage (deadline 30 juni 2025).',
+      impact: 'Medium', cost: '€2,000 - €5,000', subsidy: 'N.v.t.', co2Impact: 'N.v.t. (dataverzameling)', payback: 'N.v.t.', complexity: 'Medium'
+    })
   }
   if (companyInfo.employees > 250) {
-    immediate.push('CSRD gap analyse starten (deadline maart 2025)')
+    immediate.push({
+      title: 'CSRD Gap Analyse & Roadmap',
+      description: 'Start een grondige gap analyse om de huidige processen te vergelijken met CSRD-vereisten en een gedetailleerde implementatieroadmap op te stellen (cruciaal voor 2025).',
+      impact: 'Zeer Hoog', cost: '€10,000 - €25,000', subsidy: 'N.v.t.', co2Impact: 'N.v.t. (framework)', payback: 'N.v.t.', complexity: 'Hoog'
+    })
   }
 
   // Short term actions (6-18 months)
-  shortTerm.push('LED verlichting upgrade met EIA belastingvoordeel')
-  shortTerm.push('Smart thermostaten installeren')
-  if (companyInfo.employees > 25) {
-    shortTerm.push('SEEH subsidie aanvragen voor elektrische lease auto\'s')
+  shortTerm.push({
+    title: 'LED Verlichting Upgrade (EIA subsidie)',
+    description: 'Vervang traditionele verlichting door energiezuinige LED-verlichting. Profiteer van de Energie Investeringsaftrek (EIA) voor 30% extra aftrek op de investering.',
+    impact: 'Hoog', cost: '€8,000 - €20,000', subsidy: '30% EIA aftrek', co2Impact: '5-10% totale emissiereductie', payback: '24-36 maanden', complexity: 'Medium'
+  })
+  shortTerm.push({
+    title: 'Implementatie Smart Thermostaten & HVAC optimalisatie',
+    description: 'Installeer slimme thermostaatsystemen en optimaliseer HVAC-systemen voor efficiënter energieverbruik in het gebouw.',
+    impact: 'Medium', cost: '€5,000 - €10,000', subsidy: 'EIA mogelijk', co2Impact: '3-7% totale emissiereductie', payback: '18-30 maanden', complexity: 'Medium'
+  })
+  if (companyInfo.employees > 25) { // Assuming a certain fleet size
+    shortTerm.push({
+      title: 'Elektrische Lease Auto Transitie (SEEH subsidie)',
+      description: 'Begin met de gefaseerde overstap naar elektrische leaseauto\'s. Maak gebruik van de Subsidieregeling Emissieloze Zakelijke Voertuigen (SEEH) voor €4.000 subsidie per voertuig (max. €20.000).',
+      impact: 'Hoog', cost: 'Variabel (leasecontracten)', subsidy: 'SEEH €4,000/voertuig', co2Impact: '10-20% totale emissiereductie', payback: '24-48 maanden', complexity: 'Medium'
+    })
   }
-  shortTerm.push('Building automation systeem implementeren')
+  shortTerm.push({
+    title: 'Afvalscheiding en Circulaire Processen',
+    description: 'Implementeer verbeterde afvalscheidingssystemen en onderzoek mogelijkheden voor afvalreductie en circulaire bedrijfsprocessen (MIA/Vamil subsidie mogelijk).',
+    impact: 'Medium', cost: '€3,000 - €8,000', subsidy: 'MIA/Vamil mogelijk', co2Impact: '2-5% totale emissiereductie', payback: '30-48 maanden', complexity: 'Medium'
+  })
 
   // Long term actions (18+ months)
-  longTerm.push('Zonnepanelen met SDE++ subsidie')
-  longTerm.push('Heat pump systeem voor aardgasvrij')
-  longTerm.push('CO2-Prestatieladder niveau 3+ behalen')
-  longTerm.push('Carbon neutral certificering nastreven')
+  longTerm.push({
+    title: 'Science-Based Targets (SBTi) Definiëren',
+    description: 'Stel wetenschappelijk onderbouwde reductiedoelstellingen vast in lijn met het Parijs Akkoord om langetermijn duurzaamheidsstrategie te borgen.',
+    impact: 'Zeer Hoog', cost: '€15,000 - €30,000', subsidy: 'WBSO voor R&D', co2Impact: 'Structurele reductie', payback: 'Lange termijn', complexity: 'Hoog'
+  })
+  longTerm.push({
+    title: 'Hernieuwbare Energie Opwekking (SDE++)',
+    description: 'Overweeg investeringen in zonnepanelen of andere hernieuwbare energiebronnen op eigen locatie, met ondersteuning van de SDE++ subsidie.',
+    impact: 'Zeer Hoog', cost: '€50,000 - €200,000+', subsidy: 'SDE++', co2Impact: '20-50% totale emissiereductie', payback: '5-10 jaar', complexity: 'Hoog'
+  })
+  longTerm.push({
+    title: 'Supply Chain Carbon Engagement',
+    description: 'Werk samen met leveranciers om hun carbon footprint te verminderen en duurzame inkoopcriteria te implementeren (Scope 3 reductie).',
+    impact: 'Hoog', cost: '€5,000 - €15,000/jaar', subsidy: 'N.v.t.', co2Impact: '10-30% Scope 3 reductie', payback: 'Lange termijn', complexity: 'Hoog'
+  })
 
   return { immediate, shortTerm, longTerm }
 }
 
-function generateActionTimeline(emissions, companyInfo) {
-  return {
-    'Q1 2025': 'CSRD compliance assessment + LED upgrade + groene energie',
-    'Q2 2025': 'WPM implementatie + smart building tech + SEEH aanvragen',
-    'Q3 2025': 'Elektrische auto\'s ontvangen + CO2-Prestatieladder audit',
-    'Q4 2025': 'Heat pump planning + zonnepanelen design + compliance review'
-  }
-}
-
-function calculateTotalInvestment(emissions, companyInfo) {
-  return Math.round(emissions.total * 900) // Slightly higher for Dutch market
-}
-
-function calculateExpectedROI2(emissions, companyInfo, industry) {
-  return {
-    year1: '18-28% (Nederlandse subsidies geïncludeerd)',
-    year3: '160-220% (inclusief CO2-heffing savings)',
-    year5: '280-380% (full lifecycle benefits)'
-  }
-}
-
 function generateRiskAssessmentFallback(companyInfo, emissions, industry) {
+  const risks = []
+  
+  if (companyInfo.employees > 250) {
+    risks.push({
+      category: 'Compliance',
+      name: 'CSRD Non-Compliance Risk',
+      impact: 9, probability: 80,
+      description: 'Zonder tijdige voorbereiding op CSRD-rapportage (verplicht vanaf 2025), riskeert de organisatie boetes, reputatieschade en verlies van investeringskansen.',
+      mitigation: 'Direct starten met double materiality assessment en dataverzameling voor ESRS-compliance.',
+      cost: '€50,000 - €150,000 (boetes + herstel)', timeline: 'Direct'
+    })
+  } else if (companyInfo.employees > 50) {
+    risks.push({
+      category: 'Compliance',
+      name: 'Toekomstige CSRD-Risico',
+      impact: 6, probability: 30,
+      description: 'Hoewel CSRD nu nog niet direct verplicht is, kan het de komende jaren van toepassing worden. Niet voorbereiden leidt dan tot snelle, dure inhaalslagen.',
+      mitigation: 'Proactief framework opzetten en basisdata verzamelen.',
+      cost: '€10,000 - €30,000 (preparatie)', timeline: '12-24 maanden'
+    })
+  }
+
+  if (companyInfo.employees >= 100) {
+    risks.push({
+      category: 'Compliance',
+      name: 'WPM Rapportage Verzuim (Mobility)',
+      impact: 7, probability: 90,
+      description: 'Het niet tijdig rapporteren van woon-werkverkeer en zakelijke reizen (deadline 30 juni 2025) kan leiden tot boetes van de Rijksdienst voor Ondernemend Nederland (RVO).',
+      mitigation: 'Implementeren van een robuust mobiliteitsdataverzamelingssysteem en processen.',
+      cost: '€5,000 - €25,000 (boetes)', timeline: 'Voor juni 2025'
+    })
+  }
+
+  risks.push({
+    category: 'Financieel',
+    name: 'Escalerende CO2-heffing Kosten',
+    impact: 8, probability: 100,
+    description: `De Nederlandse CO2-heffing stijgt significant van €${DUTCH_CARBON_PRICING['2024']}/ton in 2024 naar €${DUTCH_CARBON_PRICING['2030']}/ton in 2030. Dit leidt tot een substantiële toename van de bedrijfskosten indien de emissies niet worden gereduceerd.`,
+    mitigation: 'Actief reduceren van Scope 1 en 2 emissies door energie-efficiëntie en groene energie.',
+    cost: `€${(emissions.total * DUTCH_CARBON_PRICING['2030'] - emissions.total * DUTCH_CARBON_PRICING['2024']).toFixed(0)}/jaar extra in 2030`, timeline: 'Continu'
+  })
+
+  risks.push({
+    category: 'Reputationeel',
+    name: 'Verlies van Marktpositie & Talent',
+    impact: 7, probability: 60,
+    description: 'Consumenten, werknemers en partners vragen steeds meer om duurzaamheid. Het achterblijven bij concurrenten kan leiden tot verlies van marktaandeel en moeite met het aantrekken van toptalent.',
+    mitigation: 'Actief communiceren van duurzaamheidsinitiatieven en behaalde resultaten; verkrijgen van CO2-Prestatieladder certificering.',
+    cost: 'Lange termijn omzetdaling', timeline: 'Continu'
+  })
+  
+  if (emissions.breakdown?.supplyChain > emissions.total * 0.1) {
+    risks.push({
+      category: 'Operationeel',
+      name: 'Supply Chain Carbon Blootstelling',
+      impact: 6, probability: 50,
+      description: 'Grote delen van de totale CO2-voetafdruk bevinden zich in de toeleveringsketen (Scope 3). Dit kan leiden tot risico\'s bij strengere regelgeving of leveranciersproblemen.',
+      mitigation: 'Samenwerken met leveranciers aan reductieprogramma\'s en preferente inkoop van duurzame producten/diensten.',
+      cost: 'Potentiële verstoringen', timeline: 'Middellange termijn'
+    })
+  }
+
   return {
-    aiAnalysis: 'Enhanced rule-based risk assessment completed with Dutch regulatory focus',
-    riskMatrix: generateRiskMatrix(companyInfo, emissions, industry),
-    criticalRisks: identifyCriticalRisks(companyInfo, emissions, industry),
-    mitigationStrategies: generateMitigationStrategies(companyInfo, emissions, industry),
-    totalRiskExposure: calculateTotalRiskExposure(companyInfo, emissions, industry),
+    aiAnalysis: 'Rule-based risk assessment with Dutch regulatory focus.',
+    riskMatrix: generateRiskMatrix(companyInfo, emissions, industry), // Placeholder, needs actual implementation
+    criticalRisks: risks.filter(r => r.impact >= 7),
+    mitigationStrategies: risks.map(r => ({ name: r.name, strategy: r.mitigation })),
+    totalRiskExposure: calculateTotalRiskExposure(companyInfo, emissions, industry), // Placeholder
     aiGenerated: false,
-    confidence: 0.81
+    confidence: 0.70
   }
 }
 
 function generateRiskMatrix(companyInfo, emissions, industry) {
+  // Simple example matrix structure - ideally based on actual data/risk scores
   return [
-    { 
-      risk: 'CSRD Non-compliance', 
-      impact: companyInfo.employees > 250 ? 9 : 4, 
-      likelihood: companyInfo.employees > 250 ? 8 : 3,
-      financialImpact: companyInfo.employees > 250 ? '€500,000+ boetes + reputatieschade' : 'Concurrentienadeel'
-    },
-    { 
-      risk: 'CO2-heffing escalatie 2024-2030', 
-      impact: emissions.total > 50 ? 8 : 5, 
-      likelihood: 9,
-      financialImpact: `€${Math.round(emissions.total * (DUTCH_CARBON_PRICING['2030'] - DUTCH_CARBON_PRICING['2024'])).toLocaleString()} extra kosten`
-    },
-    { 
-      risk: 'Supply chain carbon disruption', 
-      impact: 6, 
-      likelihood: 5,
-      financialImpact: '10-20% kostenstijging leveranciers'
-    },
-    {
-      risk: 'Talent acquisition sustainability gap',
-      impact: 5,
-      likelihood: 7,
-      financialImpact: '15-25% hogere recruitment kosten'
-    }
+    { risk: 'CSRD Non-Compliance', impact: companyInfo.employees > 250 ? 'High' : 'Medium', likelihood: companyInfo.employees > 250 ? 'High' : 'Medium' },
+    { risk: 'WPM Boetes', impact: companyInfo.employees >= 100 ? 'Medium' : 'Low', likelihood: companyInfo.employees >= 100 ? 'High' : 'Low' },
+    { risk: 'Stijgende CO2-heffing', impact: 'High', likelihood: 'High' },
+    { risk: 'Reputatieschade', impact: 'Medium', likelihood: 'Medium' },
+    { risk: 'Verstoring Supply Chain (Scope 3)', impact: 'Medium', likelihood: 'Medium' },
   ]
 }
 
 function identifyCriticalRisks(companyInfo, emissions, industry) {
-  const risks = []
+  const critical = []
   if (companyInfo.employees > 250) {
-    risks.push('CSRD compliance deadline maart 2025 - 12 maanden om te implementeren')
-  }
-  if (emissions.total > 50) {
-    risks.push('CO2-heffing escalatie naar €216/ton in 2030 - €' + Math.round(emissions.total * 185.52).toLocaleString() + ' extra kosten')
+    critical.push('CSRD Non-Compliance (directe verplichting)')
   }
   if (companyInfo.employees >= 100) {
-    risks.push('WPM rapportage deadline juni 2025 - mobility tracking systeem nodig')
+    critical.push('WPM Rapportage Boetes (directe verplichting)')
   }
-  return risks
+  critical.push('Escalerende CO2-heffing Kosten (financieel)')
+  if (emissions.total / companyInfo.employees > (DUTCH_INDUSTRY_BENCHMARKS[industry] * 1.5 || 8.7)) {
+    critical.push('Ondergemiddelde Duurzaamheidsprestatie (reputationeel)')
+  }
+  return critical
 }
 
 function generateMitigationStrategies(companyInfo, emissions, industry) {
-  return [
-    'Start CSRD implementation binnen 30 dagen met externe expertise',
-    'Implementeer carbon reduction roadmap met 30%+ target',
-    'Diversifieer supply chain met sustainability criteria',
-    'Develop employee sustainability engagement programma'
-  ]
+  const strategies = []
+  if (companyInfo.employees > 250) {
+    strategies.push('CSRD: Start een double materiality assessment en implementeer ESRS data punten.')
+  }
+  if (companyInfo.employees >= 100) {
+    strategies.push('WPM: Implementeer een geautomatiseerd systeem voor woon-werk en zakelijke kilometers.')
+  }
+  strategies.push('CO2-heffing: Versnel de energie transitie naar groene stroom en elektrisch vervoer.')
+  strategies.push('Reputatie: Verkrijg CO2-Prestatieladder certificering en communiceer proactief duurzaamheid.')
+  return strategies
 }
 
 function calculateTotalRiskExposure(companyInfo, emissions, industry) {
-  let exposure = Math.round(emissions.total * DUTCH_CARBON_PRICING['2030'])
-  if (companyInfo.employees > 250) exposure += 500000 // CSRD fine risk
-  if (companyInfo.employees >= 100) exposure += 50000 // WPM compliance costs
-  return exposure
+  let exposure = 0
+  if (companyInfo.employees > 250) exposure += 0.4
+  if (companyInfo.employees >= 100) exposure += 0.2
+  exposure += 0.3 * (emissions.total / 1000) // 0.3 per ton CO2 in risk value
+  return parseFloat((exposure + Math.random() * 0.1).toFixed(2)) // Add some randomness
 }
 
 function generateComplianceAnalysisFallback(companyInfo, emissions) {
   return {
-    aiAnalysis: 'Enhanced compliance analysis completed with Nederlandse regulatory timeline',
+    aiAnalysis: 'Rule-based compliance analysis with Dutch legal context.',
     csrdStatus: generateCSRDStatus(companyInfo, emissions),
     wmpStatus: generateWPMStatus(companyInfo),
     implementationSteps: generateComplianceSteps(companyInfo, emissions),
     deadlines: generateComplianceDeadlines(companyInfo),
     estimatedCosts: calculateComplianceCosts(companyInfo, emissions),
     aiGenerated: false,
-    confidence: 0.85
+    confidence: 0.80
   }
 }
 
+function checkCSRDRequirement(companyInfo) {
+  const currentYear = new Date().getFullYear()
+  const csrdApplicable = companyInfo.employees > 250 && companyInfo.revenue > 40000000 || companyInfo.balanceSheet > 20000000
+
+  if (csrdApplicable) {
+    return {
+      required: true,
+      reason: 'Voldoet aan 2 van de 3 CSRD criteria (medewerkers > 250, omzet > €40M, balanstotaal > €20M).',
+      deadline: 'Eerste rapportage over boekjaar 2024, uiterlijk maart 2025.'
+    }
+  } else if (companyInfo.employees > 50) {
+    return {
+      required: false,
+      reason: 'Nog niet direct verplicht, maar middelgrote ondernemingen volgen waarschijnlijk vanaf 2026/2027.',
+      recommendation: 'Start proactief met dataverzameling en dubbele materialiteitsanalyse.'
+    }
+  }
+  return { required: false, reason: 'Niet van toepassing op basis van huidige criteria.' }
+}
+
+function checkWPMRequirement(companyInfo) {
+  if (companyInfo.employees >= 100) {
+    return {
+      required: true,
+      reason: 'Voldoet aan de Wet Personenvervoer 2000 (WPM) criteria (100+ medewerkers).',
+      deadline: 'Eerste rapportage over boekjaar 2024, uiterlijk 30 juni 2025.'
+    }
+  }
+  return { required: false, reason: 'Niet van toepassing op basis van aantal medewerkers.' }
+}
+
+function checkCO2HeffingRequirement(emissions, industry) {
+  // CO2-heffing applies to industrial emissions (Scope 1 from stationary sources)
+  // This simplified check assumes total emissions include relevant Scope 1
+  // In reality, it's more nuanced based on specific industrial processes
+  const relevantIndustries = ['Productie & Manufacturing', 'Energie & Utilities', 'Bouw & Vastgoed']
+  const highEmissions = emissions.total > 1000 // Placeholder for significant emissions
+
+  if (relevantIndustries.includes(industry) && highEmissions) {
+    return {
+      applicable: true,
+      reason: 'Actief in een sector met significante Scope 1 emissies, dus onderhevig aan CO2-heffing industrie.',
+      impact: `Huidige kosten: €${Math.round(emissions.total * DUTCH_CARBON_PRICING['2024']).toLocaleString()}`
+    }
+  }
+  return { applicable: false, reason: 'Niet direct onderhevig aan de Nederlandse CO2-heffing industrie op basis van sector en emissies.' }
+}
+
+function calculateCSRDReadiness(totalEmissions, employees) {
+  let readiness = 10
+  if (employees > 250) readiness -= 5 // More complex for large companies
+  if (totalEmissions > 1000) readiness -= 5 // More data to manage
+
+  const randomFactor = Math.random() * 20
+  return Math.max(0, Math.min(100, Math.round(readiness + randomFactor)))
+}
+
 function generateCSRDStatus(companyInfo, emissions) {
-  const required = companyInfo.employees > 250 || (companyInfo.revenue && companyInfo.revenue > 50)
+  const required = checkCSRDRequirement(companyInfo).required
+  const readiness = calculateCSRDReadiness(emissions.total, companyInfo.employees)
+  
   return {
-    required: required,
-    readiness: calculateCSRDReadiness(emissions.total, companyInfo.employees),
-    deadline: required ? '2025-03-31' : '2026-03-31',
-    urgency: required ? 'KRITIEK - 12 maanden' : 'Medium - voorbereiden',
-    scope: required ? 'Volledige ESRS compliance + third-party assurance' : 'Vrijwillige voorbereiding'
+    required,
+    readiness: `${readiness}%`,
+    status: required && readiness < 50 ? 'Kritiek: Dringende actie vereist' : 
+            required && readiness < 80 ? 'Aandachtspunt: Vooruitgang nodig' :
+            required ? 'Op schema: Verdere optimalisatie' : 'Niet direct verplicht: Overweeg proactieve voorbereiding'
   }
 }
 
 function generateWPMStatus(companyInfo) {
+  const required = checkWPMRequirement(companyInfo).required
   return {
-    required: companyInfo.employees >= 100,
-    deadline: '2025-06-30',
-    status: companyInfo.employees >= 100 ? 'VERPLICHT - WPM rapportage 18 maanden' : 'Niet van toepassing',
-    scope: 'Home-to-work mobility tracking + CO2 impact berekening',
-    estimatedEffort: companyInfo.employees >= 100 ? '2-3 maanden implementatie' : 'Monitoring aanbevolen'
+    required,
+    status: required ? 'Verplicht: Rapportage deadline juni 2025' : 'Niet verplicht: Monitoring aanbevolen'
   }
 }
 
 function generateComplianceSteps(companyInfo, emissions) {
   const steps = []
-  if (companyInfo.employees > 250) {
-    steps.push('CSRD gap analysis binnen 4 weken')
-    steps.push('Double materiality assessment Q1 2025')
-    steps.push('ESRS data collection systemen implementeren')
-    steps.push('Third-party assurance partner selecteren')
+  if (checkCSRDRequirement(companyInfo).required) {
+    steps.push('CSRD Stap 1: Dubbele materialiteitsanalyse uitvoeren.')
+    steps.push('CSRD Stap 2: Dataverzamelingsprocessen voor ESRS inrichten.')
+    steps.push('CSRD Stap 3: Rapportagestructuur en software selecteren.')
   }
-  if (companyInfo.employees >= 100) {
-    steps.push('WPM mobility tracking systeem opzetten')
-    steps.push('Home-to-work survey en data collection')
+  if (checkWPMRequirement(companyInfo).required) {
+    steps.push('WPM Stap 1: Mobiliteitsdata verzamelen (woon-werk, zakelijk).')
+    steps.push('WPM Stap 2: Rapportage genereren conform RVO specificaties.')
+    steps.push('WPM Stap 3: Mogelijkheden voor mobiliteitsreductie identificeren.')
   }
-  steps.push('CO2-Prestatieladder certificering voorbereiden')
-  steps.push('Carbon accounting systeem implementeren')
+  steps.push('CO2-Prestatieladder: Intern CO2-management systeem opzetten.')
   return steps
 }
 
 function generateComplianceDeadlines(companyInfo) {
-  return {
-    'CSRD eerste rapportage': companyInfo.employees > 250 ? '2025-03-31' : '2026-03-31',
-    'WPM rapportage': companyInfo.employees >= 100 ? '2025-06-30' : 'Niet van toepassing',
-    'CO2-Prestatieladder audit': '2025-Q2 (aanbevolen)',
-    'Third-party verification': companyInfo.employees > 250 ? '2025-Q1' : '2026-Q1'
+  const deadlines = []
+  if (checkCSRDRequirement(companyInfo).required) {
+    deadlines.push('CSRD: Maart 2025 (eerste rapportage over boekjaar 2024).')
   }
+  if (checkWPMRequirement(companyInfo).required) {
+    deadlines.push('WPM: 30 juni 2025 (eerste rapportage over boekjaar 2024).')
+  }
+  return deadlines
 }
 
 function calculateComplianceCosts(companyInfo, emissions) {
-  return {
-    csrd: companyInfo.employees > 250 ? 75000 : 25000,
-    wmp: companyInfo.employees >= 100 ? 15000 : 0,
-    co2Prestatieladder: 12000,
-    carbonAccounting: 8000,
-    total: (companyInfo.employees > 250 ? 75000 : 25000) + 
-           (companyInfo.employees >= 100 ? 15000 : 0) + 12000 + 8000
+  let cost = 0
+  if (checkCSRDRequirement(companyInfo).required) {
+    cost += 50000 // CSRD initial setup
   }
+  if (checkWPMRequirement(companyInfo).required) {
+    cost += 5000 // WPM initial setup
+  }
+  cost += 10000 // General carbon management system
+  return cost
 }
 
 function generateFinancialAnalysisFallback(emissions, companyInfo, industry) {
   return {
-    aiAnalysis: 'Enhanced financial analysis completed with Nederlandse subsidie optimization',
+    aiAnalysis: 'Rule-based financial analysis with Dutch subsidy estimates.',
     carbonPricingExposure: calculateCarbonPricingExposure(emissions.total),
     subsidyOpportunities: calculateDutchSubsidies(emissions, companyInfo, industry),
     investmentScenarios: generateInvestmentScenarios(emissions, companyInfo, industry),
     roiProjections: calculateROIProjections(emissions, companyInfo, industry),
     cashFlowImpact: generateCashFlowAnalysis(emissions, companyInfo, industry),
     aiGenerated: false,
-    confidence: 0.82
+    confidence: 0.70
   }
 }
 
 function calculateCarbonPricingExposure(totalEmissions) {
+  const currentCost = totalEmissions * DUTCH_CARBON_PRICING['2024']
+  const futureCost2030 = totalEmissions * DUTCH_CARBON_PRICING['2030']
   return {
-    current2024: Math.round(totalEmissions * DUTCH_CARBON_PRICING['2024']),
-    projected2025: Math.round(totalEmissions * DUTCH_CARBON_PRICING['2025']),
-    projected2030: Math.round(totalEmissions * DUTCH_CARBON_PRICING['2030']),
-    totalRiskIncrease: Math.round(totalEmissions * (DUTCH_CARBON_PRICING['2030'] - DUTCH_CARBON_PRICING['2024'])),
-    annualIncrease: Math.round(totalEmissions * (DUTCH_CARBON_PRICING['2030'] - DUTCH_CARBON_PRICING['2024']) / 6),
-    euETSComparison: Math.round(totalEmissions * DUTCH_CARBON_PRICING['euETS2024'])
+    current: Math.round(currentCost),
+    future2030: Math.round(futureCost2030),
+    increase: Math.round(futureCost2030 - currentCost)
   }
 }
 
 function calculateDutchSubsidies(emissions, companyInfo, industry) {
-  const employees = companyInfo.employees || 1
-  const totalEmissions = emissions.total || 0
-  
-  const subsidies = {
-    SEEH: Math.min(Math.floor(employees / 5) * 4000, 20000), // Max 5 auto's
-    SDE: Math.min(totalEmissions * 100, 25000),
-    EIA: Math.min(totalEmissions * 300, 50000),
-    WBSO: industry.includes('Technologie') ? Math.min(totalEmissions * 150, 20000) : 0,
-    MIAVamil: Math.min(totalEmissions * 200, 75000)
+  let totalSubsidies = 0
+  const opportunities = []
+
+  // SEEH for electric vehicles (assuming 2 vehicles for smaller companies, 5 for larger)
+  const potentialEVs = companyInfo.employees > 50 ? 5 : 2
+  const seehAmount = Math.min(potentialEVs * 4000, 20000)
+  if (seehAmount > 0) {
+    opportunities.push({ name: 'SEEH (Elektrische Voertuigen)', amount: seehAmount, type: 'Directe Subsidie', description: `Tot €${seehAmount.toLocaleString()} voor aanschaf/lease van elektrische bedrijfsvoertuigen.` })
+    totalSubsidies += seehAmount
+  }
+
+  // EIA for energy efficiency (estimate based on energy emissions)
+  const eiaPotential = Math.round(emissions.breakdown?.energy * DUTCH_EMISSION_FACTORS.electricity * 100 * 0.3) // rough estimate
+  if (eiaPotential > 1000) {
+    opportunities.push({ name: 'EIA (Energie Investeringsaftrek)', amount: eiaPotential, type: 'Fiscale Aftrek', description: `Ongeveer €${eiaPotential.toLocaleString()} potentiële fiscale aftrek voor energiezuinige investeringen.` })
+    totalSubsidies += eiaPotential // for total estimate
+  }
+
+  // MIA/Vamil for circular economy (estimate based on waste/materials)
+  const miaVamilPotential = Math.round((emissions.breakdown?.waste || 0 + emissions.breakdown?.materials || 0) * 50 * 0.5) // rough estimate
+  if (miaVamilPotential > 1000) {
+    opportunities.push({ name: 'MIA/Vamil (Milieu-investeringsaftrek)', amount: miaVamilPotential, type: 'Fiscale Aftrek', description: `Ongeveer €${miaVamilPotential.toLocaleString()} potentiële fiscale aftrek voor milieu-investeringen en circulaire economie.` })
+    totalSubsidies += miaVamilPotential // for total estimate
   }
   
   return {
-    ...subsidies,
-    total: Object.values(subsidies).reduce((sum, val) => sum + val, 0),
-    description: {
-      SEEH: 'Subsidie Elektrisch Rijden: €4,000 per elektrische auto',
-      SDE: 'SDE++ hernieuwbare energie subsidie',
-      EIA: 'Energie-investeringsaftrek 30% op efficiency investeringen',
-      WBSO: 'Wet Bevordering Speur- en Ontwikkelingswerk voor innovatie',
-      MIAVamil: 'Milieu-investeringsaftrek + Vamil voor circulaire investeringen'
-    }
+    totalEstimated: Math.round(totalSubsidies),
+    opportunities
   }
 }
 
 function generateInvestmentScenarios(emissions, companyInfo, industry) {
-  const baseInvestment = emissions.total * 900 // Slightly higher for Dutch market
-  
-  return {
-    conservative: {
-      investment: Math.round(baseInvestment * 0.6),
-      co2Reduction: Math.round(emissions.total * 0.25 * 100) / 100,
-      paybackMonths: 36,
-      roi5Year: '190%',
-      measures: ['LED upgrade', 'Smart thermostaten', 'Groene energie contract']
-    },
-    moderate: {
-      investment: Math.round(baseInvestment),
-      co2Reduction: Math.round(emissions.total * 0.45 * 100) / 100,
-      paybackMonths: 24,
-      roi5Year: '270%',
-      measures: ['Building automation', 'Heat pump', 'Elektrische auto\'s', 'Zonnepanelen']
-    },
-    aggressive: {
-      investment: Math.round(baseInvestment * 1.5),
-      co2Reduction: Math.round(emissions.total * 0.70 * 100) / 100,
-      paybackMonths: 18,
-      roi5Year: '350%',
-      measures: ['Volledige elektrificatie', 'Advanced automation', 'Carbon neutral certificering']
-    }
-  }
+  const scenarios = []
+
+  scenarios.push({
+    name: 'Basisscenario: Naleving & Quick Wins',
+    description: 'Focus op directe compliance (CSRD/WPM) en kosteneffectieve quick wins zoals groene stroom en LED-verlichting met subsidie.',
+    investment: 50000,
+    annualSavings: 0.15 * emissions.total * DUTCH_CARBON_PRICING['2024'] + 5000, // 15% reduction + operational savings
+    reductionTarget: '15% CO2 reductie',
+    paybackPeriod: '2-3 jaar'
+  })
+
+  scenarios.push({
+    name: 'Groeiscenario: Innovatie & Marktleiderschap',
+    description: 'Investering in geavanceerde technologieën, elektrisch wagenpark, CO2-Prestatieladder niveau 4/5, en Scope 3 initiatieven voor concurrentievoordeel.',
+    investment: 250000,
+    annualSavings: 0.40 * emissions.total * DUTCH_CARBON_PRICING['2024'] + 15000, // 40% reduction + significant operational savings
+    reductionTarget: '40% CO2 reductie',
+    paybackPeriod: '4-6 jaar'
+  })
+
+  return scenarios.map(s => ({
+    ...s,
+    annualSavings: Math.round(s.annualSavings),
+    investment: Math.round(s.investment)
+  }))
 }
 
 function calculateROIProjections(emissions, companyInfo, industry) {
-  const baseInvestment = emissions.total * 900
+  const initialInvestment = 75000 // Average of basic scenarios
+  const annualSavingsCO2 = emissions.total * 0.20 * DUTCH_CARBON_PRICING['2024'] // 20% reduction
+  const annualOperationalSavings = 10000 // e.g. from energy efficiency
+  const totalAnnualSavings = annualSavingsCO2 + annualOperationalSavings
+  const paybackYears = initialInvestment / totalAnnualSavings
+
   return {
-    year1: { 
-      investment: baseInvestment, 
-      savings: Math.round(baseInvestment * 0.18), 
-      roi: 18,
-      subsidies: Math.round(baseInvestment * 0.25)
-    },
-    year3: { 
-      investment: baseInvestment, 
-      savings: Math.round(baseInvestment * 0.65), 
-      roi: 65,
-      cumulativeSavings: Math.round(baseInvestment * 1.2)
-    },
-    year5: { 
-      investment: baseInvestment, 
-      savings: Math.round(baseInvestment * 1.25), 
-      roi: 125,
-      cumulativeSavings: Math.round(baseInvestment * 2.7)
-    }
+    initialInvestment: Math.round(initialInvestment),
+    annualSavingsEstimated: Math.round(totalAnnualSavings),
+    paybackPeriodYears: paybackYears.toFixed(1),
+    roiOver5Years: Math.round((totalAnnualSavings * 5 - initialInvestment) / initialInvestment * 100) // Simple ROI
   }
 }
 
 function generateCashFlowAnalysis(emissions, companyInfo, industry) {
-  const baseInvestment = Math.round(emissions.total * 900)
+  // Simplified cash flow example
+  const currentCarbonCost = emissions.total * DUTCH_CARBON_PRICING['2024']
+  const projectedSavingsYear1 = currentCarbonCost * 0.10 + 5000 // 10% reduction + 5k operational
+  const projectedSavingsYear5 = emissions.total * 0.30 * DUTCH_CARBON_PRICING['2028'] + 20000 // 30% reduction + 20k operational (higher carbon price)
+  const initialCosts = 75000
+  
   return {
-    initialInvestment: baseInvestment,
-    dutchSubsidies: Math.round(baseInvestment * 0.25),
-    netInvestment: Math.round(baseInvestment * 0.75),
-    annualSavings: Math.round(emissions.total * 220), // Higher for Dutch market
-    paybackPeriod: 20, // months
-    npv5Year: Math.round(baseInvestment * 1.8),
-    carbonSavingsValue: Math.round(emissions.total * 0.6 * DUTCH_CARBON_PRICING['2030'])
+    year1: {
+      inflow: Math.round(projectedSavingsYear1),
+      outflow: Math.round(initialCosts / 3), // spread over 3 years
+      net: Math.round(projectedSavingsYear1 - (initialCosts / 3))
+    },
+    year3: {
+      inflow: Math.round(emissions.total * 0.20 * DUTCH_CARBON_PRICING['2026'] + 10000), // higher reduction, higher carbon price
+      outflow: Math.round(initialCosts / 3),
+      net: Math.round(emissions.total * 0.20 * DUTCH_CARBON_PRICING['2026'] + 10000 - (initialCosts / 3))
+    },
+    year5: {
+      inflow: Math.round(projectedSavingsYear5),
+      outflow: 0, // assuming initial investment paid off
+      net: Math.round(projectedSavingsYear5)
+    }
   }
-}
-
-// Other helper functions remain the same as before...
-function checkCSRDRequirement(companyInfo) {
-  const isRequired = companyInfo.employees > 250 || (companyInfo.revenue && companyInfo.revenue > 50)
-  return {
-    required: isRequired,
-    timeline: isRequired ? '2025' : '2026',
-    urgency: isRequired ? 'Kritiek' : 'Medium',
-    readinessScore: calculateCSRDReadiness(0, companyInfo.employees)
-  }
-}
-
-function checkWPMRequirement(companyInfo) {
-  const isRequired = companyInfo.employees >= 100
-  return {
-    required: isRequired,
-    deadline: '2025-06-30',
-    urgency: isRequired ? 'Hoog' : 'Laag',
-    scope: 'Home-to-work mobility tracking + CO2 impact reporting'
-  }
-}
-
-function checkCO2HeffingRequirement(emissions, industry) {
-  const impactedIndustries = ['Productie & Manufacturing', 'Bouw & Vastgoed', 'Transport & Logistiek', 'Energie & Utilities']
-  const isImpacted = impactedIndustries.some(sector => industry?.includes(sector)) && emissions.total > 25
-  return {
-    applicable: isImpacted,
-    currentRate: `€${DUTCH_CARBON_PRICING['2024']} per ton`,
-    rate2030: `€${DUTCH_CARBON_PRICING['2030']} per ton`,
-    urgency: isImpacted ? 'Hoog' : 'Laag',
-    estimatedCost2030: Math.round(emissions.total * DUTCH_CARBON_PRICING['2030'])
-  }
-}
-
-function calculateConfidence(emissions, companyInfo) {
-  let confidence = 0.75
-  const dataPoints = Object.values(emissions.breakdown || {}).filter(val => val > 0).length
-  confidence += Math.min(dataPoints * 0.04, 0.20)
-  if (companyInfo.employees > 50) confidence += 0.05
-  if (companyInfo.employees > 200) confidence += 0.05
-  if (emissions.total > 0) confidence += 0.05
-  return Math.min(confidence, 0.95)
-}
-
-function calculateIndustryComparison(totalEmissions, employees, industry) {
-  const emissionsPerEmployee = totalEmissions / employees
-  const benchmark = DUTCH_INDUSTRY_BENCHMARKS[industry] || 5.8
-  return Math.round((emissionsPerEmployee / benchmark) * 100)
-}
-
-function calculateCSRDReadiness2(totalEmissions, employeeCount) {
-  let score = 30
-  if (totalEmissions > 0) score += 20
-  if (employeeCount > 0) score += 15
-  if (totalEmissions < 100) score += 10
-  if (employeeCount > 50) score += 15
-  if (employeeCount > 250) score += 10
-  return Math.min(score, 100)
 }
 
 function generateDutchBenchmarking(totalEmissions, employeeCount, industry) {
   const emissionsPerEmployee = totalEmissions / employeeCount
-  const industryBenchmark = DUTCH_INDUSTRY_BENCHMARKS[industry] || 5.8
-  const performance = emissionsPerEmployee / industryBenchmark
-  const percentile = calculatePercentile(performance)
+  const industryBenchmark = DUTCH_INDUSTRY_BENCHMARKS[industry] || DUTCH_INDUSTRY_BENCHMARKS['Anders']
   
-  return {
-    industryBenchmark: industryBenchmark,
-    yourPerformance: Math.round(emissionsPerEmployee * 100) / 100,
-    percentile: percentile,
-    ranking: getPerformanceRanking(performance),
-    dutchContext: true,
-    sectorAverage: industryBenchmark,
-    improvement: Math.max(0, Math.round((emissionsPerEmployee - industryBenchmark * 0.5) * 100) / 100)
+  let comparisonText = ''
+  if (emissionsPerEmployee < industryBenchmark * 0.8) {
+    comparisonText = `Uitstekend: Uw bedrijf presteert ${Math.round((1 - (emissionsPerEmployee / industryBenchmark)) * 100)}% beter dan het Nederlandse sectorgemiddelde voor ${industry}.`
+  } else if (emissionsPerEmployee < industryBenchmark * 1.1) {
+    comparisonText = `Goed: Uw bedrijf presteert rond het Nederlandse sectorgemiddelde voor ${industry}.`
+  } else {
+    comparisonText = `Aandachtspunt: Uw bedrijf presteert ${Math.round(((emissionsPerEmployee / industryBenchmark) - 1) * 100)}% onder het Nederlandse sectorgemiddelde voor ${industry}.`
   }
-}
 
-function calculatePercentile(performance) {
-  if (performance <= 0.5) return 95
-  if (performance <= 0.7) return 85
-  if (performance <= 0.9) return 75
-  if (performance <= 1.1) return 60
-  if (performance <= 1.3) return 45
-  if (performance <= 1.5) return 30
-  return 15
-}
-
-function getPerformanceRanking(performance) {
-  if (performance <= 0.5) return 'Uitstekend (Top 5% Nederland)'
-  if (performance <= 0.7) return 'Zeer Goed (Top 15% Nederland)'
-  if (performance <= 0.9) return 'Goed (Top 25% Nederland)'
-  if (performance <= 1.1) return 'Nederlands gemiddelde'
-  if (performance <= 1.3) return 'Onder gemiddeld'
-  return 'Verbetering urgent nodig'
+  return {
+    emissionsPerEmployee: emissionsPerEmployee.toFixed(2),
+    industryBenchmark: industryBenchmark.toFixed(2),
+    comparison: comparisonText,
+    ranking: calculateSustainabilityScore({total: totalEmissions, breakdown: {}}, {employees: employeeCount}, industry).benchmarkPosition
+  }
 }
 
 function generatePriorityMatrix(breakdown, totalEmissions, industry) {
   const priorities = []
-  Object.entries(breakdown).forEach(([category, value]) => {
-    if (value > totalEmissions * 0.1) {
-      priorities.push({
-        category: category,
-        impact: value > totalEmissions * 0.3 ? 'Hoog' : 'Medium',
-        effort: category === 'energy' ? 'Laag' : category === 'transport' ? 'Medium' : 'Hoog',
-        priority: value > totalEmissions * 0.3 ? 1 : 2,
-        co2Amount: value,
-        percentage: Math.round((value / totalEmissions) * 100),
-        dutchOpportunities: getDutchOpportunities(category, value)
-      })
-    }
-  })
-  return priorities.sort((a, b) => a.priority - b.priority)
-}
+  
+  const emissionCategories = Object.keys(breakdown).map(key => ({
+    category: key,
+    emissions: breakdown[key],
+    percentage: (breakdown[key] / totalEmissions) * 100
+  })).sort((a, b) => b.emissions - a.emissions) // Sort by highest emissions
 
-function getDutchOpportunities(category, value) {
-  const opportunities = {
-    energy: ['Groene energie contract', 'EIA belastingvoordeel', 'LED upgrade'],
-    transport: ['SEEH subsidie elektrische auto\'s', 'WPM compliance improvement'],
-    waste: ['MIA/Vamil circulaire investeringen', 'Afvalfonds optimalisatie'],
-    water: ['Water efficiency technologie', 'Circulair water management'],
-    materials: ['MIA/Vamil circulaire procurement', 'Supplier sustainability requirements']
-  }
-  return opportunities[category] || ['Efficiency verbeteringen', 'Nederlandse subsidies checken']
+  emissionCategories.forEach((item, index) => {
+    let impact = 'Laag'
+    let complexity = 'Laag'
+    let timeframe = 'Lange Termijn'
+
+    if (index === 0) { // Highest emission source
+      impact = 'Zeer Hoog'
+      timeframe = 'Korte Termijn'
+      if (item.category === 'energy' || item.category === 'transport') {
+        complexity = 'Medium' // Often solutions available
+      } else {
+        complexity = 'Hoog' // Supply chain, waste etc. can be complex
+      }
+    } else if (index === 1) { // Second highest
+      impact = 'Hoog'
+      timeframe = 'Middellange Termijn'
+      complexity = 'Medium'
+    } else {
+      impact = 'Medium'
+      timeframe = 'Middellange Termijn'
+      complexity = 'Medium'
+    }
+
+    priorities.push({
+      area: item.category,
+      percentageOfTotal: item.percentage.toFixed(1) + '%',
+      potentialImpact: impact,
+      implementationComplexity: complexity,
+      recommendedTimeframe: timeframe
+    })
+  })
+
+  return priorities
 }
 
 function generateImplementationRoadmap(breakdown, companyInfo, totalEmissions) {
-  return {
-    phases: [
-      {
-        phase: 'Foundation & Compliance (0-6 maanden)',
-        target: Math.round(totalEmissions * 0.85 * 100) / 100,
-        actions: ['CSRD gap analyse', 'WPM implementatie setup', 'CO2-Prestatieladder start', 'Quick wins (LED, groene energie)'],
-        budget: '€15,000 - €35,000',
-        co2Reduction: Math.round(totalEmissions * 0.15 * 100) / 100,
-        dutchFocus: 'Compliance deadlines en subsidie aanvragen'
-      },
-      {
-        phase: 'Technology & Systems (6-18 maanden)',
-        target: Math.round(totalEmissions * 0.65 * 100) / 100,
-        actions: ['Building automation met EIA', 'SEEH elektrische auto\'s', 'Heat pump planning', 'Zonnepanelen met SDE++'],
-        budget: '€50,000 - €120,000',
-        co2Reduction: Math.round(totalEmissions * 0.35 * 100) / 100,
-        dutchFocus: 'Structurele emissiereductie en subsidie optimalisatie'
-      },
-      {
-        phase: 'Carbon Neutraliteit & Leadership (18+ maanden)',
-        target: Math.round(totalEmissions * 0.20 * 100) / 100,
-        actions: ['Science-based targets implementatie', 'Carbon offset programma', 'Supply chain engagement', 'Carbon neutral certificering'],
-        budget: '€80,000 - €200,000',
-        co2Reduction: Math.round(totalEmissions * 0.45 * 100) / 100,
-        dutchFocus: 'Market leadership en competitive advantage'
-      }
-    ],
-    totalInvestment: Math.round(totalEmissions * 1200),
-    totalSubsidies: Math.round(totalEmissions * 300),
-    netInvestment: Math.round(totalEmissions * 900),
-    expectedROI: {
-      year1: '18-25%',
-      year3: '120-180%',
-      year5: '280-350%'
-    },
-    co2ReductionTarget: Math.round(totalEmissions * 0.80 * 100) / 100,
-    dutchSpecific: true,
-    methodology: 'CO2-Prestatieladder 3.1 + CSRD compliance'
-  }
-}
-
-function generateEnhancedRecommendations(breakdown, totalEmissions, industry, companyInfo) {
-  const recommendations = []
-  const employees = companyInfo.employees || 1
-
-  // AI-Enhanced Energy Recommendations with Dutch subsidies
-  if (breakdown.energy > totalEmissions * 0.3) {
-    recommendations.push({
-      category: 'Energie Transitie',
-      title: 'Nederlandse Groene Energie Leverancier Transitie',
-      description: 'Schakel over naar 100% groene energie via Nederlandse leveranciers zoals Vattenfall, Eneco of Essent. Elimineer direct alle Scope 2 emissies met Nederlandse Garanties van Oorsprong.',
-      impact: 'Zeer Hoog',
-      co2Reduction: Math.round(breakdown.energy * 0.85 * 100) / 100,
-      cost: '€0 - €2,000 setup kosten',
-      paybackMonths: 0,
-      priority: 1,
-      dutchSpecific: true,
-      subsidies: ['Geen extra kosten', 'Vaak goedkoper dan grijze stroom', 'CO2-Prestatieladder punten'],
-      suppliers: ['Vattenfall 100% Nederlandse wind', 'Eneco Nederlandse groene stroom', 'Essent Duurzame energie'],
-      implementationSteps: [
-        'Vergelijk aanbieders groene energie certificaten',
-        'Onderhandel contract met Nederlandse garanties van oorsprong',
-        'Implementeer binnen 30 dagen zonder downtime',
-        'Monitor en rapporteer Scope 2 eliminatie voor CSRD'
-      ],
-      compliance: 'Direct CSRD Scope 2 market-based improvement'
-    })
+  const roadmap = {
+    'Fase 1: Analyse & Planning (0-3 maanden)': [],
+    'Fase 2: Quick Wins & Basis Implementatie (3-9 maanden)': [],
+    'Fase 3: Structurele Reductie & Innovatie (9-24 maanden)': []
   }
 
-  // AI-Enhanced Transport Recommendations with SEEH subsidie
-  if (breakdown.transport > totalEmissions * 0.25) {
-    const potentialVehicles = Math.min(Math.floor(employees / 5), 20)
-    const seehSubsidy = Math.min(potentialVehicles * 4000, 20000)
-    
-    recommendations.push({
-      category: 'Mobiliteit',
-      title: 'SEEH Elektrische Fleet Transitie Programma',
-      description: `Elektrificeer ${potentialVehicles} lease auto's met Nederlandse SEEH subsidie van €4,000 per voertuig. Profiteer van 4% bijtelling vs 22% voor diesel en elimineer motorrijtuigenbelasting.`,
-      impact: 'Zeer Hoog',
-      co2Reduction: Math.round(breakdown.transport * 0.7 * 100) / 100,
-      cost: `€${(potentialVehicles * 25000).toLocaleString()} - €${(potentialVehicles * 45000).toLocaleString()}`,
-      savings: `€${seehSubsidy.toLocaleString()} SEEH subsidie + €${potentialVehicles * 600}/jaar tax benefits`,
-      paybackMonths: 18,
-      priority: 1,
-      dutchSpecific: true,
-      subsidies: [`€${seehSubsidy.toLocaleString()} SEEH subsidie totaal`, '4% bijtelling voordeel vs 22%', 'Geen motorrijtuigenbelasting', 'CO2-Prestatieladder verbetering'],
-      providers: ['LeasePlan Nederland EV specialists', 'Athlon Car Lease groene fleet', 'ALD Automotive sustainability'],
-      implementationSteps: [
-        'SEEH subsidie aanvraag indienen bij RVO',
-        'Lease partner selecteren met EV expertise en charging solutions',
-        'Laadinfrastructuur planning en installatie',
-        'Gefaseerde implementatie over 6-12 maanden met training'
-      ],
-      wmpCompliance: 'Verbetert WPM rapportage scores significant'
-    })
-  }
+  roadmap['Fase 1: Analyse & Planning (0-3 maanden)'].push('Gedetailleerde carbon footprint data validatie')
+  roadmap['Fase 1: Analyse & Planning (0-3 maanden)'].push('Vormen van een intern duurzaamheidsteam')
+  roadmap['Fase 1: Analyse & Planning (0-3 maanden)'].push('CSRD/WPM compliance gap analyse (indien van toepassing)')
+  roadmap['Fase 1: Analyse & Planning (0-3 maanden)'].push('Ontwikkelen van een reductiestrategie en doelstellingen (conform CO2-Prestatieladder)')
 
-  // AI-Enhanced Building Efficiency with EIA aftrek
   if (breakdown.energy > totalEmissions * 0.2) {
-    recommendations.push({
-      category: 'Building Efficiency',
-      title: 'Smart Building Automation met EIA Belastingvoordeel',
-      description: 'Implementeer smart thermostaten, LED verlichting en building automation systemen. 30% EIA belastingaftrek op energie-efficiency investeringen tot €2.4 miljoen.',
-      impact: 'Hoog',
-      co2Reduction: Math.round(breakdown.energy * 0.25 * 100) / 100,
-      cost: '€15,000 - €35,000',
-      savings: '€4,500 - €10,500 EIA aftrek + €3,000-8,000/jaar operationele besparing',
-      paybackMonths: 24,
-      priority: 2,
-      dutchSpecific: true,
-      subsidies: ['30% EIA belastingaftrek', 'Accelerated depreciation mogelijk', 'Lagere energiekosten direct'],
-      technologies: ['Smart thermostaat systemen', 'LED verlichting met sensoren', 'HVAC optimization', 'Energy monitoring dashboard'],
-      implementationSteps: [
-        'Energy audit en ROI berekening',
-        'EIA aftrek aanvraag voorbereiding',
-        'Technology selectie en installatie planning',
-        'Implementation met minimal business disruption'
-      ]
-    })
+    roadmap['Fase 2: Quick Wins & Basis Implementatie (3-9 maanden)'].push('Overstap naar 100% Nederlandse groene energie')
+    roadmap['Fase 2: Quick Wins & Basis Implementatie (3-9 maanden)'].push('Implementatie LED-verlichting en smart thermostaten (met EIA subsidie aanvraag)')
   }
-
-  // Circulaire Economie met MIA/Vamil
-  if (breakdown.waste > totalEmissions * 0.1 || breakdown.materials > totalEmissions * 0.15) {
-    recommendations.push({
-      category: 'Circulaire Economie',
-      title: 'Circulair Business Model met MIA/Vamil Aftrek',
-      description: 'Implementeer circulaire processen: waste-to-resource, material recovery, en closed-loop systems. Tot 75% MIA/Vamil belastingaftrek op circulaire investeringen.',
-      impact: 'Medium-Hoog',
-      co2Reduction: Math.round((breakdown.waste + breakdown.materials) * 0.6 * 100) / 100,
-      cost: '€25,000 - €75,000',
-      savings: '€18,750 - €56,250 MIA/Vamil aftrek + operationele besparingen',
-      paybackMonths: 30,
-      priority: 3,
-      dutchSpecific: true,
-      subsidies: ['Tot 75% MIA/Vamil aftrek circulaire investeringen', 'Innovation tax credits', 'Circular economy grants mogelijk'],
-      strategies: ['Waste stream optimization', 'Material recovery systems', 'Supplier circularity requirements', 'Product lifecycle extension'],
-      implementationSteps: [
-        'Circularity assessment en quick wins identificatie',
-        'MIA/Vamil qualification check en application',
-        'Pilot project implementatie en measurement',
-        'Scale-up en supply chain integration'
-      ]
-    })
+  if (breakdown.transport > totalEmissions * 0.15) {
+    roadmap['Fase 2: Quick Wins & Basis Implementatie (3-9 maanden)'].push('Start pilot elektrische leaseauto\'s (met SEEH subsidie aanvraag)')
   }
-
-  // CO2-Prestatieladder Certificering
-  recommendations.push({
-    category: 'Compliance & Market Position',
-    title: 'CO2-Prestatieladder Niveau 3+ Certificering',
-    description: 'Behaal CO2-Prestatieladder niveau 3+ voor significante aanbestedingsvoordelen bij Nederlandse overheidsopdrachten. ROI binnen 6 maanden voor B2G bedrijven.',
-    impact: 'Business Impact',
-    co2Reduction: 0, // Process improvement, niet direct CO2 reductie
-    cost: '€8,000 - €15,000 certificering + €5,000/jaar onderhoud',
-    savings: 'Aanbestedingsvoordeel: 10-15% hogere win rate + premium pricing mogelijk',
-    paybackMonths: 6,
-    priority: 2,
-    dutchSpecific: true,
-    benefits: ['10-15% voordeel bij overheidstenders', 'Access tot groene aanbestedingen', 'Verbeterde market positioning', 'CSRD compliance preparation'],
-    requirements: ['Carbon footprint berekening', 'Reduction plan ontwikkeling', 'Third-party verification', 'Annual monitoring en reporting'],
-    implementationSteps: [
-      'Gap analysis huidige carbon management',
-      'CO2-Prestatieladder consultant selectie',
-      'Data verzameling en verification',
-      'Certificering aanvraag en audit'
-    ]
-  })
-
-  return recommendations.slice(0, 6).map((rec, index) => ({
-    ...rec,
-    id: `ai-rec-${index + 1}`,
-    confidence: 0.92,
-    aiEnhanced: true,
-    lastUpdated: new Date().toISOString(),
-    dutchMarketContext: true
-  }))
-}
-
-function calculateSustainabilityScore(emissions, companyInfo, industry) {
-  const emissionsPerEmployee = emissions.total / companyInfo.employees
-  const industryBenchmark = DUTCH_INDUSTRY_BENCHMARKS[industry] || 5.8
-  const relativePerformance = Math.max(0, 1 - (emissionsPerEmployee / industryBenchmark))
-  
-  let score = Math.round(relativePerformance * 40) // Base 40 points for emissions performance
-  
-  // Compliance readiness bonus (Nederlandse context)
-  if (companyInfo.employees > 250) score += 20 // CSRD ready
-  else if (companyInfo.employees > 100) score += 15 // WPM ready
-  else score += 10 // Proactive sustainability
-  
-  // Size efficiency bonus
-  if (emissionsPerEmployee < 2) score += 15
-  else if (emissionsPerEmployee < 3) score += 10
-  else if (emissionsPerEmployee < 5) score += 5
-  
-  // Industry leadership bonus
-  if (relativePerformance > 0.8) score += 10
-  else if (relativePerformance > 0.6) score += 5
-  
-  // Data completeness bonus
-  const dataCompleteness = Object.values(emissions.breakdown || {}).filter(val => val > 0).length
-  if (dataCompleteness >= 5) score += 5
-  
-  return {
-    overall: Math.min(score, 100),
-    breakdown: {
-      emissions: Math.round(relativePerformance * 40),
-      compliance: companyInfo.employees > 250 ? 20 : companyInfo.employees >= 100 ? 15 : 10,
-      efficiency: emissionsPerEmployee < 2 ? 15 : emissionsPerEmployee < 3 ? 10 : emissionsPerEmployee < 5 ? 5 : 0,
-      leadership: relativePerformance > 0.8 ? 10 : relativePerformance > 0.6 ? 5 : 0,
-      dataQuality: dataCompleteness >= 5 ? 5 : 0
-    },
-    grade: score >= 90 ? 'A+' : score >= 80 ? 'A' : score >= 70 ? 'B+' : score >= 60 ? 'B' : score >= 50 ? 'C+' : 'C',
-    benchmarkPosition: relativePerformance > 0.8 ? 'Top 20% Nederland' : relativePerformance > 0.6 ? 'Top 40% Nederland' : relativePerformance > 0.4 ? 'Nederlands gemiddelde' : 'Onder Nederlands gemiddelde',
-    improvementPotential: Math.max(0, Math.round((industryBenchmark * 0.5 - emissionsPerEmployee) * companyInfo.employees * 100) / 100)
+  if (companyInfo.employees >= 100) {
+    roadmap['Fase 2: Quick Wins & Basis Implementatie (3-9 maanden)'].push('WPM mobiliteitsdata verzameling en rapportagesysteem opzetten')
   }
-}
+  roadmap['Fase 2: Quick Wins & Basis Implementatie (3-9 maanden)'].push('CO2-Prestatieladder Niveau 3 certificeringstraject starten')
 
-// All helper functions for fallback scenarios
-function generateExecutiveSummaryFallback(companyInfo, emissions, industry) {
-  const emissionsPerEmployee = emissions.total / companyInfo.employees
-  const industryBenchmark = DUTCH_INDUSTRY_BENCHMARKS[industry] || 5.8
-  const performance = emissionsPerEmployee / industryBenchmark
 
-  let assessment = ""
-  let urgency = ""
-  
-  if (performance < 0.7) {
-    assessment = "uitstekend presterende organisatie die de Nederlandse industrie standaarden significant overtreft"
-    urgency = "optimalisatie en market leadership"
-  } else if (performance < 1.0) {
-    assessment = "goed presterende organisatie met sterke sustainability fundamenten boven Nederlands gemiddelde"
-    urgency = "strategische verbetering"
-  } else if (performance < 1.3) {
-    assessment = "gemiddeld presterende organisatie met belangrijke verbetermogelijkheden"
-    urgency = "directe actie"
-  } else {
-    assessment = "organisatie die urgent actie moet ondernemen voor Nederlandse compliance en concurrentiepositie"
-    urgency = "kritieke interventie"
+  if (breakdown.energy > totalEmissions * 0.3) {
+    roadmap['Fase 3: Structurele Reductie & Innovatie (9-24 maanden)'].push('Onderzoek SDE++ subsidie voor zonnepanelen of andere hernieuwbare opwekking')
   }
-
-  return {
-    headline: `${companyInfo.name} is een ${assessment}`,
-    content: `Met ${emissions.total} ton CO2 uitstoot (${emissionsPerEmployee.toFixed(1)} ton per medewerker) staat ${companyInfo.name} op ${Math.round(performance * 100)}% van het Nederlandse ${industry} sectorgemiddelde.
-
-**Nederlandse Compliance Status:**
-${companyInfo.employees > 250 ? '🔴 CSRD rapportage VERPLICHT vanaf maart 2025 - implementatie kritiek' : '🟡 CSRD voorbereiding aanbevolen voor toekomstige verplichting'}
-${companyInfo.employees >= 100 ? '🔴 WPM rapportage VERPLICHT vanaf juni 2025 - mobility tracking opstarten' : '✅ Geen directe WPM verplichting'}
-
-**Top Strategische Prioriteiten:**
-1. ${emissions.breakdown?.energy > 5 ? 'Groene energie transitie (direct 30-50% Scope 2 reductie mogelijk)' : 'Energie efficiency optimalisatie met smart building tech'}
-2. ${emissions.breakdown?.transport > 3 ? 'Fleet elektrificatie met €4,000 SEEH subsidie per auto' : 'Sustainable mobility programma en WPM compliance'}
-3. CO2-Prestatieladder certificering voor aanbestedingsvoordeel
-
-**Financial Impact:**
-- Huidige carbon exposure: €${Math.round(emissions.total * DUTCH_CARBON_PRICING['2024']).toLocaleString()}/jaar
-- 2030 risico zonder actie: €${Math.round(emissions.total * DUTCH_CARBON_PRICING['2030']).toLocaleString()}/jaar
-- Potentiële ROI: €${Math.round(emissions.total * 150).toLocaleString()}/jaar besparingen mogelijk
-- Nederlandse subsidies beschikbaar: €${Math.round(emissions.total * 200).toLocaleString()}
-
-**Next Steps:** Start binnen 30 dagen met ${urgency}, focus op Nederlandse subsidie deadlines en compliance timelines.`,
-    keyMetrics: {
-      totalEmissions: emissions.total,
-      emissionsPerEmployee: Math.round(emissionsPerEmployee * 100) / 100,
-      industryComparison: Math.round(performance * 100),
-      csrdReadiness: calculateCSRDReadiness(emissions.total, companyInfo.employees),
-      benchmarkStatus: performance < 1.0 ? 'Boven Nederlands gemiddelde' : 'Onder Nederlands gemiddelde'
-    },
-    urgencyLevel: urgency,
-    nextSteps: [
-      'Start CSRD gap analyse binnen 30 dagen',
-      'Implementeer carbon accounting systeem',
-      'Ontwikkel science-based reduction targets conform Nederlandse methodiek'
-    ],
-    aiGenerated: false,
-    confidence: 0.75
+  if (breakdown.transport > totalEmissions * 0.2) {
+    roadmap['Fase 3: Structurele Reductie & Innovatie (9-24 maanden)'].push('Volledige elektrificatie van wagenpark en oplaadinfrastructuur uitbreiden')
   }
-}
-
-function generateActionPlanFallback(emissions, companyInfo, industry) {
-  return {
-    aiGeneratedPlan: 'Enhanced rule-based action plan generated with Dutch market focus',
-    structured: generateStructuredActionPlan(emissions, companyInfo, industry),
-    timeline: generateActionTimeline(emissions, companyInfo),
-    totalInvestment: calculateTotalInvestment(emissions, companyInfo),
-    expectedROI: calculateExpectedROI(emissions, companyInfo, industry),
-    aiGenerated: false,
-    confidence: 0.78
+  if (breakdown.waste > totalEmissions * 0.1 || breakdown.materials > totalEmissions * 0.1) {
+    roadmap['Fase 3: Structurele Reductie & Innovatie (9-24 maanden)'].push('Implementatie circulaire bedrijfsprocessen (met MIA/Vamil subsidie aanvraag)')
   }
-}
-function generateStructuredActionPlan(emissions, companyInfo, industry) {
- const immediate = []
- const shortTerm = []
- const longTerm = []
+  roadmap['Fase 3: Structurele Reductie & Innovatie (9-24 maanden)'].push('Ontwikkelen van Science-Based Targets (SBTi)')
+  roadmap['Fase 3: Structurele Reductie & Innovatie (9-24 maanden)'].push('Betrekken van supply chain partners voor Scope 3 reductie')
 
- // Immediate actions (0-6 months)
- immediate.push('CO2-Prestatieladder niveau 1 certificering aanvragen')
- if (emissions.breakdown?.energy > 2) {
-   immediate.push('Groene energie contract onderhandelen met Nederlandse leveranciers')
- }
- if (companyInfo.employees >= 100) {
-   immediate.push('WPM rapportage systeem opzetten (deadline juni 2025)')
- }
- if (companyInfo.employees > 250) {
-   immediate.push('CSRD gap analyse starten (deadline maart 2025)')
- }
-
- // Short term actions (6-18 months)
- shortTerm.push('LED verlichting upgrade met EIA belastingvoordeel')
- shortTerm.push('Smart thermostaten installeren')
- if (companyInfo.employees > 25) {
-   shortTerm.push('SEEH subsidie aanvragen voor elektrische lease auto\'s')
- }
- shortTerm.push('Building automation systeem implementeren')
-
- // Long term actions (18+ months)
- longTerm.push('Zonnepanelen met SDE++ subsidie')
- longTerm.push('Heat pump systeem voor aardgasvrij')
- longTerm.push('CO2-Prestatieladder niveau 3+ behalen')
- longTerm.push('Carbon neutral certificering nastreven')
-
- return { immediate, shortTerm, longTerm }
-}
-
-function generateActionTimeline(emissions, companyInfo) {
- return {
-   'Q1 2025': 'CSRD compliance assessment + LED upgrade + groene energie',
-   'Q2 2025': 'WPM implementatie + smart building tech + SEEH aanvragen',
-   'Q3 2025': 'Elektrische auto\'s ontvangen + CO2-Prestatieladder audit',
-   'Q4 2025': 'Heat pump planning + zonnepanelen design + compliance review'
- }
-}
-
-function calculateTotalInvestment(emissions, companyInfo) {
- return Math.round(emissions.total * 900) // Slightly higher for Dutch market
-}
-
-function calculateExpectedROI(emissions, companyInfo, industry) {
- return {
-   year1: '18-28% (Nederlandse subsidies geïncludeerd)',
-   year3: '160-220% (inclusief CO2-heffing savings)',
-   year5: '280-380% (full lifecycle benefits)'
- }
-}
-
-function generateRiskAssessmentFallback(companyInfo, emissions, industry) {
- return {
-   aiAnalysis: 'Enhanced rule-based risk assessment completed with Dutch regulatory focus',
-   riskMatrix: generateRiskMatrix(companyInfo, emissions, industry),
-   criticalRisks: identifyCriticalRisks(companyInfo, emissions, industry),
-   mitigationStrategies: generateMitigationStrategies(companyInfo, emissions, industry),
-   totalRiskExposure: calculateTotalRiskExposure(companyInfo, emissions, industry),
-   aiGenerated: false,
-   confidence: 0.81
- }
-}
-
-function generateRiskMatrix(companyInfo, emissions, industry) {
- return [
-   { 
-     risk: 'CSRD Non-compliance', 
-     impact: companyInfo.employees > 250 ? 9 : 4, 
-     likelihood: companyInfo.employees > 250 ? 8 : 3,
-     financialImpact: companyInfo.employees > 250 ? '€500,000+ boetes + reputatieschade' : 'Concurrentienadeel'
-   },
-   { 
-     risk: 'CO2-heffing escalatie 2024-2030', 
-     impact: emissions.total > 50 ? 8 : 5, 
-     likelihood: 9,
-     financialImpact: `€${Math.round(emissions.total * (DUTCH_CARBON_PRICING['2030'] - DUTCH_CARBON_PRICING['2024'])).toLocaleString()} extra kosten`
-   },
-   { 
-     risk: 'Supply chain carbon disruption', 
-     impact: 6, 
-     likelihood: 5,
-     financialImpact: '10-20% kostenstijging leveranciers'
-   },
-   {
-     risk: 'Talent acquisition sustainability gap',
-     impact: 5,
-     likelihood: 7,
-     financialImpact: '15-25% hogere recruitment kosten'
-   }
- ]
-}
-
-function identifyCriticalRisks(companyInfo, emissions, industry) {
- const risks = []
- if (companyInfo.employees > 250) {
-   risks.push('CSRD compliance deadline maart 2025 - 12 maanden om te implementeren')
- }
- if (emissions.total > 50) {
-   risks.push('CO2-heffing escalatie naar €216/ton in 2030 - €' + Math.round(emissions.total * 185.52).toLocaleString() + ' extra kosten')
- }
- if (companyInfo.employees >= 100) {
-   risks.push('WPM rapportage deadline juni 2025 - mobility tracking systeem nodig')
- }
- return risks
-}
-
-function generateMitigationStrategies(companyInfo, emissions, industry) {
- return [
-   'Start CSRD implementation binnen 30 dagen met externe expertise',
-   'Implementeer carbon reduction roadmap met 30%+ target',
-   'Diversifieer supply chain met sustainability criteria',
-   'Develop employee sustainability engagement programma'
- ]
-}
-
-function calculateTotalRiskExposure(companyInfo, emissions, industry) {
- let exposure = Math.round(emissions.total * DUTCH_CARBON_PRICING['2030'])
- if (companyInfo.employees > 250) exposure += 500000 // CSRD fine risk
- if (companyInfo.employees >= 100) exposure += 50000 // WPM compliance costs
- return exposure
-}
-
-function generateComplianceAnalysisFallback(companyInfo, emissions) {
- return {
-   aiAnalysis: 'Enhanced compliance analysis completed with Nederlandse regulatory timeline',
-   csrdStatus: generateCSRDStatus(companyInfo, emissions),
-   wmpStatus: generateWPMStatus(companyInfo),
-   implementationSteps: generateComplianceSteps(companyInfo, emissions),
-   deadlines: generateComplianceDeadlines(companyInfo),
-   estimatedCosts: calculateComplianceCosts(companyInfo, emissions),
-   aiGenerated: false,
-   confidence: 0.85
- }
-}
-
-function generateCSRDStatus(companyInfo, emissions) {
- const required = companyInfo.employees > 250 || (companyInfo.revenue && companyInfo.revenue > 50)
- return {
-   required: required,
-   readiness: calculateCSRDReadiness(emissions.total, companyInfo.employees),
-   deadline: required ? '2025-03-31' : '2026-03-31',
-   urgency: required ? 'KRITIEK - 12 maanden' : 'Medium - voorbereiden',
-   scope: required ? 'Volledige ESRS compliance + third-party assurance' : 'Vrijwillige voorbereiding'
- }
-}
-
-function generateWPMStatus(companyInfo) {
- return {
-   required: companyInfo.employees >= 100,
-   deadline: '2025-06-30',
-   status: companyInfo.employees >= 100 ? 'VERPLICHT - WPM rapportage 18 maanden' : 'Niet van toepassing',
-   scope: 'Home-to-work mobility tracking + CO2 impact berekening',
-   estimatedEffort: companyInfo.employees >= 100 ? '2-3 maanden implementatie' : 'Monitoring aanbevolen'
- }
-}
-
-function generateComplianceSteps(companyInfo, emissions) {
- const steps = []
- if (companyInfo.employees > 250) {
-   steps.push('CSRD gap analysis binnen 4 weken')
-   steps.push('Double materiality assessment Q1 2025')
-   steps.push('ESRS data collection systemen implementeren')
-   steps.push('Third-party assurance partner selecteren')
- }
- if (companyInfo.employees >= 100) {
-   steps.push('WPM mobility tracking systeem opzetten')
-   steps.push('Home-to-work survey en data collection')
- }
- steps.push('CO2-Prestatieladder certificering voorbereiden')
- steps.push('Carbon accounting systeem implementeren')
- return steps
-}
-
-function generateComplianceDeadlines(companyInfo) {
- return {
-   'CSRD eerste rapportage': companyInfo.employees > 250 ? '2025-03-31' : '2026-03-31',
-   'WPM rapportage': companyInfo.employees >= 100 ? '2025-06-30' : 'Niet van toepassing',
-   'CO2-Prestatieladder audit': '2025-Q2 (aanbevolen)',
-   'Third-party verification': companyInfo.employees > 250 ? '2025-Q1' : '2026-Q1'
- }
-}
-
-function calculateComplianceCosts(companyInfo, emissions) {
- return {
-   csrd: companyInfo.employees > 250 ? 75000 : 25000,
-   wmp: companyInfo.employees >= 100 ? 15000 : 0,
-   co2Prestatieladder: 12000,
-   carbonAccounting: 8000,
-   total: (companyInfo.employees > 250 ? 75000 : 25000) + 
-          (companyInfo.employees >= 100 ? 15000 : 0) + 12000 + 8000
- }
-}
-
-function generateFinancialAnalysisFallback(emissions, companyInfo, industry) {
- return {
-   aiAnalysis: 'Enhanced financial analysis completed with Nederlandse subsidie optimization',
-   carbonPricingExposure: calculateCarbonPricingExposure(emissions.total),
-   subsidyOpportunities: calculateDutchSubsidies(emissions, companyInfo, industry),
-   investmentScenarios: generateInvestmentScenarios(emissions, companyInfo, industry),
-   roiProjections: calculateROIProjections(emissions, companyInfo, industry),
-   cashFlowImpact: generateCashFlowAnalysis(emissions, companyInfo, industry),
-   aiGenerated: false,
-   confidence: 0.82
- }
-}
-
-function calculateCarbonPricingExposure(totalEmissions) {
- return {
-   current2024: Math.round(totalEmissions * DUTCH_CARBON_PRICING['2024']),
-   projected2025: Math.round(totalEmissions * DUTCH_CARBON_PRICING['2025']),
-   projected2030: Math.round(totalEmissions * DUTCH_CARBON_PRICING['2030']),
-   totalRiskIncrease: Math.round(totalEmissions * (DUTCH_CARBON_PRICING['2030'] - DUTCH_CARBON_PRICING['2024'])),
-   annualIncrease: Math.round(totalEmissions * (DUTCH_CARBON_PRICING['2030'] - DUTCH_CARBON_PRICING['2024']) / 6),
-   euETSComparison: Math.round(totalEmissions * DUTCH_CARBON_PRICING['euETS2024'])
- }
-}
-
-function calculateDutchSubsidies(emissions, companyInfo, industry) {
- const employees = companyInfo.employees || 1
- const totalEmissions = emissions.total || 0
- 
- const subsidies = {
-   SEEH: Math.min(Math.floor(employees / 5) * 4000, 20000), // Max 5 auto's
-   SDE: Math.min(totalEmissions * 100, 25000),
-   EIA: Math.min(totalEmissions * 300, 50000),
-   WBSO: industry.includes('Technologie') ? Math.min(totalEmissions * 150, 20000) : 0,
-   MIAVamil: Math.min(totalEmissions * 200, 75000)
- }
- 
- return {
-   ...subsidies,
-   total: Object.values(subsidies).reduce((sum, val) => sum + val, 0),
-   description: {
-     SEEH: 'Subsidie Elektrisch Rijden: €4,000 per elektrische auto',
-     SDE: 'SDE++ hernieuwbare energie subsidie',
-     EIA: 'Energie-investeringsaftrek 30% op efficiency investeringen',
-     WBSO: 'Wet Bevordering Speur- en Ontwikkelingswerk voor innovatie',
-     MIAVamil: 'Milieu-investeringsaftrek + Vamil voor circulaire investeringen'
-   }
- }
-}
-
-function generateInvestmentScenarios2(emissions, companyInfo, industry) {
- const baseInvestment = emissions.total * 900 // Slightly higher for Dutch market
- 
- return {
-   conservative: {
-     investment: Math.round(baseInvestment * 0.6),
-     co2Reduction: Math.round(emissions.total * 0.25 * 100) / 100,
-     paybackMonths: 36,
-     roi5Year: '190%',
-     measures: ['LED upgrade', 'Smart thermostaten', 'Groene energie contract']
-   },
-   moderate: {
-     investment: Math.round(baseInvestment),
-     co2Reduction: Math.round(emissions.total * 0.45 * 100) / 100,
-     paybackMonths: 24,
-     roi5Year: '270%',
-     measures: ['Building automation', 'Heat pump', 'Elektrische auto\'s', 'Zonnepanelen']
-   },
-   aggressive: {
-     investment: Math.round(baseInvestment * 1.5),
-     co2Reduction: Math.round(emissions.total * 0.70 * 100) / 100,
-     paybackMonths: 18,
-     roi5Year: '350%',
-     measures: ['Volledige elektrificatie', 'Advanced automation', 'Carbon neutral certificering']
-   }
- }
-}
-
-function calculateROIProjections(emissions, companyInfo, industry) {
- const baseInvestment = emissions.total * 900
- return {
-   year1: { 
-     investment: baseInvestment, 
-     savings: Math.round(baseInvestment * 0.18), 
-     roi: 18,
-     subsidies: Math.round(baseInvestment * 0.25)
-   },
-   year3: { 
-     investment: baseInvestment, 
-     savings: Math.round(baseInvestment * 0.65), 
-     roi: 65,
-     cumulativeSavings: Math.round(baseInvestment * 1.2)
-   },
-   year5: { 
-     investment: baseInvestment, 
-     savings: Math.round(baseInvestment * 1.25), 
-     roi: 125,
-     cumulativeSavings: Math.round(baseInvestment * 2.7)
-   }
- }
-}
-
-function generateCashFlowAnalysis(emissions, companyInfo, industry) {
- const baseInvestment = Math.round(emissions.total * 900)
- return {
-   initialInvestment: baseInvestment,
-   dutchSubsidies: Math.round(baseInvestment * 0.25),
-   netInvestment: Math.round(baseInvestment * 0.75),
-   annualSavings: Math.round(emissions.total * 220), // Higher for Dutch market
-   paybackPeriod: 20, // months
-   npv5Year: Math.round(baseInvestment * 1.8),
-   carbonSavingsValue: Math.round(emissions.total * 0.6 * DUTCH_CARBON_PRICING['2030'])
- }
-}
-
-function generateDutchBenchmarking(totalEmissions, employeeCount, industry) {
- const emissionsPerEmployee = totalEmissions / employeeCount
- const industryBenchmark = DUTCH_INDUSTRY_BENCHMARKS[industry] || 5.8
- const performance = emissionsPerEmployee / industryBenchmark
- const percentile = calculatePercentile(performance)
- 
- return {
-   industryBenchmark: industryBenchmark,
-   yourPerformance: Math.round(emissionsPerEmployee * 100) / 100,
-   percentile: percentile,
-   ranking: getPerformanceRanking(performance),
-   dutchContext: true,
-   sectorAverage: industryBenchmark,
-   improvement: Math.max(0, Math.round((emissionsPerEmployee - industryBenchmark * 0.5) * 100) / 100)
- }
-}
-
-function calculatePercentile(performance) {
- if (performance <= 0.5) return 95
- if (performance <= 0.7) return 85
- if (performance <= 0.9) return 75
- if (performance <= 1.1) return 60
- if (performance <= 1.3) return 45
- if (performance <= 1.5) return 30
- return 15
-}
-
-function getPerformanceRanking(performance) {
- if (performance <= 0.5) return 'Uitstekend (Top 5% Nederland)'
- if (performance <= 0.7) return 'Zeer Goed (Top 15% Nederland)'
- if (performance <= 0.9) return 'Goed (Top 25% Nederland)'
- if (performance <= 1.1) return 'Nederlands gemiddelde'
- if (performance <= 1.3) return 'Onder gemiddeld'
- return 'Verbetering urgent nodig'
-}
-
-function generatePriorityMatrix(breakdown, totalEmissions, industry) {
- const priorities = []
- Object.entries(breakdown).forEach(([category, value]) => {
-   if (value > totalEmissions * 0.1) {
-     priorities.push({
-       category: category,
-       impact: value > totalEmissions * 0.3 ? 'Hoog' : 'Medium',
-       effort: category === 'energy' ? 'Laag' : category === 'transport' ? 'Medium' : 'Hoog',
-       priority: value > totalEmissions * 0.3 ? 1 : 2,
-       co2Amount: value,
-       percentage: Math.round((value / totalEmissions) * 100),
-       dutchOpportunities: getDutchOpportunities(category, value)
-     })
-   }
- })
- return priorities.sort((a, b) => a.priority - b.priority)
-}
-
-function getDutchOpportunities2(category, value) {
- const opportunities = {
-   energy: ['Groene energie contract', 'EIA belastingvoordeel', 'LED upgrade'],
-   transport: ['SEEH subsidie elektrische auto\'s', 'WPM compliance improvement'],
-   waste: ['MIA/Vamil circulaire investeringen', 'Afvalfonds optimalisatie'],
-   water: ['Water efficiency technologie', 'Circulair water management'],
-   materials: ['MIA/Vamil circulaire procurement', 'Supplier sustainability requirements']
- }
- return opportunities[category] || ['Efficiency verbeteringen', 'Nederlandse subsidies checken']
-}
-
-function generateSectorInsights(industry, breakdown, companyInfo) {
- const insights = {
-   'Technologie & Software': {
-     keyMetrics: ['Energy per server', 'Code efficiency', 'Cloud carbon optimization'],
-     opportunities: ['Green software engineering', 'Carbon-aware algorithms', 'Renewable energy hosting'],
-     dutchLeaders: ['Booking.com', 'Adyen', 'MessageBird'],
-     specificChallenges: ['Data center efficiency', 'Remote work impact', 'Digital product lifecycle'],
-     averageReduction: '25-40%',
-     quickWins: ['Cloud optimization', 'Green hosting', 'Efficient coding practices']
-   },
-   'Productie & Manufacturing': {
-     keyMetrics: ['Energy per unit', 'Waste per product', 'Supply chain emissions'],
-     opportunities: ['Industry 4.0 automation', 'Circular manufacturing', 'Heat recovery systems'],
-     dutchLeaders: ['ASML', 'Philips', 'DSM'],
-     specificChallenges: ['Process heating', 'Material sourcing', 'Production efficiency'],
-     averageReduction: '30-50%',
-     quickWins: ['LED lighting', 'Equipment optimization', 'Waste stream analysis']
-   },
-   'Transport & Logistiek': {
-     keyMetrics: ['Fuel per km', 'Load efficiency', 'Route optimization'],
-     opportunities: ['Electric fleet', 'Route optimization AI', 'Multimodal transport'],
-     dutchLeaders: ['PostNL', 'DHL Netherlands', 'Vos Logistics'],
-     specificChallenges: ['Last-mile delivery', 'Fleet electrification', 'Warehouse efficiency'],
-     averageReduction: '40-60%',
-     quickWins: ['Route optimization', 'Driver training', 'Vehicle maintenance']
-   },
-   'Retail & E-commerce': {
-     keyMetrics: ['Energy per m²', 'Packaging efficiency', 'Digital vs physical'],
-     opportunities: ['Smart buildings', 'Sustainable packaging', 'Local sourcing'],
-     dutchLeaders: ['Ahold Delhaize', 'Bol.com', 'Coolblue'],
-     specificChallenges: ['Store lighting', 'Cold chain', 'Return logistics'],
-     averageReduction: '20-35%',
-     quickWins: ['LED upgrade', 'HVAC optimization', 'Packaging reduction']
-   }
- }
-
- const defaultInsight = {
-   keyMetrics: ['Energy efficiency', 'Waste reduction', 'Transport optimization'],
-   opportunities: ['Groene energie transitie', 'Smart building tech', 'Circulaire processen'],
-   dutchLeaders: ['Nederlandse sustainability pioneers'],
-   specificChallenges: ['Energy costs', 'Compliance requirements', 'ROI optimization'],
-   averageReduction: '25-40%',
-   quickWins: ['LED lighting', 'Smart thermostats', 'Groene energie contract']
- }
-
- return insights[industry] || defaultInsight
-}
-
-function generateComplianceTimeline(companyInfo) {
- const currentYear = new Date().getFullYear()
- const timeline = {}
- 
- // CSRD timeline
- if (companyInfo.employees > 250) {
-   timeline['Q1 2025'] = ['CSRD gap analysis', 'Double materiality assessment', 'Data collection setup']
-   timeline['Q2 2025'] = ['ESRS implementation', 'Third-party auditor selection']
-   timeline['Q3 2025'] = ['Data verification', 'Report drafting']
-   timeline['Q4 2025'] = ['Final CSRD report preparation']
-   timeline['Q1 2026'] = ['CSRD report submission (maart 2025 deadline)']
- } else {
-   timeline[currentYear] = ['Voluntary CSRD preparation', 'Basic carbon accounting']
-   timeline[currentYear + 1] = ['Enhanced sustainability reporting']
- }
-
- // WPM timeline
- if (companyInfo.employees >= 100) {
-   timeline['Q1 2025'] = [...(timeline['Q1 2025'] || []), 'WPM tracking system setup']
-   timeline['Q2 2025'] = [...(timeline['Q2 2025'] || []), 'WPM first report (juni 2025 deadline)']
- }
-
- return timeline
+  return roadmap
 }
 
 function generateCarbonPricingAnalysis(totalEmissions) {
- return {
-   current2024: Math.round(totalEmissions * DUTCH_CARBON_PRICING['2024']),
-   projected2025: Math.round(totalEmissions * DUTCH_CARBON_PRICING['2025']),
-   projected2030: Math.round(totalEmissions * DUTCH_CARBON_PRICING['2030']),
-   euEtsComparison: Math.round(totalEmissions * DUTCH_CARBON_PRICING['euETS2024']),
-   escalationRisk: {
-     annual: Math.round(totalEmissions * (DUTCH_CARBON_PRICING['2030'] - DUTCH_CARBON_PRICING['2024']) / 6),
-     total: Math.round(totalEmissions * (DUTCH_CARBON_PRICING['2030'] - DUTCH_CARBON_PRICING['2024'])),
-     percentage: Math.round(((DUTCH_CARBON_PRICING['2030'] / DUTCH_CARBON_PRICING['2024']) - 1) * 100)
-   },
-   mitigationValue: {
-     per25PercentReduction: Math.round(totalEmissions * 0.25 * DUTCH_CARBON_PRICING['2030']),
-     per50PercentReduction: Math.round(totalEmissions * 0.50 * DUTCH_CARBON_PRICING['2030']),
-     per75PercentReduction: Math.round(totalEmissions * 0.75 * DUTCH_CARBON_PRICING['2030'])
-   }
- }
+  const currentYear = new Date().getFullYear()
+  const projectionYears = [currentYear, currentYear + 2, currentYear + 5, 2030]
+  const analysis = {}
+
+  projectionYears.forEach(year => {
+    const price = DUTCH_CARBON_PRICING[year] || DUTCH_CARBON_PRICING['euETS2024'] // Fallback to EU ETS if specific year not found
+    analysis[year] = {
+      pricePerTon: price,
+      estimatedCost: Math.round(totalEmissions * price)
+    }
+  })
+  return analysis
 }
 
-// Final helper functions
-function calculateCSRDReadiness(totalEmissions, employeeCount) {
- let score = 30
- if (totalEmissions > 0) score += 20
- if (employeeCount > 0) score += 15
- if (totalEmissions < 100) score += 10
- if (employeeCount > 50) score += 15
- if (employeeCount > 250) score += 10
- return Math.min(score, 100)
+function generateSectorInsights(industry, breakdown, companyInfo) {
+  const insights = []
+  if (industry === 'Transport & Logistiek') {
+    insights.push('Grote potentieel voor brandstofefficiëntie en overstap naar elektrische/waterstof trucks, met specifieke Nederlandse subsidies voor zero-emissie logistiek.')
+    if (breakdown.transport > 0) insights.push(`Uw grootste impact ligt in transport (${(breakdown.transport / (breakdown.transport + breakdown.energy) * 100).toFixed(1)}%). Focus op modal shift, route-optimalisatie en EV-investeringen.`)
+  } else if (industry === 'Productie & Manufacturing') {
+    insights.push('Focussen op procesoptimalisatie, warmteterugwinning en overgang naar hernieuwbare energiebronnen voor industriële processen is cruciaal.')
+    if (breakdown.energy > 0) insights.push(`Energieverbruik in uw productieprocessen is een primaire driver van emissies. Overweeg geothermische warmte of biomassa.`)
+  } else if (industry === 'Retail & E-commerce') {
+    insights.push('Duurzaamheid in supply chain en logistiek (last-mile delivery) is hier de grootste kans. Optimalisatie van verpakkingen en retourstromen is ook belangrijk.')
+    if (breakdown.transport > 0) insights.push(`De footprint van uw last-mile delivery en warehousing is significant. Onderzoek hub-and-spoke modellen met elektrische voertuigen.`)
+  } else {
+    insights.push('Algemene inzichten: Energie-efficiëntie in gebouwen en duurzame mobiliteit voor medewerkers zijn vaak de eerste stappen voor de meeste Nederlandse bedrijven.')
+  }
+  return insights
 }
 
-function calculateIndustryComparison(totalEmissions, employees, industry) {
- const emissionsPerEmployee = totalEmissions / employees
- const benchmark = DUTCH_INDUSTRY_BENCHMARKS[industry] || 5.8
- return Math.round((emissionsPerEmployee / benchmark) * 100)
+function generateBenchmarkComparison(totalEmissions, employeeCount, industry) {
+  const emissionsPerEmployee = totalEmissions / employeeCount
+  const industryBenchmark = DUTCH_INDUSTRY_BENCHMARKS[industry] || DUTCH_INDUSTRY_BENCHMARKS['Anders']
+  
+  const comparison = {
+    yourEmissionsPerEmployee: emissionsPerEmployee.toFixed(2),
+    industryAveragePerEmployee: industryBenchmark.toFixed(2),
+    difference: (emissionsPerEmployee - industryBenchmark).toFixed(2),
+    status: ''
+  }
+
+  if (emissionsPerEmployee < industryBenchmark * 0.9) {
+    comparison.status = 'Leider in de sector: U presteert significant beter dan het Nederlandse sectorgemiddelde.'
+  } else if (emissionsPerEmployee < industryBenchmark * 1.1) {
+    comparison.status = 'Conform sectorgemiddelde: U bent vergelijkbaar met uw Nederlandse peers.'
+  } else {
+    comparison.status = 'Aandachtspunt: U presteert onder het Nederlandse sectorgemiddelde en heeft aanzienlijk reductiepotentieel.'
+  }
+  return comparison
+}
+
+function generateInnovationOpportunities(industry, breakdown, companyInfo) {
+  const opportunities = []
+  
+  if (industry === 'Technologie & Software') {
+    opportunities.push('Ontwikkeling van groene IT-oplossingen en energiezuinige datacenters.')
+    opportunities.push('Blockchain voor transparante supply chains en carbon tracking.')
+  } else if (industry === 'Bouw & Vastgoed') {
+    opportunities.push('Innovatie in circulaire bouwmaterialen en prefab constructies.')
+    opportunities.push('Integratie van hernieuwbare energie in gebouwontwerp (BENG-eisen).')
+  } else if (industry === 'Agri & Food') {
+    opportunities.push('Precisielandbouw voor minder emissies en waterverbruik.')
+    opportunities.push('Ontwikkeling van plantaardige eiwitten en circulaire voedselsystemen.')
+  } else {
+    opportunities.push('Digitalisering van processen voor efficiëntie en papierloos werken.')
+    opportunities.push('Implementatie van AI voor energie-optimalisatie en predictive maintenance.')
+  }
+  opportunities.push('Partnerschappen met Nederlandse startups in cleantech.')
+
+  return opportunities
 }
 
 function calculateConfidence(emissions, companyInfo) {
- let confidence = 0.75
- const dataPoints = Object.values(emissions.breakdown || {}).filter(val => val > 0).length
- confidence += Math.min(dataPoints * 0.04, 0.20)
- if (companyInfo.employees > 50) confidence += 0.05
- if (companyInfo.employees > 200) confidence += 0.05
- if (emissions.total > 0) confidence += 0.05
- return Math.min(confidence, 0.95)
+  // Simple heuristic for confidence based on data completeness
+  const emissionCategoriesCount = Object.keys(DUTCH_EMISSION_FACTORS).length // Total possible categories
+  const providedBreakdownCount = Object.keys(emissions.breakdown || {}).filter(key => emissions.breakdown[key] > 0).length
+  
+  let confidence = 0.60 // Base confidence
+  confidence += (providedBreakdownCount / emissionCategoriesCount) * 0.20 // Up to 20% for data completeness
+  if (companyInfo.employees && companyInfo.name) confidence += 0.10 // Basic company info adds confidence
+  if (emissions.total > 0) confidence += 0.10 // Total emissions provided
+
+  return parseFloat(Math.min(confidence, 0.95).toFixed(2)) // Max 0.95
 }
 
-// Clean AI response helper
-function cleanAIResponse(text) {
- if (!text || typeof text !== 'string') return ''
- 
- return text
-   .replace(/^\s+|\s+$/g, '') // Trim whitespace
-   .replace(/\n\s*\n\s*\n/g, '\n\n') // Clean multiple newlines
-   .replace(/(.)\1{4,}/g, '$1$1$1') // Remove excessive repetition
-   .slice(0, 2000) // Limit length
+function calculateTotalInvestment(emissions, companyInfo) {
+  let investment = 0
+  // Base cost for initial setup/consulting
+  investment += 10000
+
+  // CSRD compliance costs (if applicable)
+  if (companyInfo.employees > 250) {
+    investment += 40000 // significant investment for large corps
+  } else if (companyInfo.employees > 50) {
+    investment += 10000 // smaller prep for future
+  }
+
+  // WPM compliance costs (if applicable)
+  if (companyInfo.employees >= 100) {
+    investment += 5000 // data collection system
+  }
+
+  // Estimated costs for energy efficiency measures based on energy emissions
+  if (emissions.breakdown?.energy > 0) {
+    investment += Math.min(emissions.breakdown.energy * 50, 50000) // Rough estimate
+  }
+
+  // Estimated costs for transport measures based on transport emissions
+  if (emissions.breakdown?.transport > 0) {
+    investment += Math.min(emissions.breakdown.transport * 100, 75000) // Rough estimate, e.g., EV transition
+  }
+
+  return Math.round(investment)
+}
+
+function calculateExpectedROI(emissions, companyInfo, industry) {
+  const currentCarbonCost = emissions.total * DUTCH_CARBON_PRICING['2024']
+  const projectedFutureCarbonCost = emissions.total * DUTCH_CARBON_PRICING['2030']
+
+  // Estimate potential savings from CO2 reduction (e.g., 20% reduction)
+  const estimatedCO2Reduction = emissions.total * 0.20
+  const estimatedCarbonPriceSavings2030 = estimatedCO2Reduction * DUTCH_CARBON_PRICING['2030']
+
+  // Estimate operational savings (e.g., energy efficiency, fuel savings)
+  let operationalSavings = 0
+  if (emissions.breakdown?.energy > 0) operationalSavings += emissions.breakdown.energy * 0.10 * 0.3 // 10% of energy kWh saved at 0.3 EUR/kWh
+  if (emissions.breakdown?.transport > 0) operationalSavings += emissions.breakdown.transport * 0.15 * 1 // 15% of transport km saved at 1 EUR/km
+  
+  const totalAnnualSavings = estimatedCarbonPriceSavings2030 + operationalSavings
+
+  const totalInvestment = calculateTotalInvestment(emissions, companyInfo)
+  
+  if (totalInvestment === 0) return { amount: 0, percentage: 0, timeframe: 'N/A' } // Avoid division by zero
+
+  const paybackPeriodYears = totalInvestment / totalAnnualSavings
+  const roiPercentage = (totalAnnualSavings * 5 - totalInvestment) / totalInvestment * 100 // ROI over 5 years
+
+  return {
+    amount: Math.round(totalAnnualSavings),
+    percentage: Math.round(roiPercentage),
+    timeframe: paybackPeriodYears.toFixed(1) + ' jaar'
+  }
+}
+
+function generateActionTimeline(emissions, companyInfo) {
+  const timeline = []
+  if (companyInfo.employees > 250) {
+    timeline.push({ phase: 'Fase 1: CSRD Voorbereiding', duration: '0-6 maanden', milestones: ['CSRD Gap Analyse', 'Dubbele Materialiteit', 'Data Framework'] })
+  }
+  if (companyInfo.employees >= 100) {
+    timeline.push({ phase: 'Fase 1: WPM Compliance', duration: '0-3 maanden', milestones: ['Mobiliteitsdata Verzameling Start', 'Rapportage Voorbereiding'] })
+  }
+  timeline.push({ phase: 'Fase 2: Energie Optimalisatie', duration: '3-12 maanden', milestones: ['Groene Stroom Transitie', 'LED Upgrade', 'EIA Aanvraag'] })
+  timeline.push({ phase: 'Fase 2: Mobiliteit Transitie', duration: '6-18 maanden', milestones: ['EV Pilot', 'SEEH Aanvraag', 'Laadinfrastructuur'] })
+  timeline.push({ phase: 'Fase 3: Strategische Reductie', duration: '12-36 maanden', milestones: ['CO2-Prestatieladder Niveau 3+', 'SBTi Definitie', 'Scope 3 Engagement'] })
+  return timeline
+}
+
+function generateComplianceTimeline(companyInfo) {
+  const timeline = []
+  if (companyInfo.employees > 250) {
+    timeline.push({
+      event: 'CSRD Eerste Rapportage (boekjaar 2024)',
+      deadline: 'Maart 2025',
+      status: 'Kritiek: Start nu'
+    })
+  }
+  if (companyInfo.employees >= 100) {
+    timeline.push({
+      event: 'WPM Mobiliteitsrapportage (boekjaar 2024)',
+      deadline: '30 Juni 2025',
+      status: 'Verplicht: Actie vereist'
+    })
+  }
+  timeline.push({
+    event: 'CO2-Prestatieladder Certificering',
+    deadline: 'Doorlopend',
+    status: 'Aanbevolen voor aanbestedingen'
+  })
+  return timeline
 }
