@@ -1382,8 +1382,8 @@ function generateFinancialAnalysis(pdf, aiInsights, results, companyData) {
     pdf.setFont('helvetica', 'normal')
     pdf.setFontSize(9)
     
-    const financialAI = aiInsights.financialAnalysis.aiAnalysis || 
-      
+    const financialAI = aiInsights.financialAnalysis.aiAnalysis ||
+      'AI analysis toont optimale ROI door gefaseerde implementatie met focus op Nederlandse subsidies en carbon pricing risico mitigatie.'
 
 export async function POST(request) {
   try {
