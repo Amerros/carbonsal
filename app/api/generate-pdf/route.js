@@ -348,10 +348,10 @@ function generateComplianceSection(pdf, results, aiInsights, companyData) {
   const csrdRequired = employees > 250
   const wpmRequired = employees >= 100
 
-  pdf.setFillColor(csrdRequired ? 255, 230, 230 : 240, 255, 240)
+  pdf.setFillColor(csrdRequired ? 255 : 240, csrdRequired ? 230 : 255, csrdRequired ? 230 : 240)
   pdf.roundedRect(15, yPos - 5, 180, 30, 3, 3, 'F')
   pdf.setFont('helvetica', 'bold')
-  pdf.setTextColor(csrdRequired ? 200, 0, 0 : 0, 150, 0)
+  pdf.setTextColor(csrdRequired ? 200 : 0, csrdRequired ? 0 : 150, csrdRequired ? 0 : 0)
   pdf.text('📋 CSRD VERPLICHTING STATUS', 20, yPos)
   yPos += 15
 
