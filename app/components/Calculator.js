@@ -639,41 +639,35 @@ const Calculator = ({ onClose }) => {
               <h3 className="text-2xl font-bold text-white mb-2">Materialen & Producten</h3>
               <p className="text-gray-400">Upstream emissies van materiaalgebruik</p>
             </div>
- // Results view
-  if (showResults && results) {
-    return (
-      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="glass-effect rounded-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto p-6"
-        >
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-white">Nederlandse Carbon Footprint Resultaten</h2>
-            <button onClick={onClose} className="text-gray-400 hover:text-white">
-              <XMarkIcon className="w-6 h-6" />
-            </button>
-          </div>
-          
-          <div className="text-center mb-8">
-            <div className="text-5xl font-bold text-primary-400 mb-2">
-              {results.emissions.total} ton CO2
+            <div className="grid gap-4">
+              {materialTypes.map((type) => (
+                <div key={type.key}>
+                  <label className="block text-gray-300 mb-2">{type.label} ({type.unit})</label>
+                  <input
+                    type="number"
+                    value={formData.materials[type.key]}
+                    onChange={(e) => handleInputChange('materials', type.key, e.target.value)}
+                    className="w-full px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-primary-500 focus:outline-none text-white"
+                    placeholder="Bijv. 1000"
+                  />
+                  <p className="text-xs text-gray-400 mt-1">{type.description}</p>
+                </div>
+              ))}
             </div>
-            <p className="text-gray-300">
-              {results.companyInfo.name} • {results.companyInfo.industry} • {results.companyInfo.employees} medewerkers
-            </p>
-            <div className="flex justify-center items-center space-x-4 mt-4">
-              <div className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm">
-                CO2-Prestatieladder Ready
-              </div>
-              <div className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm">
-                CSRD Compliant
-              </div>
-              <div className="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-sm">
-                Nederlandse Methodiek
-              </div>
+            <div className="glass-effect-dark rounded-lg p-4">
+              <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
+                <SparklesIcon className="w-5 h-5 text-yellow-400" />
+                Nederlandse Materiaal Tips
+              </h4>
+              <ul className="text-sm text-gray-300 space-y-1">
+                <li>• Circulaire economie: 30% minder materiaalimpact</li>
+                <li>• Nederlandse recycling: hoogste percentages Europa</li>
+                <li>• Lokale sourcing vermindert transport emissies</li>
+                <li>• Elektronics leasing vs kopen: 40% CO2 reductie</li>
+              </ul>
             </div>
           </div>
+        )
 
           {/* Emissions Breakdown Chart */}
           <div className="grid lg:grid-cols-2 gap-8 mb-8">
