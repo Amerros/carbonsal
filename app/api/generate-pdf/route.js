@@ -1,3 +1,8 @@
+import { NextResponse } from 'next/server'
+import { jsPDF } from 'jspdf'
+import { db } from '../../../lib/db'
+import jwt from 'jsonwebtoken'
+      
 const financialAI = aiInsights.financialAnalysis.aiAnalysis ||
       'AI analysis toont optimale ROI door gefaseerde implementatie met focus op Nederlandse subsidies en carbon pricing risico mitigatie.'; // Added semicolon
 
@@ -1378,10 +1383,7 @@ function generateFinancialAnalysis(pdf, aiInsights, results, companyData) {
     pdf.setFontSize(9)
     
     const financialAI = aiInsights.financialAnalysis.aiAnalysis || 
-      'import { NextResponse } from 'next/server'
-import { jsPDF } from 'jspdf'
-import { db } from '../../../lib/db'
-import jwt from 'jsonwebtoken'
+      
 
 export async function POST(request) {
   try {
