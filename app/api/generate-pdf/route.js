@@ -1,10 +1,8 @@
-const financialAI = aiInsights.financialAnalysis.aiAnalysis || 
-      'AI analysis toont optimale ROI door gefaseerde implementatie met focus op Nederlandse subsidies en carbon pricing risico mitigatie.'
-    
-    const aiLines = pdf.splitTextToSize(financialAI, 170)
-    pdf.text(aiLines, 20, yPos)
-  
-}
+const financialAI = aiInsights.financialAnalysis.aiAnalysis ||
+      'AI analysis toont optimale ROI door gefaseerde implementatie met focus op Nederlandse subsidies en carbon pricing risico mitigatie.'; // Added semicolon
+
+const aiLines = pdf.splitTextToSize(financialAI, 170); // Added semicolon
+pdf.text(aiLines, 20, yPos); // Added semicolon
 
 function generateRiskAssessment(pdf, aiInsights, results, companyData) {
   pdf.addPage()
