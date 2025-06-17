@@ -1,3 +1,4 @@
+'use client'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
@@ -45,7 +46,178 @@ const Calculator = ({ onClose }) => {
       gas: '',
       heating: '',
       greenEnergyPercentage: '0'
-    },
+    
+
+  // Main calculator form
+  return (
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.9 }}
+        className="glass-effect rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto"
+      >
+        {/* Header */}
+        <div className="p-6 border-b border-white/10">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center relative">
+                <CalculatorIcon className="w-6 h-6 text-white" />
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center">
+                  <span className="text-xs text-white font-bold">NL</span>
+                </div>
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-white">Nederlandse Carbon Footprint Calculator</h2>
+                <p className="text-gray-400">
+                  {isAuthenticated ? 'CSRD-conforme berekening met AI-insights' : 'Gratis Nederlandse berekening - 1x per gebruiker'}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+            >
+              <XMarkIcon className="w-6 h-6 text-gray-400" />
+            </button>
+          </div>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="p-6 border-b border-white/10">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-sm text-gray-400">Stap {currentStep} van {totalSteps}</span>
+            <span className="text-sm text-gray-400">{Math.round(progress)}% voltooid</span>
+          </div>
+          <div className="w-full bg-gray-700 rounded-full h-3 relative">
+            <motion.div
+              className="bg-gradient-to-r from-red-500 via-white to-blue-600 h-3 rounded-full"
+              style={{ width: `${progress}%` }}
+              initial={{ width: 0 }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.5 }}
+            />
+          </div>
+          
+          {/* Step indicators */}
+          <div className="flex justify-between mt-2 text-xs text-gray-400">
+            <span className={currentStep >= 1 ? 'text-white' : ''}>Bedrijf</span>
+            <span className={currentStep >= 2 ? 'text-white' : ''}>Energie</span>
+            <span className={currentStep >= 3 ? 'text-white' : ''}>Transport</span>
+            <span className={currentStep >= 4 ? 'text-white' : ''}>Afval</span>
+            <span className={currentStep >= 5 ? 'text-white' : ''}>Water</span>
+            <span className={currentStep >= 6 ? 'text-white' : ''}>Materialen</span>
+            <span className={currentStep >= 7 ? 'text-white' : ''}>Scope 3</span>
+            <span className={currentStep >= 8 ? 'text-white' : ''}>Verificatie</span>
+          </div>
+        </div>
+
+        {/* Form Content */}
+        <div className="p-6">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentStep}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              {renderStep()}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* Navigation */}
+        <div className="p-6 border-t border-white/10 flex justify-between items-center">
+          <motion.button
+            onClick={prevStep}
+            disabled={currentStep === 1}
+            className="flex items-center space-x-2 px-6 py-3 glass-effect rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/20 transition-colors"
+            whileHover={{ scale: currentStep === 1 ? 1 : 1.05 }}
+            whileTap={{ scale: currentStep === 1 ? 1 : 0.95 }}
+          >
+            <ChevronLeftIcon className="w-5 h-5" />
+            <span>Vorige</span>
+          </motion.button>
+
+          <div className="flex items-center space-x-2 text-sm text-gray-400">
+            {!isAuthenticated && (
+              <>
+                <EyeIcon className="w-4 h-4" />
+                <span>Gratis Nederlandse berekening</span>
+              </>
+            )}
+            {isAuthenticated && (
+              <>
+                <CheckCircleIcon className="w-4 h-4 text-green-400" />
+                <span className="text-green-400">Premium features unlocked</span>
+              </>
+            )}
+          </div>
+
+          <motion.button
+            onClick={nextStep}
+            disabled={isCalculating}
+            className="flex items-center space-x-2 gradient-button px-6 py-3 rounded-lg disabled:opacity-50"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <span>
+              {isCalculating ? 'Nederlandse berekening...' : 
+               currentStep === totalSteps ? 'Bereken Nederlandse Footprint' : 'Volgende'}
+            </span>
+            {!isCalculating && currentStep < totalSteps && <ChevronRightIcon className="w-5 h-5" />}
+            {isCalculating && <div className="w-4 h-4 loading-spinner"></div>}
+          </motion.button>
+        </div>
+
+        {/* Features banner */}
+        {!isAuthenticated && (
+          <div className="p-4 bg-gradient-to-r from-primary-500/20 to-primary-600/20 border-t border-primary-500/30">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <SparklesIcon className="w-5 h-5 text-primary-400" />
+                <span className="text-sm text-gray-300">
+                  Upgrade voor AI-insights, onbeperkte berekeningen en CSRD rapporten
+                </span>
+              </div>
+              <button className="text-sm text-primary-400 hover:text-primary-300 transition-colors">
+                Meer info →
+              </button>
+            </div>
+          </div>
+        )}
+      </motion.div>
+    </div>
+  )
+}
+
+// Helper functions
+const getCategoryDisplayName = (category) => {
+  const names = {
+    energy: 'Energie',
+    transport: 'Transport',
+    waste: 'Afval',
+    water: 'Water',
+    materials: 'Materialen',
+    scope3: 'Scope 3'
+  }
+  return names[category] || category
+}
+
+const getCategoryColor = (category) => {
+  const colors = {
+    energy: '#f59e0b',
+    transport: '#3b82f6',
+    waste: '#10b981',
+    water: '#06b6d4',
+    materials: '#8b5cf6',
+    scope3: '#ef4444'
+  }
+  return colors[category] || '#6b7280'
+}
+
+export default Calculator,
     transport: {
       carFleet: '',
       electricVehicles: '0',
@@ -639,7 +811,7 @@ const Calculator = ({ onClose }) => {
               <h3 className="text-2xl font-bold text-white mb-2">Materialen & Producten</h3>
               <p className="text-gray-400">Upstream emissies van materiaalgebruik</p>
             </div>
-            <div className="grid gap-4">
+<div className="grid gap-4">
               {materialTypes.map((type) => (
                 <div key={type.key}>
                   <label className="block text-gray-300 mb-2">{type.label} ({type.unit})</label>
@@ -669,226 +841,460 @@ const Calculator = ({ onClose }) => {
           </div>
         )
 
-          {/* Emissions Breakdown Chart */}
-          <div className="grid lg:grid-cols-2 gap-8 mb-8">
-            <div className="glass-effect-dark rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">Emissie Verdeling</h3>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={Object.entries(results.emissions.breakdown || {}).map(([key, value]) => ({
-                        name: getCategoryDisplayName(key),
-                        value: value,
-                        fill: getCategoryColor(key)
-                      }))}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    />
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
+      case 7:
+        return (
+          <div className="space-y-6">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <BuildingOfficeIcon className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-2">Scope 3 Emissies</h3>
+              <p className="text-gray-400">Indirecte emissies in de waardeketen</p>
+            </div>
+            <div className="grid gap-4">
+              {scope3Categories.map((category) => (
+                <div key={category.key}>
+                  <label className="block text-gray-300 mb-2">{category.label} ({category.unit})</label>
+                  <input
+                    type="number"
+                    value={formData.scope3[category.key]}
+                    onChange={(e) => handleInputChange('scope3', category.key, e.target.value)}
+                    className="w-full px-4 py-3 bg-black/20 border border-gray-600 rounded-lg focus:border-primary-500 focus:outline-none text-white"
+                    placeholder="Bijv. 100000"
+                  />
+                  <p className="text-xs text-gray-400 mt-1">{category.description}</p>
+                </div>
+              ))}
+            </div>
+            <div className="glass-effect-dark rounded-lg p-4">
+              <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
+                <ExclamationTriangleIcon className="w-5 h-5 text-orange-400" />
+                Scope 3 Nederlandse Guidance
+              </h4>
+              <ul className="text-sm text-gray-300 space-y-1">
+                <li>• CSRD vereist Scope 3 rapportage voor alle materiële categorieën</li>
+                <li>• Nederlandse leveranciers: gemiddeld 0.45 kg CO2/€ inkoop</li>
+                <li>• IT diensten: 0.12 kg CO2/€ (relatief laag)</li>
+                <li>• Consultancy: 0.28 kg CO2/€ (vooral reizen)</li>
+              </ul>
+            </div>
+          </div>
+        )
+
+      case 8:
+        return (
+          <div className="space-y-6">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <CheckCircleIcon className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-2">Verificatie & Bevestiging</h3>
+              <p className="text-gray-400">Controleer uw gegevens voordat we de Nederlandse carbon footprint berekenen</p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="glass-effect-dark rounded-lg p-4">
+                <h4 className="font-semibold text-white mb-3">Bedrijfsinformatie</h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Bedrijf:</span>
+                    <span className="text-white">{formData.companyName || 'Niet ingevuld'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Industrie:</span>
+                    <span className="text-white">{formData.industry || 'Niet geselecteerd'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Medewerkers:</span>
+                    <span className="text-white">{formData.employees || '0'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Locatie:</span>
+                    <span className="text-white">{formData.location}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="glass-effect-dark rounded-lg p-4">
+                <h4 className="font-semibold text-white mb-3">Compliance Check</h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    {parseInt(formData.employees) >= 250 ? (
+                      <ExclamationTriangleIcon className="w-4 h-4 text-red-400" />
+                    ) : (
+                      <CheckCircleIcon className="w-4 h-4 text-green-400" />
+                    )}
+                    <span className="text-gray-300">
+                      CSRD rapportage {parseInt(formData.employees) >= 250 ? 'verplicht' : 'vrijwillig'}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {parseInt(formData.employees) >= 100 ? (
+                      <ExclamationTriangleIcon className="w-4 h-4 text-yellow-400" />
+                    ) : (
+                      <CheckCircleIcon className="w-4 h-4 text-green-400" />
+                    )}
+                    <span className="text-gray-300">
+                      WPM rapportage {parseInt(formData.employees) >= 100 ? 'verplicht' : 'niet verplicht'}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <SparklesIcon className="w-4 h-4 text-blue-400" />
+                    <span className="text-gray-300">Nederlandse CO2-Prestatieladder conform</span>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="glass-effect-dark rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">Nederlandse Benchmark</h3>
+            <div className="glass-effect-dark rounded-lg p-4">
+              <h4 className="font-semibold text-white mb-3 flex items-center gap-2">
+                <ClockIcon className="w-5 h-5 text-blue-400" />
+                Wat gebeurt er na de berekening?
+              </h4>
+              <div className="grid md:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <h5 className="text-white font-medium mb-2">Gratis gebruikers krijgen:</h5>
+                  <ul className="text-gray-300 space-y-1">
+                    <li>• Nederlandse carbon footprint overzicht</li>
+                    <li>• Scope 1, 2, 3 uitsplitsing</li>
+                    <li>• Nederlandse benchmark vergelijking</li>
+                    <li>• CSRD/WPM compliance status</li>
+                    <li>• Basis verbeteraanbevelingen</li>
+                  </ul>
+                </div>
+                <div>
+                  <h5 className="text-white font-medium mb-2">Premium gebruikers krijgen ook:</h5>
+                  <ul className="text-gray-300 space-y-1">
+                    <li>• AI-powered Nederlandse insights</li>
+                    <li>• Professioneel PDF rapport</li>
+                    <li>• CSRD-conforme documentatie</li>
+                    <li>• Actieplan met CO2-heffing impact</li>
+                    <li>• Nederlandse leverancier database</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {!isAuthenticated && (
+              <div className="glass-effect-dark rounded-lg p-4 border border-primary-500/30">
+                <div className="flex items-center gap-3">
+                  <UserPlusIcon className="w-6 h-6 text-primary-400" />
+                  <div>
+                    <h5 className="text-white font-medium">Upgrade naar Premium</h5>
+                    <p className="text-sm text-gray-300">
+                      Log in of registreer voor AI-insights en professionele CSRD rapporten
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )
+
+      default:
+        return null
+    }
+  }
+
+  // Show results screen
+  if (showResults && results) {
+    return (
+      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.9 }}
+          className="glass-effect rounded-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto"
+        >
+          {/* Header */}
+          <div className="p-6 border-b border-white/10">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-500 rounded-xl flex items-center justify-center">
+                  <CheckCircleIcon className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-white">Nederlandse Carbon Footprint Resultaten</h2>
+                  <p className="text-gray-400">
+                    {results.companyInfo?.name} - {results.emissions?.total?.toFixed(1)} ton CO2eq/jaar
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={onClose}
+                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+              >
+                <XMarkIcon className="w-6 h-6 text-gray-400" />
+              </button>
+            </div>
+          </div>
+
+          <div className="p-6">
+            {/* Main Results Overview */}
+            <div className="grid lg:grid-cols-3 gap-6 mb-8">
+              <div className="lg:col-span-2">
+                <div className="glass-effect-dark rounded-xl p-6">
+                  <h3 className="text-xl font-bold text-white mb-4">Totale Uitstoot</h3>
+                  <div className="text-center">
+                    <div className="text-5xl font-bold bg-gradient-to-r from-red-400 to-blue-400 bg-clip-text text-transparent mb-2">
+                      {results.emissions?.total?.toFixed(1)}
+                    </div>
+                    <div className="text-lg text-gray-300 mb-4">ton CO2 equivalent per jaar</div>
+                    <div className="text-sm text-gray-400">
+                      {(results.emissions?.total / results.companyInfo?.employees).toFixed(1)} ton per medewerker
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Uw emissies per medewerker:</span>
-                  <span className="text-white font-bold">
-                    {(results.emissions.total / results.companyInfo.employees).toFixed(1)} ton
-                  </span>
+                <div className="glass-effect-dark rounded-xl p-4">
+                  <h4 className="font-semibold text-white mb-2">Scope 1</h4>
+                  <div className="text-2xl font-bold text-orange-400">
+                    {results.emissions?.scope1?.toFixed(1) || '0.0'}
+                  </div>
+                  <p className="text-xs text-gray-400">Directe emissies</p>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Nederlandse {results.companyInfo.industry} gemiddelde:</span>
-                  <span className="text-gray-400">
-                    {results.benchmark?.industryAverage ? 
-                      (results.benchmark.industryAverage / results.companyInfo.employees).toFixed(1) : 
-                      '5.8'
-                    } ton
-                  </span>
+                
+                <div className="glass-effect-dark rounded-xl p-4">
+                  <h4 className="font-semibold text-white mb-2">Scope 2</h4>
+                  <div className="text-2xl font-bold text-yellow-400">
+                    {results.emissions?.scope2?.toFixed(1) || '0.0'}
+                  </div>
+                  <p className="text-xs text-gray-400">Energie emissies</p>
                 </div>
-                <div className="w-full bg-gray-700 rounded-full h-3">
-                  <div 
-                    className={`h-3 rounded-full ${
-                      results.benchmark?.performanceRatio < 1 ? 'bg-green-500' : 'bg-yellow-500'
-                    }`}
-                    style={{ 
-                      width: `${Math.min((results.benchmark?.performanceRatio || 1) * 100, 100)}%` 
-                    }}
-                  ></div>
+                
+                <div className="glass-effect-dark rounded-xl p-4">
+                  <h4 className="font-semibold text-white mb-2">Scope 3</h4>
+                  <div className="text-2xl font-bold text-red-400">
+                    {results.emissions?.scope3?.toFixed(1) || '0.0'}
+                  </div>
+                  <p className="text-xs text-gray-400">Indirecte emissies</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Emissions Breakdown Chart */}
+            <div className="grid lg:grid-cols-2 gap-8 mb-8">
+              <div className="glass-effect-dark rounded-xl p-6">
+                <h3 className="text-lg font-semibold text-white mb-4">Emissie Verdeling</h3>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={Object.entries(results.emissions?.breakdown || {}).map(([key, value]) => ({
+                          name: getCategoryDisplayName(key),
+                          value: value,
+                          fill: getCategoryColor(key)
+                        }))}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      />
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              <div className="glass-effect-dark rounded-xl p-6">
+                <h3 className="text-lg font-semibold text-white mb-4">Nederlandse Benchmark</h3>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-300">Uw emissies per medewerker:</span>
+                    <span className="text-white font-bold">
+                      {(results.emissions?.total / results.companyInfo?.employees).toFixed(1)} ton
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-300">Nederlandse {results.companyInfo?.industry} gemiddelde:</span>
+                    <span className="text-gray-400">
+                      {results.benchmark?.industryAverage ? 
+                        (results.benchmark.industryAverage / results.companyInfo?.employees).toFixed(1) : 
+                        '5.8'
+                      } ton
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-700 rounded-full h-3">
+                    <div 
+                      className={`h-3 rounded-full ${
+                        results.benchmark?.performanceRatio < 1 ? 'bg-green-500' : 'bg-yellow-500'
+                      }`}
+                      style={{ 
+                        width: `${Math.min((results.benchmark?.performanceRatio || 1) * 100, 100)}%` 
+                      }}
+                    ></div>
+                  </div>
+                  <p className="text-sm text-gray-400">
+                    {results.benchmark?.ranking || 'Gemiddelde prestatie'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Compliance Status */}
+            <div className="grid md:grid-cols-3 gap-6 mb-8">
+              <div className="glass-effect-dark rounded-xl p-6">
+                <h4 className="font-semibold text-white mb-3 flex items-center gap-2">
+                  <ShieldCheckIcon className="w-5 h-5 text-blue-400" />
+                  CSRD Status
+                </h4>
+                <div className="text-lg font-bold mb-2">
+                  {results.compliance?.csrd?.required ? (
+                    <span className="text-red-400">Verplicht 2025</span>
+                  ) : (
+                    <span className="text-green-400">Vrijwillig</span>
+                  )}
                 </div>
                 <p className="text-sm text-gray-400">
-                  {results.benchmark?.ranking || 'Gemiddelde prestatie'}
+                  {results.compliance?.csrd?.readiness || '75'}% readiness
+                </p>
+              </div>
+
+              <div className="glass-effect-dark rounded-xl p-6">
+                <h4 className="font-semibold text-white mb-3 flex items-center gap-2">
+                  <TruckIcon className="w-5 h-5 text-yellow-400" />
+                  WPM Status
+                </h4>
+                <div className="text-lg font-bold mb-2">
+                  {results.compliance?.wpm?.required ? (
+                    <span className="text-yellow-400">Verplicht</span>
+                  ) : (
+                    <span className="text-green-400">Niet verplicht</span>
+                  )}
+                </div>
+                <p className="text-sm text-gray-400">
+                  Mobiliteitsrapportage {results.compliance?.wpm?.deadline || '2025'}
+                </p>
+              </div>
+
+              <div className="glass-effect-dark rounded-xl p-6">
+                <h4 className="font-semibold text-white mb-3 flex items-center gap-2">
+                  <BoltIcon className="w-5 h-5 text-green-400" />
+                  CO2-Heffing
+                </h4>
+                <div className="text-lg font-bold mb-2">
+                  <span className="text-white">
+                    €{results.carbonPricing?.current2024?.toLocaleString() || '0'}
+                  </span>
+                </div>
+                <p className="text-sm text-gray-400">
+                  2030: €{results.carbonPricing?.projected2030?.toLocaleString() || '0'}
                 </p>
               </div>
             </div>
-          </div>
 
-          {/* Compliance Status */}
-          <div className="grid md:grid-cols-3 gap-6 mb-8">
-            <div className="glass-effect-dark rounded-xl p-6">
-              <h4 className="font-semibold text-white mb-3 flex items-center gap-2">
-                <ShieldCheckIcon className="w-5 h-5 text-blue-400" />
-                CSRD Status
-              </h4>
-              <div className="text-lg font-bold mb-2">
-                {results.compliance?.csrd?.required ? (
-                  <span className="text-red-400">Verplicht 2025</span>
-                ) : (
-                  <span className="text-green-400">Vrijwillig</span>
-                )}
-              </div>
-              <p className="text-sm text-gray-400">
-                {results.compliance?.csrd?.readiness}% readiness
-              </p>
-            </div>
-
-            <div className="glass-effect-dark rounded-xl p-6">
-              <h4 className="font-semibold text-white mb-3 flex items-center gap-2">
-                <TruckIcon className="w-5 h-5 text-yellow-400" />
-                WPM Status
-              </h4>
-              <div className="text-lg font-bold mb-2">
-                {results.compliance?.wpm?.required ? (
-                  <span className="text-yellow-400">Verplicht</span>
-                ) : (
-                  <span className="text-green-400">Niet verplicht</span>
-                )}
-              </div>
-              <p className="text-sm text-gray-400">
-                Mobiliteitsrapportage {results.compliance?.wmp?.deadline || '2025'}
-              </p>
-            </div>
-
-            <div className="glass-effect-dark rounded-xl p-6">
-              <h4 className="font-semibold text-white mb-3 flex items-center gap-2">
-                <BoltIcon className="w-5 h-5 text-green-400" />
-                CO2-Heffing
-              </h4>
-              <div className="text-lg font-bold mb-2">
-                <span className="text-white">
-                  €{results.carbonPricing?.current2024?.toLocaleString() || '0'}
-                </span>
-              </div>
-              <p className="text-sm text-gray-400">
-                2030: €{results.carbonPricing?.projected2030?.toLocaleString() || '0'}
-              </p>
-            </div>
-          </div>
-
-          {/* Action buttons */}
-          <div className="flex gap-4 justify-center">
-            {isAuthenticated && (
-              <button
-                onClick={generateProfessionalPDF}
-                disabled={isGeneratingPDF}
-                className="gradient-button px-6 py-3 rounded-lg font-semibold disabled:opacity-50 flex items-center gap-2"
-              >
-                {isGeneratingPDF ? (
-                  <>
-                    <div className="w-4 h-4 loading-spinner"></div>
-                    Genereren...
-                  </>
-                ) : (
-                  <>
-                    <DocumentArrowDownIcon className="w-5 h-5" />
-                    Download Nederlands PDF Rapport
-                  </>
-                )}
-              </button>
-            )}
-            
-            {!isAuthenticated && (
-              <button
-                onClick={handleOneTimePayment}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2"
-              >
-                <CreditCardIcon className="w-5 h-5" />
-                Koop Professioneel Rapport (€149)
-              </button>
-            )}
-
-            {loadingAI ? (
-              <button disabled className="glass-effect px-6 py-3 rounded-lg font-semibold opacity-50 flex items-center gap-2">
-                <div className="w-4 h-4 loading-spinner"></div>
-                AI Insights laden...
-              </button>
-            ) : aiInsights ? (
-              <button
-                onClick={() => setShowResults(false)}
-                className="glass-effect px-6 py-3 rounded-lg font-semibold hover:bg-white/20 transition-colors flex items-center gap-2"
-              >
-                <SparklesIcon className="w-5 h-5" />
-                Bekijk AI Insights
-              </button>
-            ) : isAuthenticated ? (
-              <button
-                onClick={() => generateAIInsights(results)}
-                className="glass-effect px-6 py-3 rounded-lg font-semibold hover:bg-white/20 transition-colors flex items-center gap-2"
-              >
-                <SparklesIcon className="w-5 h-5" />
-                Genereer AI Insights
-              </button>
-            ) : null}
-          </div>
-
-          {/* AI Insights Preview */}
-          {aiInsights && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-8 glass-effect-dark rounded-xl p-6"
-            >
-              <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                <SparklesIcon className="w-5 h-5 text-yellow-400" />
-                AI-Powered Nederlandse Insights
-              </h3>
+            {/* Action buttons */}
+            <div className="flex gap-4 justify-center">
+              {isAuthenticated && (
+                <button
+                  onClick={generateProfessionalPDF}
+                  disabled={isGeneratingPDF}
+                  className="gradient-button px-6 py-3 rounded-lg font-semibold disabled:opacity-50 flex items-center gap-2"
+                >
+                  {isGeneratingPDF ? (
+                    <>
+                      <div className="w-4 h-4 loading-spinner"></div>
+                      Genereren...
+                    </>
+                  ) : (
+                    <>
+                      <DocumentArrowDownIcon className="w-5 h-5" />
+                      Download Nederlands PDF Rapport
+                    </>
+                  )}
+                </button>
+              )}
               
-              {aiInsights.executiveSummary && (
-                <div className="mb-4">
-                  <h4 className="font-medium text-white mb-2">Executive Summary</h4>
-                  <p className="text-gray-300 text-sm leading-relaxed">
-                    {typeof aiInsights.executiveSummary === 'object' 
-                      ? aiInsights.executiveSummary.content?.substring(0, 300) + '...'
-                      : aiInsights.executiveSummary.substring(0, 300) + '...'
-                    }
-                  </p>
-                </div>
+              {!isAuthenticated && (
+                <button
+                  onClick={handleOneTimePayment}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2"
+                >
+                  <CreditCardIcon className="w-5 h-5" />
+                  Koop Professioneel Rapport (€149)
+                </button>
               )}
 
-              {aiInsights.aiRecommendations && aiInsights.aiRecommendations.length > 0 && (
-                <div className="mb-4">
-                  <h4 className="font-medium text-white mb-2">Top Nederlandse Aanbevelingen</h4>
-                  <div className="space-y-2">
-                    {aiInsights.aiRecommendations.slice(0, 3).map((rec, index) => (
-                      <div key={index} className="flex items-start gap-2 text-sm">
-                        <span className="text-primary-400 font-bold">{index + 1}.</span>
-                        <span className="text-gray-300">
-                          {typeof rec === 'object' ? rec.title || rec.action : rec}
-                        </span>
-                      </div>
-                    ))}
+              {loadingAI ? (
+                <button disabled className="glass-effect px-6 py-3 rounded-lg font-semibold opacity-50 flex items-center gap-2">
+                  <div className="w-4 h-4 loading-spinner"></div>
+                  AI Insights laden...
+                </button>
+              ) : aiInsights ? (
+                <button
+                  onClick={() => setShowResults(false)}
+                  className="glass-effect px-6 py-3 rounded-lg font-semibold hover:bg-white/20 transition-colors flex items-center gap-2"
+                >
+                  <SparklesIcon className="w-5 h-5" />
+                  Bekijk AI Insights
+                </button>
+              ) : isAuthenticated ? (
+                <button
+                  onClick={() => generateAIInsights(results)}
+                  className="glass-effect px-6 py-3 rounded-lg font-semibold hover:bg-white/20 transition-colors flex items-center gap-2"
+                >
+                  <SparklesIcon className="w-5 h-5" />
+                  Genereer AI Insights
+                </button>
+              ) : null}
+            </div>
+
+            {/* AI Insights Preview */}
+            {aiInsights && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-8 glass-effect-dark rounded-xl p-6"
+              >
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                  <SparklesIcon className="w-5 h-5 text-yellow-400" />
+                  AI-Powered Nederlandse Insights
+                </h3>
+                
+                {aiInsights.executiveSummary && (
+                  <div className="mb-4">
+                    <h4 className="font-medium text-white mb-2">Executive Summary</h4>
+                    <p className="text-gray-300 text-sm leading-relaxed">
+                      {typeof aiInsights.executiveSummary === 'object' 
+                        ? aiInsights.executiveSummary.content?.substring(0, 300) + '...'
+                        : aiInsights.executiveSummary.substring(0, 300) + '...'
+                      }
+                    </p>
                   </div>
-                </div>
-              )}
+                )}
 
-              {aiInsights.sustainabilityScore && (
-                <div className="flex items-center justify-between pt-4 border-t border-gray-600">
-                  <span className="text-gray-300">Sustainability Score:</span>
-                  <span className="text-2xl font-bold text-primary-400">
-                    {aiInsights.sustainabilityScore.overall}/100
-                  </span>
-                </div>
-              )}
-            </motion.div>
-          )}
+                {aiInsights.aiRecommendations && aiInsights.aiRecommendations.length > 0 && (
+                  <div className="mb-4">
+                    <h4 className="font-medium text-white mb-2">Top Nederlandse Aanbevelingen</h4>
+                    <div className="space-y-2">
+                      {aiInsights.aiRecommendations.slice(0, 3).map((rec, index) => (
+                        <div key={index} className="flex items-start gap-2 text-sm">
+                          <span className="text-primary-400 font-bold">{index + 1}.</span>
+                          <span className="text-gray-300">
+                            {typeof rec === 'object' ? rec.title || rec.action : rec}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {aiInsights.sustainabilityScore && (
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-600">
+                    <span className="text-gray-300">Sustainability Score:</span>
+                    <span className="text-2xl font-bold text-primary-400">
+                      {aiInsights.sustainabilityScore.overall}/100
+                    </span>
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </div>
         </motion.div>
       </div>
     )
@@ -1034,6 +1440,121 @@ const Calculator = ({ onClose }) => {
           </div>
         )}
       </motion.div>
+
+      {/* Upgrade Prompt Modal */}
+      <AnimatePresence>
+        {showUpgradePrompt && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/90 backdrop-blur-sm z-60 flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="glass-effect rounded-2xl max-w-md w-full p-6"
+            >
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <SparklesIcon className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">Upgrade naar Premium</h3>
+                <p className="text-gray-400 mb-6">
+                  Je hebt je gratis Nederlandse berekening al gebruikt. Upgrade voor onbeperkte berekeningen en AI-insights.
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowUpgradePrompt(false)}
+                    className="flex-1 glass-effect px-4 py-2 rounded-lg hover:bg-white/20 transition-colors"
+                  >
+                    Annuleren
+                  </button>
+                  <button
+                    onClick={() => setShowOneTimePayment(true)}
+                    className="flex-1 gradient-button px-4 py-2 rounded-lg"
+                  >
+                    Upgrade Nu
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* One-time Payment Modal */}
+      <AnimatePresence>
+        {showOneTimePayment && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/90 backdrop-blur-sm z-60 flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="glass-effect rounded-2xl max-w-lg w-full p-6"
+            >
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <CreditCardIcon className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">Professioneel Nederlands Rapport</h3>
+                <p className="text-gray-400 mb-6">
+                  Eenmalige betaling voor een volledig CSRD-conform rapport met AI-insights en Nederlandse compliance analyse.
+                </p>
+                
+                <div className="glass-effect-dark rounded-lg p-4 mb-6 text-left">
+                  <h4 className="font-semibold text-white mb-3">Inbegrepen:</h4>
+                  <ul className="text-sm text-gray-300 space-y-2">
+                    <li className="flex items-center gap-2">
+                      <CheckCircleIcon className="w-4 h-4 text-green-400" />
+                      Nederlandse carbon footprint berekening
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircleIcon className="w-4 h-4 text-green-400" />
+                      CSRD-conform PDF rapport
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircleIcon className="w-4 h-4 text-green-400" />
+                      AI-powered insights en aanbevelingen
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircleIcon className="w-4 h-4 text-green-400" />
+                      Nederlandse compliance analyse
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircleIcon className="w-4 h-4 text-green-400" />
+                      CO2-heffing impact berekening
+                    </li>
+                  </ul>
+                </div>
+                
+                <div className="text-3xl font-bold text-white mb-6">€149</div>
+                
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowOneTimePayment(false)}
+                    className="flex-1 glass-effect px-4 py-2 rounded-lg hover:bg-white/20 transition-colors"
+                  >
+                    Annuleren
+                  </button>
+                  <button
+                    onClick={handleOneTimePayment}
+                    className="flex-1 gradient-button px-4 py-2 rounded-lg"
+                  >
+                    Betalen & Downloaden
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
@@ -1063,4 +1584,4 @@ const getCategoryColor = (category) => {
   return colors[category] || '#6b7280'
 }
 
-export default Calculator'use client'
+export default Calculator
