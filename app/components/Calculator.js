@@ -46,7 +46,7 @@ const Calculator = ({ onClose }) => {
       gas: '',
       heating: '',
       greenEnergyPercentage: '0'
-    
+    }
 
   // Main calculator form
   return (
